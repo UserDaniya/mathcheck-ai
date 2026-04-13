@@ -34,6 +34,8 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
 /* AUTH SCREEN */
 #authScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
@@ -62,14 +64,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .auth-role-name{font-size:13px;font-weight:600;color:var(--text)}
 .auth-role-hint{font-size:11px;color:var(--text3);margin-top:2px}
 .auth-divider{text-align:center;font-size:11px;color:var(--text3);margin:16px 0;position:relative}
-.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border)}
 .auth-divider::before{left:0}.auth-divider::after{right:0}
-
-/* LOGOUT BUTTON */
-.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px;background:transparent;border:1px solid transparent;width:100%;text-align:left}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px;background:transparent;border:1px solid transparent;width:100%}
 .logout-btn:hover{background:var(--red-dim);color:var(--red);border-color:rgba(248,113,113,.2)}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
 .layout{display:flex;min-height:100vh}
 
@@ -286,7 +284,6 @@ textarea.math-area::placeholder{color:var(--text3)}
     </div>
     <div class="auth-title">Добро пожаловать</div>
     <div class="auth-sub">Выберите роль и войдите в систему</div>
-
     <div class="auth-roles">
       <div class="auth-role-btn selected" id="roleTeacher" onclick="selectRole('teacher')">
         <div class="auth-role-icon">👨‍🏫</div>
@@ -299,9 +296,7 @@ textarea.math-area::placeholder{color:var(--text3)}
         <div class="auth-role-hint">Решение задач</div>
       </div>
     </div>
-
     <div class="auth-error" id="authError">Неверный логин или пароль</div>
-
     <div class="auth-field">
       <label class="auth-label" for="authLogin">Логин</label>
       <input class="auth-input" type="text" id="authLogin" placeholder="Введите логин" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
@@ -310,9 +305,7 @@ textarea.math-area::placeholder{color:var(--text3)}
       <label class="auth-label" for="authPassword">Пароль</label>
       <input class="auth-input" type="password" id="authPassword" placeholder="Введите пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-
     <button class="auth-btn" onclick="doLogin()">Войти</button>
-
     <div class="auth-divider" style="margin-top:20px">тестовые аккаунты</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
@@ -328,7 +321,6 @@ textarea.math-area::placeholder{color:var(--text3)}
     </div>
   </div>
 </div>
-
 <div class="layout">
 
   <!-- SIDEBAR -->
@@ -370,9 +362,7 @@ textarea.math-area::placeholder{color:var(--text3)}
           <div class="user-role" id="userRole">Магистрант · НИРМ</div>
         </div>
       </div>
-      <button class="logout-btn" onclick="doLogout()">
-        <span>🚪</span><span>Выйти из системы</span>
-      </button>
+      <button class="logout-btn" onclick="doLogout()">🚪 Выйти из системы</button>
     </div>
   </aside>
 
@@ -618,7 +608,7 @@ textarea.math-area::placeholder{color:var(--text3)}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── AUTH ──────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────────────
 const USERS = {
   teacher: { password: 'teach123', role: 'teacher', name: 'Ахтаев Данияр', initials: 'АД', roleLabel: 'Учитель · НИРМ' },
   student: { password: 'math123',  role: 'student', name: 'Ученик',        initials: 'У',  roleLabel: 'Ученик' },
@@ -639,14 +629,12 @@ function doLogin() {
   const pass  = document.getElementById('authPassword').value;
   const errEl = document.getElementById('authError');
   errEl.classList.remove('show');
-
   const user = USERS[login];
   if (!user || user.password !== pass || user.role !== selectedRole) {
     errEl.classList.add('show');
     document.getElementById('authPassword').value = '';
     return;
   }
-
   currentUser = { login, ...user };
   localStorage.setItem('mathcheck_session', JSON.stringify({ login, role: user.role }));
   applySession();
@@ -664,13 +652,9 @@ function doLogout() {
 
 function applySession() {
   if (!currentUser) return;
-
-  // Update sidebar user card
   document.getElementById('userAvatar').textContent = currentUser.initials;
   document.getElementById('userName').textContent   = currentUser.name;
   document.getElementById('userRole').textContent   = currentUser.roleLabel;
-
-  // Restrict nav items for students
   const teacherOnly = ['teacher', 'analytics'];
   document.querySelectorAll('.nav-item').forEach(el => {
     const panel = el.getAttribute('onclick')?.match(/showPanel\('(\w+)'/)?.[1];
@@ -682,7 +666,8 @@ function applySession() {
   });
 }
 
-// ── ORIGINAL INIT ───────────────────────────────────────
+// ── APP ───────────────────────────────────────────────────
+const TASKS = [
   { name:'Линейное уравнение', formula:'3x + 7 = 22', desc:'Найдите значение x', hints:['x = ','3x = ','Шаг 1: ','Ответ: x = '], custom:false },
   { name:'Квадратное уравнение', formula:'x² − 5x + 6 = 0', desc:'Найдите все корни уравнения', hints:['D = ','x₁ = ','x₂ = ','Ответ: '], custom:false },
   { name:'Система уравнений', formula:'x + y = 10\n2x − y = 5', desc:'Найдите x и y', hints:['x = ','y = ','Шаг 1: ','Ответ: '], custom:false },
@@ -696,11 +681,10 @@ let apiKey = '';
 let isChecking = false;
 let history = [];
 
-// Detect if running on Vercel (has /api/check) or locally
 const API_URL = '/api/check';
 
 function init() {
-  // Check for saved session
+  // Restore session
   const saved = localStorage.getItem('mathcheck_session');
   if (saved) {
     try {
@@ -713,7 +697,6 @@ function init() {
       }
     } catch(e) { localStorage.removeItem('mathcheck_session'); }
   }
-
   apiKey = localStorage.getItem('mathcheck_key') || '';
   if (apiKey) { document.getElementById('apiKeyInput').value = apiKey; updateStatus(true); }
   history = JSON.parse(localStorage.getItem('mathcheck_history') || '[]');
