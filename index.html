@@ -34,6 +34,40 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* AUTH SCREEN */
+#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+#authScreen.hidden{display:none}
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.auth-logo{display:flex;align-items:center;gap:14px;margin-bottom:32px;justify-content:center}
+.auth-logo-icon{width:48px;height:48px;background:var(--accent);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:22px;color:white;box-shadow:0 0 24px rgba(108,99,255,.4)}
+.auth-logo-text{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--text)}
+.auth-logo-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.auth-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:28px}
+.auth-field{margin-bottom:16px}
+.auth-label{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
+.auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:11px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--font);transition:border-color .2s}
+.auth-input:focus{border-color:var(--accent)}
+.auth-input::placeholder{color:var(--text3)}
+.auth-btn{width:100%;margin-top:8px;padding:13px;background:var(--accent);color:white;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.auth-btn:hover{background:#5a52e0;box-shadow:0 0 20px rgba(108,99,255,.35)}
+.auth-error{background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.auth-error.show{display:block}
+.auth-roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.auth-role-btn{padding:12px;background:var(--bg3);border:2px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:center;transition:all .2s}
+.auth-role-btn:hover{border-color:var(--border2)}
+.auth-role-btn.selected{border-color:var(--accent);background:var(--accent-glow)}
+.auth-role-icon{font-size:22px;margin-bottom:6px}
+.auth-role-name{font-size:13px;font-weight:600;color:var(--text)}
+.auth-role-hint{font-size:11px;color:var(--text3);margin-top:2px}
+.auth-divider{text-align:center;font-size:11px;color:var(--text3);margin:16px 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+
+/* LOGOUT BUTTON */
+.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px;background:transparent;border:1px solid transparent;width:100%;text-align:left}
+.logout-btn:hover{background:var(--red-dim);color:var(--red);border-color:rgba(248,113,113,.2)}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
@@ -240,6 +274,61 @@ textarea.math-area::placeholder{color:var(--text3)}
 </style>
 </head>
 <body>
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">∑</div>
+      <div>
+        <div class="auth-logo-text">MathCheck AI</div>
+        <div class="auth-logo-sub">Powered by Claude Sonnet</div>
+      </div>
+    </div>
+    <div class="auth-title">Добро пожаловать</div>
+    <div class="auth-sub">Выберите роль и войдите в систему</div>
+
+    <div class="auth-roles">
+      <div class="auth-role-btn selected" id="roleTeacher" onclick="selectRole('teacher')">
+        <div class="auth-role-icon">👨‍🏫</div>
+        <div class="auth-role-name">Учитель</div>
+        <div class="auth-role-hint">Все функции</div>
+      </div>
+      <div class="auth-role-btn" id="roleStudent" onclick="selectRole('student')">
+        <div class="auth-role-icon">🎓</div>
+        <div class="auth-role-name">Ученик</div>
+        <div class="auth-role-hint">Решение задач</div>
+      </div>
+    </div>
+
+    <div class="auth-error" id="authError">Неверный логин или пароль</div>
+
+    <div class="auth-field">
+      <label class="auth-label" for="authLogin">Логин</label>
+      <input class="auth-input" type="text" id="authLogin" placeholder="Введите логин" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label" for="authPassword">Пароль</label>
+      <input class="auth-input" type="password" id="authPassword" placeholder="Введите пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <button class="auth-btn" onclick="doLogin()">Войти</button>
+
+    <div class="auth-divider" style="margin-top:20px">тестовые аккаунты</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
+        <div style="color:var(--accent2);font-weight:600;margin-bottom:4px">👨‍🏫 Учитель</div>
+        <div>Логин: <span style="color:var(--text);font-family:var(--font-mono)">teacher</span></div>
+        <div>Пароль: <span style="color:var(--text);font-family:var(--font-mono)">teach123</span></div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
+        <div style="color:var(--teal);font-weight:600;margin-bottom:4px">🎓 Ученик</div>
+        <div>Логин: <span style="color:var(--text);font-family:var(--font-mono)">student</span></div>
+        <div>Пароль: <span style="color:var(--text);font-family:var(--font-mono)">math123</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="layout">
 
   <!-- SIDEBAR -->
@@ -275,12 +364,15 @@ textarea.math-area::placeholder{color:var(--text3)}
 
     <div class="sidebar-footer">
       <div class="user-card">
-        <div class="avatar">АД</div>
+        <div class="avatar" id="userAvatar">АД</div>
         <div>
-          <div class="user-name">Ахтаев Данияр</div>
-          <div class="user-role">Магистрант · НИРМ</div>
+          <div class="user-name" id="userName">Ахтаев Данияр</div>
+          <div class="user-role" id="userRole">Магистрант · НИРМ</div>
         </div>
       </div>
+      <button class="logout-btn" onclick="doLogout()">
+        <span>🚪</span><span>Выйти из системы</span>
+      </button>
     </div>
   </aside>
 
@@ -526,7 +618,71 @@ textarea.math-area::placeholder{color:var(--text3)}
 <div class="toast" id="toast"></div>
 
 <script>
-const TASKS = [
+// ── AUTH ──────────────────────────────────────────────
+const USERS = {
+  teacher: { password: 'teach123', role: 'teacher', name: 'Ахтаев Данияр', initials: 'АД', roleLabel: 'Учитель · НИРМ' },
+  student: { password: 'math123',  role: 'student', name: 'Ученик',        initials: 'У',  roleLabel: 'Ученик' },
+};
+
+let currentUser = null;
+let selectedRole = 'teacher';
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('roleTeacher').classList.toggle('selected', role === 'teacher');
+  document.getElementById('roleStudent').classList.toggle('selected', role === 'student');
+  document.getElementById('authError').classList.remove('show');
+}
+
+function doLogin() {
+  const login = document.getElementById('authLogin').value.trim();
+  const pass  = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('authError');
+  errEl.classList.remove('show');
+
+  const user = USERS[login];
+  if (!user || user.password !== pass || user.role !== selectedRole) {
+    errEl.classList.add('show');
+    document.getElementById('authPassword').value = '';
+    return;
+  }
+
+  currentUser = { login, ...user };
+  localStorage.setItem('mathcheck_session', JSON.stringify({ login, role: user.role }));
+  applySession();
+  document.getElementById('authScreen').classList.add('hidden');
+}
+
+function doLogout() {
+  localStorage.removeItem('mathcheck_session');
+  currentUser = null;
+  document.getElementById('authLogin').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authError').classList.remove('show');
+  document.getElementById('authScreen').classList.remove('hidden');
+}
+
+function applySession() {
+  if (!currentUser) return;
+
+  // Update sidebar user card
+  document.getElementById('userAvatar').textContent = currentUser.initials;
+  document.getElementById('userName').textContent   = currentUser.name;
+  document.getElementById('userRole').textContent   = currentUser.roleLabel;
+
+  // Restrict nav items for students
+  const teacherOnly = ['teacher', 'analytics'];
+  document.querySelectorAll('.nav-item').forEach(el => {
+    const panel = el.getAttribute('onclick')?.match(/showPanel\('(\w+)'/)?.[1];
+    if (panel && teacherOnly.includes(panel) && currentUser.role === 'student') {
+      el.style.display = 'none';
+    } else {
+      el.style.display = '';
+    }
+  });
+}
+
+// ── ORIGINAL INIT ───────────────────────────────────────
   { name:'Линейное уравнение', formula:'3x + 7 = 22', desc:'Найдите значение x', hints:['x = ','3x = ','Шаг 1: ','Ответ: x = '], custom:false },
   { name:'Квадратное уравнение', formula:'x² − 5x + 6 = 0', desc:'Найдите все корни уравнения', hints:['D = ','x₁ = ','x₂ = ','Ответ: '], custom:false },
   { name:'Система уравнений', formula:'x + y = 10\n2x − y = 5', desc:'Найдите x и y', hints:['x = ','y = ','Шаг 1: ','Ответ: '], custom:false },
@@ -544,6 +700,20 @@ let history = [];
 const API_URL = '/api/check';
 
 function init() {
+  // Check for saved session
+  const saved = localStorage.getItem('mathcheck_session');
+  if (saved) {
+    try {
+      const s = JSON.parse(saved);
+      const user = USERS[s.login];
+      if (user && user.role === s.role) {
+        currentUser = { login: s.login, ...user };
+        applySession();
+        document.getElementById('authScreen').classList.add('hidden');
+      }
+    } catch(e) { localStorage.removeItem('mathcheck_session'); }
+  }
+
   apiKey = localStorage.getItem('mathcheck_key') || '';
   if (apiKey) { document.getElementById('apiKeyInput').value = apiKey; updateStatus(true); }
   history = JSON.parse(localStorage.getItem('mathcheck_history') || '[]');
