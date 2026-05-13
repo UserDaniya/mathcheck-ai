@@ -81,7 +81,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 /* ── MAIN ───────────────────────────────────────────────── */
 .main{display:flex;flex-direction:column;min-height:100vh}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 28px 16px;border-bottom:1px solid var(--border);background:var(--bg2);gap:16px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--bg2);gap:16px}
 .page-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text)}
 .page-sub{font-size:12px;color:var(--text3);margin-top:2px}
 .topbar-right{display:flex;align-items:center;gap:10px}
@@ -92,14 +92,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .panel{display:none}.panel.active{display:block}
 
 /* ── TASKS GRID ─────────────────────────────────────────── */
-.tasks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.task-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px;cursor:pointer;transition:all .15s}
-.task-card:hover{border-color:var(--border2)}
-.task-card.selected{border-color:var(--accent);background:var(--accent-glow)}
-.task-icon{font-size:22px;margin-bottom:8px}
-.task-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px}
-.task-formula{font-size:11px;color:var(--accent2);font-family:var(--font-mono);margin-bottom:6px}
-.task-diff{font-size:10px;color:var(--text3)}
+.tasks-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.task-chip{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:30px;cursor:pointer;transition:all .15s;user-select:none}
+.task-chip:hover{border-color:var(--border2);background:var(--bg3)}
+.task-chip.selected{border-color:var(--accent);background:var(--accent-glow)}
+.task-chip-icon{font-size:15px}
+.task-chip-name{font-size:13px;font-weight:600;color:var(--text)}
+.task-chip.selected .task-chip-name{color:var(--accent)}
+.task-chip-formula{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+.task-chip.selected .task-chip-formula{color:var(--accent2)}
 
 /* ── SOLVE AREA ─────────────────────────────────────────── */
 .solve-area{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -107,7 +108,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .panel-box-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .panel-box-title{font-size:14px;font-weight:600;color:var(--text)}
 .panel-box-sub{font-size:11px;color:var(--text3);margin-top:2px}
-.panel-box-body{padding:16px 18px}
+.panel-box-body{padding:14px 16px}
 .formula-display{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;text-align:center}
 .formula-main{font-family:var(--font-mono);font-size:20px;color:var(--accent2);margin-bottom:6px}
 .formula-desc{font-size:12px;color:var(--text3)}
@@ -238,7 +239,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 @media(max-width:900px){
   .sidebar{display:none}
-  .tasks-grid{grid-template-columns:1fr 1fr}
+  .tasks-chips{gap:6px}
   .solve-area{grid-template-columns:1fr}
   .stats-row{grid-template-columns:1fr 1fr}
   .charts-grid{grid-template-columns:1fr}
@@ -346,7 +347,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       </div>
       <div class="topbar-right">
         <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Тёмная</button>
-        <div class="badge-model">claude-sonnet-4-5</div>
       </div>
     </div>
 
@@ -354,42 +354,35 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
       <!-- STUDENT PANEL -->
       <div class="panel active" id="panel-student">
-        <div class="tasks-grid">
-          <div class="task-card selected" onclick="selectTask(0,this)">
-            <div class="task-icon">➗</div>
-            <div class="task-name" data-i18n="task_linear">Линейное уравнение</div>
-            <div class="task-formula">3x + 7 = 22</div>
-            <div class="task-diff">🟢 <span data-i18n="level_easy">Начальный</span></div>
+        <div class="tasks-chips">
+          <div class="task-chip selected" onclick="selectTask(0,this)">
+            <span class="task-chip-icon">➗</span>
+            <span class="task-chip-name" data-i18n="task_linear">Линейное уравнение</span>
+            <span class="task-chip-formula">3x+7=22</span>
           </div>
-          <div class="task-card" onclick="selectTask(1,this)">
-            <div class="task-icon">📐</div>
-            <div class="task-name" data-i18n="task_quadratic">Квадратное уравнение</div>
-            <div class="task-formula">x² − 5x + 6 = 0</div>
-            <div class="task-diff">🟡 <span data-i18n="level_mid">Средний</span></div>
+          <div class="task-chip" onclick="selectTask(1,this)">
+            <span class="task-chip-icon">📐</span>
+            <span class="task-chip-name" data-i18n="task_quadratic">Квадратное уравнение</span>
+            <span class="task-chip-formula">x²−5x+6=0</span>
           </div>
-          <div class="task-card" onclick="selectTask(2,this)">
-            <div class="task-icon">🔢</div>
-            <div class="task-name" data-i18n="task_system">Система уравнений</div>
-            <div class="task-formula">x+y=10; 2x−y=5</div>
-            <div class="task-diff">🟡 <span data-i18n="level_mid">Средний</span></div>
+          <div class="task-chip" onclick="selectTask(2,this)">
+            <span class="task-chip-icon">🔢</span>
+            <span class="task-chip-name" data-i18n="task_system">Система уравнений</span>
+            <span class="task-chip-formula">x+y=10</span>
           </div>
-          <div class="task-card" onclick="selectTask(3,this)">
-            <div class="task-icon">📏</div>
-            <div class="task-name" data-i18n="task_ineq">Неравенство</div>
-            <div class="task-formula">2x − 4 > 8</div>
-            <div class="task-diff">🟢 <span data-i18n="level_easy">Начальный</span></div>
+          <div class="task-chip" onclick="selectTask(3,this)">
+            <span class="task-chip-icon">📏</span>
+            <span class="task-chip-name" data-i18n="task_ineq">Неравенство</span>
+            <span class="task-chip-formula">2x−4&gt;8</span>
           </div>
-          <div class="task-card" onclick="selectTask(4,this)">
-            <div class="task-icon">🧮</div>
-            <div class="task-name" data-i18n="task_discrim">Дискриминант</div>
-            <div class="task-formula">x² + 4x + 4 = 0</div>
-            <div class="task-diff">🟡 <span data-i18n="level_mid">Средний</span></div>
+          <div class="task-chip" onclick="selectTask(4,this)">
+            <span class="task-chip-icon">🧮</span>
+            <span class="task-chip-name" data-i18n="task_discrim">Дискриминант</span>
+            <span class="task-chip-formula">x²+4x+4=0</span>
           </div>
-          <div class="task-card" onclick="selectTask(5,this)">
-            <div class="task-icon">📌</div>
-            <div class="task-name" data-i18n="task_custom">Своя задача</div>
-            <div class="task-formula" data-i18n="arbitrary">Произвольная</div>
-            <div class="task-diff">✏️ <span data-i18n="enter_manually">Ввести вручную</span></div>
+          <div class="task-chip" onclick="selectTask(5,this)">
+            <span class="task-chip-icon">✏️</span>
+            <span class="task-chip-name" data-i18n="task_custom">Своя задача</span>
           </div>
         </div>
 
@@ -410,10 +403,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
                 <div class="field-label" data-i18n="enter_condition">Введите своё условие</div>
                 <textarea class="math-area" id="customTask" style="height:60px" placeholder="Например: 5x - 3 = 12"></textarea>
               </div>
-              <div class="field-label" data-i18n="quick_input">Быстрый ввод</div>
-              <div class="hint-grid" id="hintGrid"></div>
-              <div class="field-label" data-i18n="your_solution">Ваше решение</div>
-
+              <div class="hint-grid" id="hintGrid" style="margin-bottom:14px"></div>
               <!-- PHOTO ZONE -->
               <div class="photo-upload-zone" id="photoZone"
                 ondragover="event.preventDefault();this.classList.add('drag')"
@@ -442,12 +432,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           </div>
 
           <div class="panel-box">
-            <div class="panel-box-header">
-              <div>
-                <div class="panel-box-title" data-i18n="result_title">Результат проверки</div>
-                <div class="panel-box-sub" data-i18n="result_sub">Анализ ИИ · Claude Sonnet</div>
-              </div>
-            </div>
             <div class="panel-box-body">
               <div id="resultArea">
                 <div class="result-placeholder">
@@ -965,7 +949,7 @@ let currentTaskIdx = 0;
 
 function selectTask(idx, el) {
   currentTaskIdx = idx;
-  document.querySelectorAll('.task-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.task-chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   const task = TASKS[idx];
   document.getElementById('taskSubLabel').textContent = t(task.nameKey);
@@ -1101,25 +1085,31 @@ async function checkPhotoWithAI() {
   setCheckingState(true, 'checkPhotoBtn', 'photoBtnIcon', 'photoBtnText', t('reading_photo'));
   document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_reading')}</div><div class="ai-text" style="color:var(--text3)">Claude Vision...</div></div></div>`;
 
-  const prompt = `Ты — педагогический ИИ-ассистент по математике. На фото — рукописное решение ученика.
+  // If student picked "custom" task and typed it — pass as a hint, otherwise trust the photo fully
+  const taskHint = task.custom
+    ? (document.getElementById('customTask').value.trim() || '')
+    : '';
 
-ЗАДАЧА: ${taskText}
+  const prompt = `Ты — педагогический ИИ-ассистент по математике. На фото — рукописное решение ученика в тетради или скриншот.
 
-Задачи:
-1. Распознай рукописный текст с фото
-2. Проверь решение на правильность
-3. Найди ошибки и объясни пошагово
+${taskHint ? `УСЛОВИЕ ЗАДАЧИ (если совпадает с фото): ${taskHint}\n` : ''}ВАЖНО: Читай задачу и решение ТОЛЬКО с фото. Не подставляй другую задачу, даже если она есть в контексте.
+
+Шаги:
+1. Распознай точно задачу и всё решение с фото
+2. Проверь каждый шаг решения
+3. Найди ошибки, объясни где именно
+4. Покажи правильный ход решения
 
 Стиль: ${style}. Отвечай на ${aiLang} языке.
 
 Верни ТОЛЬКО JSON без markdown:
-{"recognized":"распознанный текст","verdict":"correct"|"wrong"|"partial","verdict_text":"краткий вердикт","steps":[{"status":"ok"|"err"|"info","text":"шаг"}],"comment":"комментарий 3-5 предложений"}`;
+{"recognized":"точный текст с фото — задача и шаги","verdict":"correct"|"wrong"|"partial","verdict_text":"вердикт одним предложением","steps":[{"status":"ok"|"err"|"info","text":"описание шага"}],"comment":"педагогический комментарий 3-5 предложений"}`;
 
   const content = [
     { type:'image', source:{ type:'base64', media_type: uploadedPhotoType, data: uploadedPhotoBase64 }},
     { type:'text', text: prompt }
   ];
-  await callAPI([{ role:'user', content }], 'photo', 'checkPhotoBtn', 'photoBtnIcon', 'photoBtnText', taskText, `[Фото] ${uploadedPhotoName}`);
+  await callAPI([{ role:'user', content }], 'photo', 'checkPhotoBtn', 'photoBtnIcon', 'photoBtnText', '📷 ' + uploadedPhotoName, `[Фото] ${uploadedPhotoName}`);
 }
 
 async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPreview) {
