@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathCheck AI — Проверка домашних заданий</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #18181f;
+  --bg4: #1e1e28;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --accent-glow: rgba(108,99,255,0.15);
+  --teal: #2dd4bf;
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --green: #4ade80;
+  --green-dim: rgba(74,222,128,0.12);
+  --amber: #fbbf24;
+  --amber-dim: rgba(251,191,36,0.1);
+  --text: #f0f0f8;
+  --text2: #9090a8;
+  --text3: #5a5a72;
+  --r: 10px;
+  --r2: 16px;
+  --font: 'Manrope', sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* AUTH SCREEN */
+#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+#authScreen.hidden{display:none}
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.auth-logo{display:flex;align-items:center;gap:14px;margin-bottom:32px;justify-content:center}
+.auth-logo-icon{width:48px;height:48px;background:var(--accent);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:22px;color:white;box-shadow:0 0 24px rgba(108,99,255,.4)}
+.auth-logo-text{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--text)}
+.auth-logo-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.auth-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:28px}
+.auth-field{margin-bottom:16px}
+.auth-label{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
+.auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:11px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--font);transition:border-color .2s}
+.auth-input:focus{border-color:var(--accent)}
+.auth-input::placeholder{color:var(--text3)}
+.auth-btn{width:100%;margin-top:8px;padding:13px;background:var(--accent);color:white;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.auth-btn:hover{background:#5a52e0;box-shadow:0 0 20px rgba(108,99,255,.35)}
+.auth-error{background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.auth-error.show{display:block}
+.auth-roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.auth-role-btn{padding:12px;background:var(--bg3);border:2px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:center;transition:all .2s}
+.auth-role-btn:hover{border-color:var(--border2)}
+.auth-role-btn.selected{border-color:var(--accent);background:var(--accent-glow)}
+.auth-role-icon{font-size:22px;margin-bottom:6px}
+.auth-role-name{font-size:13px;font-weight:600;color:var(--text)}
+.auth-role-hint{font-size:11px;color:var(--text3);margin-top:2px}
+.auth-divider{text-align:center;font-size:11px;color:var(--text3);margin:16px 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px;background:transparent;border:1px solid transparent;width:100%}
+.logout-btn:hover{background:var(--red-dim);color:var(--red);border-color:rgba(248,113,113,.2)}
+
+/* PHOTO UPLOAD */
+.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;background:var(--bg3)}
+.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
+.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-upload-icon{font-size:28px;margin-bottom:8px}
+.photo-upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.photo-upload-sub{font-size:11px;color:var(--text3)}
+.photo-preview-wrap{position:relative;margin-bottom:14px;border-radius:var(--r2);overflow:hidden;border:1px solid var(--border2)}
+.photo-preview-wrap img{width:100%;max-height:260px;object-fit:contain;display:block;background:#000}
+.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
+.photo-preview-name{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:2px 8px;border-radius:4px;background:var(--red-dim);border:none;font-family:var(--font)}
+.photo-remove-btn:hover{background:rgba(248,113,113,.2)}
+.photo-mode-toggle{display:flex;gap:8px;margin-bottom:14px}
+.mode-btn{flex:1;padding:9px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s;font-family:var(--font)}
+.mode-btn.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
+
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:260px;min-width:260px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.logo-icon{width:38px;height:38px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:white;box-shadow:0 0 20px rgba(108,99,255,0.4);flex-shrink:0}
+.logo-text{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
+
+.api-section{padding:16px;border-bottom:1px solid var(--border)}
+.api-label{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.api-input-wrap{position:relative}
+.api-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 36px 9px 12px;font-family:var(--font-mono);font-size:11px;color:var(--text2);outline:none;transition:border-color .2s}
+.api-input:focus{border-color:var(--accent);color:var(--text)}
+.api-input::placeholder{color:var(--text3)}
+.api-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text3);font-size:14px;user-select:none}
+.api-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--text3)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:background .3s}
+.dot.connected{background:var(--green);box-shadow:0 0 6px var(--green)}
+
+.nav-section{padding:12px 10px;flex:1}
+.nav-title{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);padding:0 10px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px;border:1px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--accent-glow);color:var(--accent2);border-color:rgba(108,99,255,.2)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border)}
+.avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0}
+.user-name{font-size:13px;font-weight:500;color:var(--text)}
+.user-role{font-size:11px;color:var(--text3)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0}
+.page-title{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text)}
+.page-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.badge-model{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--accent-glow);border:1px solid rgba(108,99,255,.25);border-radius:20px;font-size:11px;font-weight:600;color:var(--accent2)}
+.badge-model::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+
+.content{flex:1;overflow-y:auto;padding:28px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* TASK CARDS */
+.tasks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.task-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.task-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .2s}
+.task-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.task-card.selected{border-color:rgba(108,99,255,.4);background:rgba(108,99,255,.06)}
+.task-card.selected::before{background:var(--accent)}
+.task-icon{font-size:24px;margin-bottom:10px}
+.task-name{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.task-formula{font-family:var(--font-mono);font-size:12px;color:var(--accent2);background:var(--accent-glow);padding:4px 8px;border-radius:6px;display:inline-block;margin-bottom:8px}
+.task-diff{font-size:11px;color:var(--text3)}
+
+/* SOLVE AREA */
+.solve-area{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.panel-box-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.panel-box-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text)}
+.panel-box-sub{font-size:11px;color:var(--text3)}
+.panel-box-body{padding:18px}
+
+.formula-display{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:16px}
+.formula-main{font-family:var(--font-mono);font-size:22px;color:var(--accent2);font-weight:500}
+.formula-desc{font-size:12px;color:var(--text3);margin-top:8px}
+
+.hint-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.hint-btn{font-family:var(--font-mono);font-size:12px;padding:5px 12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .15s}
+.hint-btn:hover{background:var(--accent-glow);border-color:rgba(108,99,255,.3);color:var(--accent2)}
+
+textarea.math-area{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-family:var(--font-mono);font-size:14px;color:var(--text);resize:none;outline:none;height:140px;line-height:1.6;transition:border-color .2s}
+textarea.math-area:focus{border-color:var(--accent)}
+textarea.math-area::placeholder{color:var(--text3)}
+
+.btn-check{width:100%;margin-top:12px;padding:13px;background:var(--accent);color:white;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-check:hover{background:#5a52e0;box-shadow:0 0 20px rgba(108,99,255,.3)}
+.btn-check:disabled{background:var(--bg4);color:var(--text3);cursor:not-allowed;box-shadow:none}
+.btn-clear{width:100%;margin-top:8px;padding:9px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;transition:all .15s}
+.btn-clear:hover{border-color:var(--border2);color:var(--text2)}
+
+/* PHOTO UPLOAD */
+.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;background:var(--bg3)}
+.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
+.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-upload-icon{font-size:26px;margin-bottom:6px}
+.photo-upload-text{font-size:13px;color:var(--text2);font-weight:500}
+.photo-upload-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.photo-preview-wrap{position:relative;margin-bottom:14px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border2)}
+.photo-preview-wrap img{width:100%;max-height:200px;object-fit:contain;background:var(--bg4);display:block}
+.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
+.photo-preview-name{font-size:12px;color:var(--text2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:3px 8px;border-radius:4px;border:1px solid rgba(248,113,113,.3);background:var(--red-dim);transition:all .15s;white-space:nowrap}
+.photo-remove-btn:hover{background:rgba(248,113,113,.2)}
+.divider-or{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:11px;color:var(--text3)}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-photo{width:100%;margin-bottom:8px;padding:11px;background:linear-gradient(135deg,rgba(45,212,191,.15),rgba(108,99,255,.1));border:1px solid rgba(45,212,191,.3);color:var(--teal);border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-photo:hover{background:linear-gradient(135deg,rgba(45,212,191,.25),rgba(108,99,255,.15));border-color:var(--teal);box-shadow:0 0 16px rgba(45,212,191,.2)}
+
+/* RESULT */
+.result-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:220px;color:var(--text3);font-size:13px;text-align:center;gap:10px}
+.result-placeholder-icon{font-size:36px;opacity:.4}
+.result-block{animation:fadeSlide .4s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.verdict{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);margin-bottom:14px;border:1px solid}
+.verdict.correct{background:var(--green-dim);border-color:rgba(74,222,128,.25)}
+.verdict.wrong{background:var(--red-dim);border-color:rgba(248,113,113,.25)}
+.verdict.partial{background:var(--amber-dim);border-color:rgba(251,191,36,.2)}
+.verdict-icon{font-size:22px;flex-shrink:0}
+.verdict-title{font-family:var(--font-display);font-weight:700;font-size:15px}
+.verdict.correct .verdict-title{color:var(--green)}
+.verdict.wrong .verdict-title{color:var(--red)}
+.verdict.partial .verdict-title{color:var(--amber)}
+.verdict-sub{font-size:12px;margin-top:2px}
+.verdict.correct .verdict-sub{color:rgba(74,222,128,.7)}
+.verdict.wrong .verdict-sub{color:rgba(248,113,113,.7)}
+.verdict.partial .verdict-sub{color:rgba(251,191,36,.7)}
+
+.steps-block{margin-bottom:14px}
+.steps-title{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.step-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.step-row:last-child{border-bottom:none}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--bg4);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;margin-top:1px}
+.step-num.ok{background:var(--green-dim);color:var(--green)}
+.step-num.err{background:var(--red-dim);color:var(--red)}
+.step-text{color:var(--text2);line-height:1.5;font-family:var(--font-mono);font-size:12px}
+
+.ai-block{background:linear-gradient(135deg,rgba(108,99,255,.06),rgba(45,212,191,.04));border:1px solid rgba(108,99,255,.2);border-radius:var(--r);padding:14px}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent2);margin-bottom:8px}
+.ai-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.ai-text{font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap}
+
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TEACHER */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px}
+.stat-val{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--text)}
+.stat-lbl{font-size:12px;color:var(--text3);margin-top:4px}
+.stat-trend{font-size:11px;margin-top:6px}
+.up{color:var(--green)}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.table-head{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;padding:12px 18px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3)}
+.table-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s}
+.table-row:last-child{border-bottom:none}
+.table-row:hover{background:var(--bg3)}
+.stu-name-cell{display:flex;align-items:center;gap:10px}
+.stu-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.stu-av.a{background:rgba(108,99,255,.2);color:var(--accent2)}
+.stu-av.b{background:rgba(45,212,191,.15);color:var(--teal)}
+.stu-av.c{background:rgba(251,191,36,.15);color:var(--amber)}
+.stu-av.d{background:rgba(248,113,113,.15);color:var(--red)}
+.stu-name{font-size:13px;color:var(--text);font-weight:500}
+.stu-task{font-size:12px;color:var(--text3);font-family:var(--font-mono)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.pill.ok{background:var(--green-dim);color:var(--green)}
+.pill.err{background:var(--red-dim);color:var(--red)}
+.pill.pend{background:var(--amber-dim);color:var(--amber)}
+.score-bar{display:flex;align-items:center;gap:8px}
+.bar-track{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;background:var(--accent)}
+.bar-val{font-size:12px;font-weight:600;color:var(--text2);min-width:32px;text-align:right}
+
+/* ANALYTICS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
+.chart-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.chart-sub{font-size:11px;color:var(--text3);margin-bottom:16px}
+.h-bar-row{margin-bottom:10px}
+.h-bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px}
+.h-bar-track{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.h-bar-fill{height:100%;border-radius:3px}
+.sus-big{font-family:var(--font-display);font-size:52px;font-weight:800;color:var(--accent2)}
+.sus-track{height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin:12px 0 8px}
+.sus-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--teal));width:73.8%}
+
+/* CONFIG */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.config-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
+.config-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px}
+.field{margin-bottom:14px}
+.field-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.field-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;font-size:13px;color:var(--text);outline:none;font-family:var(--font);cursor:pointer}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-text .t1{font-size:13px;color:var(--text)}
+.toggle-text .t2{font-size:11px;color:var(--text3);margin-top:2px}
+.toggle{width:36px;height:20px;border-radius:10px;background:var(--bg4);border:1px solid var(--border2);cursor:pointer;position:relative;transition:background .2s}
+.toggle.on{background:var(--accent);border-color:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;transition:transform .2s}
+.toggle.on::after{transform:translateX(16px)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:999;max-width:300px}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* HISTORY */
+.history-list{display:flex;flex-direction:column;gap:10px}
+.history-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;cursor:pointer;transition:all .15s}
+.history-item:hover{border-color:var(--border2)}
+.history-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.history-task{font-family:var(--font-mono);font-size:12px;color:var(--accent2)}
+.history-time{font-size:11px;color:var(--text3);margin-left:auto}
+.history-answer{font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .tasks-grid{grid-template-columns:1fr 1fr}
+  .solve-area{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .config-grid{grid-template-columns:1fr}
+  .table-head,.table-row{grid-template-columns:2fr 1fr 1fr}
+}
+</style>
+</head>
+<body>
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">∑</div>
+      <div>
+        <div class="auth-logo-text">MathCheck AI</div>
+        <div class="auth-logo-sub">Powered by Claude Sonnet</div>
+      </div>
+    </div>
+    <div class="auth-title">Добро пожаловать</div>
+    <div class="auth-sub">Выберите роль и войдите в систему</div>
+    <div class="auth-roles">
+      <div class="auth-role-btn selected" id="roleTeacher" onclick="selectRole('teacher')">
+        <div class="auth-role-icon">👨‍🏫</div>
+        <div class="auth-role-name">Учитель</div>
+        <div class="auth-role-hint">Все функции</div>
+      </div>
+      <div class="auth-role-btn" id="roleStudent" onclick="selectRole('student')">
+        <div class="auth-role-icon">🎓</div>
+        <div class="auth-role-name">Ученик</div>
+        <div class="auth-role-hint">Решение задач</div>
+      </div>
+    </div>
+    <div class="auth-error" id="authError">Неверный логин или пароль</div>
+    <div class="auth-field">
+      <label class="auth-label" for="authLogin">Логин</label>
+      <input class="auth-input" type="text" id="authLogin" placeholder="Введите логин" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label" for="authPassword">Пароль</label>
+      <input class="auth-input" type="password" id="authPassword" placeholder="Введите пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="auth-btn" onclick="doLogin()">Войти</button>
+    <div class="auth-divider" style="margin-top:20px">тестовые аккаунты</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
+        <div style="color:var(--accent2);font-weight:600;margin-bottom:4px">👨‍🏫 Учитель</div>
+        <div>Логин: <span style="color:var(--text);font-family:var(--font-mono)">teacher</span></div>
+        <div>Пароль: <span style="color:var(--text);font-family:var(--font-mono)">teach123</span></div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
+        <div style="color:var(--teal);font-weight:600;margin-bottom:4px">🎓 Ученик</div>
+        <div>Логин: <span style="color:var(--text);font-family:var(--font-mono)">student</span></div>
+        <div>Пароль: <span style="color:var(--text);font-family:var(--font-mono)">math123</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">∑</div>
+      <div>
+        <div class="logo-text">MathCheck AI</div>
+        <div class="logo-sub">Powered by Claude Sonnet</div>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-label">API ключ Anthropic</div>
+      <div class="api-input-wrap">
+        <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." oninput="onApiKeyChange()">
+        <span class="api-eye" onclick="toggleApiVis()">👁</span>
+      </div>
+      <div class="api-status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Ключ не введён</span>
+      </div>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-title">Навигация</div>
+      <div class="nav-item active" onclick="showPanel('student',this)"><span class="nav-icon">✏️</span><span>Решить задание</span></div>
+      <div class="nav-item" onclick="showPanel('teacher',this)"><span class="nav-icon">📋</span><span>Журнал класса</span></div>
+      <div class="nav-item" onclick="showPanel('analytics',this)"><span class="nav-icon">📊</span><span>Аналитика</span></div>
+      <div class="nav-item" onclick="showPanel('history',this)"><span class="nav-icon">🕒</span><span>История проверок</span></div>
+      <div class="nav-item" onclick="showPanel('config',this)"><span class="nav-icon">⚙️</span><span>Настройки</span></div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar" id="userAvatar">АД</div>
+        <div>
+          <div class="user-name" id="userName">Ахтаев Данияр</div>
+          <div class="user-role" id="userRole">Магистрант · НИРМ</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Выйти из системы</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">Решить задание</div>
+        <div class="page-sub" id="pageSub">Введите решение — ИИ проверит и объяснит ошибки</div>
+      </div>
+      <div class="badge-model">claude-sonnet-4-5</div>
+    </div>
+
+    <div class="content">
+
+      <!-- STUDENT PANEL -->
+      <div class="panel active" id="panel-student">
+        <div class="tasks-grid">
+          <div class="task-card selected" onclick="selectTask(0,this)">
+            <div class="task-icon">➗</div>
+            <div class="task-name">Линейное уравнение</div>
+            <div class="task-formula">3x + 7 = 22</div>
+            <div class="task-diff">🟢 Начальный уровень</div>
+          </div>
+          <div class="task-card" onclick="selectTask(1,this)">
+            <div class="task-icon">📐</div>
+            <div class="task-name">Квадратное уравнение</div>
+            <div class="task-formula">x² − 5x + 6 = 0</div>
+            <div class="task-diff">🟡 Средний уровень</div>
+          </div>
+          <div class="task-card" onclick="selectTask(2,this)">
+            <div class="task-icon">🔢</div>
+            <div class="task-name">Система уравнений</div>
+            <div class="task-formula">x+y=10; 2x−y=5</div>
+            <div class="task-diff">🟡 Средний уровень</div>
+          </div>
+          <div class="task-card" onclick="selectTask(3,this)">
+            <div class="task-icon">📏</div>
+            <div class="task-name">Неравенство</div>
+            <div class="task-formula">2x − 4 > 8</div>
+            <div class="task-diff">🟢 Начальный уровень</div>
+          </div>
+          <div class="task-card" onclick="selectTask(4,this)">
+            <div class="task-icon">🧮</div>
+            <div class="task-name">Дискриминант</div>
+            <div class="task-formula">x² + 4x + 4 = 0</div>
+            <div class="task-diff">🟡 Средний уровень</div>
+          </div>
+          <div class="task-card" onclick="selectTask(5,this)">
+            <div class="task-icon">📌</div>
+            <div class="task-name">Своя задача</div>
+            <div class="task-formula">Произвольная</div>
+            <div class="task-diff">✏️ Ввести вручную</div>
+          </div>
+        </div>
+
+        <div class="solve-area">
+          <div class="panel-box">
+            <div class="panel-box-header">
+              <div>
+                <div class="panel-box-title">Условие задачи</div>
+                <div class="panel-box-sub" id="taskSubLabel">Линейное уравнение</div>
+              </div>
+            </div>
+            <div class="panel-box-body">
+              <div class="formula-display" id="formulaDisplay">
+                <div class="formula-main">3x + 7 = 22</div>
+                <div class="formula-desc">Найдите значение x</div>
+              </div>
+              <div id="customTaskWrap" style="display:none;margin-bottom:14px">
+                <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Введите своё условие</div>
+                <textarea class="math-area" id="customTask" style="height:60px" placeholder="Например: 5x - 3 = 12"></textarea>
+              </div>
+              <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Быстрый ввод</div>
+              <div class="hint-grid" id="hintGrid">
+                <button class="hint-btn" onclick="ins('x = ')">x =</button>
+                <button class="hint-btn" onclick="ins('Шаг 1: ')">шаг</button>
+                <button class="hint-btn" onclick="ins('Ответ: x = ')">ответ</button>
+              </div>
+              <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Ваше решение</div>
+
+              <!-- PHOTO UPLOAD -->
+              <div class="photo-upload-zone" id="photoZone"
+                ondragover="event.preventDefault();this.classList.add('drag')"
+                ondragleave="this.classList.remove('drag')"
+                ondrop="handlePhotoDrop(event)">
+                <input type="file" accept="image/*" onchange="handlePhotoFile(this.files[0])" id="photoFileInput">
+                <div class="photo-upload-icon">📸</div>
+                <div class="photo-upload-text">Нажмите чтобы выбрать фото</div>
+                <div class="photo-upload-sub">Скриншот или фото тетради · JPG, PNG, HEIC · до 10 МБ</div>
+                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">📱 Фото с телефона</span>
+                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">🖼️ Скриншот</span>
+                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">📓 Фото тетради</span>
+                </div>
+              </div>
+              <div id="photoPreview" style="display:none"></div>
+
+              <div class="divider-or">или введите текстом</div>
+
+              <textarea class="math-area" id="studentAnswer" placeholder="Запишите ход решения и ответ...&#10;&#10;Например:&#10;3x + 7 = 22&#10;3x = 22 - 7 = 15&#10;x = 15 / 3&#10;x = 5"></textarea>
+              <button class="btn-photo" id="checkPhotoBtn" onclick="checkPhotoWithAI()" style="display:none">
+                <span id="photoBtnIcon">📷</span>
+                <span id="photoBtnText">Проверить фото с помощью ИИ</span>
+              </button>
+              <button class="btn-check" id="checkBtn" onclick="checkWithAI()">
+                <span id="btnIcon">🔍</span>
+                <span id="btnText">Проверить с помощью ИИ</span>
+              </button>
+              <button class="btn-clear" onclick="clearAll()">Очистить</button>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-box-header">
+              <div>
+                <div class="panel-box-title">Результат проверки</div>
+                <div class="panel-box-sub">Анализ ИИ · Claude Sonnet</div>
+              </div>
+            </div>
+            <div class="panel-box-body">
+              <div id="resultArea">
+                <div class="result-placeholder">
+                  <div class="result-placeholder-icon">🤖</div>
+                  <div>Введите решение и нажмите<br>«Проверить с помощью ИИ»</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEACHER PANEL -->
+      <div class="panel" id="panel-teacher">
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val">28</div><div class="stat-lbl">Всего учеников</div><div class="stat-trend up">↑ +3 за неделю</div></div>
+          <div class="stat-box"><div class="stat-val">247</div><div class="stat-lbl">Заданий сдано</div><div class="stat-trend up">↑ +42 сегодня</div></div>
+          <div class="stat-box"><div class="stat-val">73%</div><div class="stat-lbl">Успеваемость</div><div class="stat-trend up">↑ +5% за месяц</div></div>
+          <div class="stat-box"><div class="stat-val">1.8с</div><div class="stat-lbl">Среднее время ИИ</div><div class="stat-trend up">↓ оптимально</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-head"><span>Ученик</span><span>Задание</span><span>Статус</span><span>Оценка</span><span>Время</span></div>
+          <div class="table-row">
+            <div class="stu-name-cell"><div class="stu-av a">АС</div><div class="stu-name">Ахметов Санжар</div></div>
+            <div class="stu-task">3x+7=22</div><div><span class="pill ok">✓ Верно</span></div>
+            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">100%</span></div></div>
+            <div style="font-size:12px;color:var(--text3)">2 мин назад</div>
+          </div>
+          <div class="table-row">
+            <div class="stu-name-cell"><div class="stu-av b">БА</div><div class="stu-name">Байжанова Айгерим</div></div>
+            <div class="stu-task">x²−5x+6=0</div><div><span class="pill err">✗ Ошибка</span></div>
+            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:60%;background:#f87171"></div></div><span class="bar-val">60%</span></div></div>
+            <div style="font-size:12px;color:var(--text3)">5 мин назад</div>
+          </div>
+          <div class="table-row">
+            <div class="stu-name-cell"><div class="stu-av c">ДМ</div><div class="stu-name">Досанов Марат</div></div>
+            <div class="stu-task">x+y=10</div><div><span class="pill ok">✓ Верно</span></div>
+            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><span class="bar-val">95%</span></div></div>
+            <div style="font-size:12px;color:var(--text3)">12 мин назад</div>
+          </div>
+          <div class="table-row">
+            <div class="stu-name-cell"><div class="stu-av d">НЗ</div><div class="stu-name">Нурланова Зарина</div></div>
+            <div class="stu-task">2x−4>8</div><div><span class="pill pend">⏳ На проверке</span></div>
+            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val">—</span></div></div>
+            <div style="font-size:12px;color:var(--text3)">Только что</div>
+          </div>
+          <div class="table-row">
+            <div class="stu-name-cell"><div class="stu-av a">КЕ</div><div class="stu-name">Касымов Ерлан</div></div>
+            <div class="stu-task">x²+4x+4=0</div><div><span class="pill err">✗ Ошибка</span></div>
+            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:40%;background:#f87171"></div></div><span class="bar-val">40%</span></div></div>
+            <div style="font-size:12px;color:var(--text3)">18 мин назад</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PANEL -->
+      <div class="panel" id="panel-analytics">
+        <div class="charts-grid">
+          <div class="chart-box">
+            <div class="chart-title">Точность ИИ по разделам</div>
+            <div class="chart-sub">На основе 247 проверенных заданий</div>
+            <div id="accuracyBars"></div>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Индекс удобства (SUS)</div>
+            <div class="chart-sub">Апробация с 28 участниками</div>
+            <div class="sus-big">73.8</div>
+            <div class="sus-track"><div class="sus-fill"></div></div>
+            <div style="font-size:12px;color:var(--text3)">Хороший уровень · порог: 68 баллов</div>
+            <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="pill ok">77.5% готовы использовать</span>
+              <span class="pill pend">90% точность системы</span>
+            </div>
+          </div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-box">
+            <div class="chart-title">Типы ошибок учеников</div>
+            <div class="chart-sub">Статистика за текущий месяц</div>
+            <div id="errorBars"></div>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">Производительность (JMeter)</div>
+            <div class="chart-sub">Нагрузочное тестирование</div>
+            <div id="perfBars"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY PANEL -->
+      <div class="panel" id="panel-history">
+        <div id="historyList"></div>
+      </div>
+
+      <!-- CONFIG PANEL -->
+      <div class="panel" id="panel-config">
+        <div class="config-grid">
+          <div class="config-box">
+            <div class="config-title">Настройки ИИ</div>
+            <div class="field">
+              <div class="field-label">Модель</div>
+              <select class="field-select" id="modelSelect">
+                <option value="claude-sonnet-4-5" selected>claude-sonnet-4-5 (рекомендуется)</option>
+                <option value="claude-haiku-4-5">claude-haiku-4-5 (быстрее/дешевле)</option>
+                <option value="claude-opus-4-5">claude-opus-4-5 (мощнее)</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label">Язык объяснений</div>
+              <select class="field-select" id="langSelect">
+                <option value="русском" selected>Русский</option>
+                <option value="казахском">Казахский</option>
+                <option value="английском">Английский</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label">Стиль комментариев</div>
+              <select class="field-select" id="styleSelect">
+                <option value="педагогический подробный" selected>Педагогический (подробный)</option>
+                <option value="краткий">Краткий (только результат)</option>
+                <option value="сократовский через наводящие вопросы">Сократовский (через вопросы)</option>
+              </select>
+            </div>
+          </div>
+          <div class="config-box">
+            <div class="config-title">Функции системы</div>
+            <div class="toggle-row">
+              <div class="toggle-text"><div class="t1">Пошаговый разбор</div><div class="t2">ИИ объясняет каждый шаг</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-text"><div class="t1">Педагогические подсказки</div><div class="t2">Направляет к правильному ответу</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-text"><div class="t1">Сохранение истории</div><div class="t2">В памяти браузера (localStorage)</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── AUTH ─────────────────────────────────────────────────
+const USERS = {
+  teacher: { password: 'teach123', role: 'teacher', name: 'Ахтаев Данияр', initials: 'АД', roleLabel: 'Учитель · НИРМ' },
+  student: { password: 'math123',  role: 'student', name: 'Ученик',        initials: 'У',  roleLabel: 'Ученик' },
+};
+
+let currentUser = null;
+let selectedRole = 'teacher';
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('roleTeacher').classList.toggle('selected', role === 'teacher');
+  document.getElementById('roleStudent').classList.toggle('selected', role === 'student');
+  document.getElementById('authError').classList.remove('show');
+}
+
+function doLogin() {
+  const login = document.getElementById('authLogin').value.trim();
+  const pass  = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('authError');
+  errEl.classList.remove('show');
+  const user = USERS[login];
+  if (!user || user.password !== pass || user.role !== selectedRole) {
+    errEl.classList.add('show');
+    document.getElementById('authPassword').value = '';
+    return;
+  }
+  currentUser = { login, ...user };
+  localStorage.setItem('mathcheck_session', JSON.stringify({ login, role: user.role }));
+  applySession();
+  document.getElementById('authScreen').classList.add('hidden');
+}
+
+function doLogout() {
+  localStorage.removeItem('mathcheck_session');
+  currentUser = null;
+  document.getElementById('authLogin').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authError').classList.remove('show');
+  document.getElementById('authScreen').classList.remove('hidden');
+}
+
+function applySession() {
+  if (!currentUser) return;
+  document.getElementById('userAvatar').textContent = currentUser.initials;
+  document.getElementById('userName').textContent   = currentUser.name;
+  document.getElementById('userRole').textContent   = currentUser.roleLabel;
+  const teacherOnly = ['teacher', 'analytics'];
+  document.querySelectorAll('.nav-item').forEach(el => {
+    const panel = el.getAttribute('onclick')?.match(/showPanel\('(\w+)'/)?.[1];
+    if (panel && teacherOnly.includes(panel) && currentUser.role === 'student') {
+      el.style.display = 'none';
+    } else {
+      el.style.display = '';
+    }
+  });
+}
+
+// ── APP ───────────────────────────────────────────────────
+const TASKS = [
+  { name:'Линейное уравнение', formula:'3x + 7 = 22', desc:'Найдите значение x', hints:['x = ','3x = ','Шаг 1: ','Ответ: x = '], custom:false },
+  { name:'Квадратное уравнение', formula:'x² − 5x + 6 = 0', desc:'Найдите все корни уравнения', hints:['D = ','x₁ = ','x₂ = ','Ответ: '], custom:false },
+  { name:'Система уравнений', formula:'x + y = 10\n2x − y = 5', desc:'Найдите x и y', hints:['x = ','y = ','Шаг 1: ','Ответ: '], custom:false },
+  { name:'Неравенство', formula:'2x − 4 > 8', desc:'Найдите множество решений', hints:['2x > ','x > ','Ответ: x ∈ '], custom:false },
+  { name:'Дискриминант', formula:'x² + 4x + 4 = 0', desc:'Найдите все корни', hints:['D = ','x = ','Ответ: x = '], custom:false },
+  { name:'Своя задача', formula:'', desc:'Ваше условие', hints:['Дано: ','Найти: ','Решение: ','Ответ: '], custom:true },
+];
+
+let currentTaskIdx = 0;
+let apiKey = '';
+let isChecking = false;
+let history = [];
+
+const API_URL = '/api/check';
+
+function init() {
+  // Restore session
+  const saved = localStorage.getItem('mathcheck_session');
+  if (saved) {
+    try {
+      const s = JSON.parse(saved);
+      const user = USERS[s.login];
+      if (user && user.role === s.role) {
+        currentUser = { login: s.login, ...user };
+        applySession();
+        document.getElementById('authScreen').classList.add('hidden');
+      }
+    } catch(e) { localStorage.removeItem('mathcheck_session'); }
+  }
+  apiKey = localStorage.getItem('mathcheck_key') || '';
+  if (apiKey) { document.getElementById('apiKeyInput').value = apiKey; updateStatus(true); }
+  history = JSON.parse(localStorage.getItem('mathcheck_history') || '[]');
+  renderAnalytics();
+  renderHistory();
+}
+
+function onApiKeyChange() {
+  apiKey = document.getElementById('apiKeyInput').value.trim();
+  localStorage.setItem('mathcheck_key', apiKey);
+  updateStatus(apiKey.startsWith('sk-ant'));
+}
+
+function updateStatus(ok) {
+  document.getElementById('statusDot').classList.toggle('connected', ok);
+  document.getElementById('statusText').textContent = ok ? 'Подключено к Claude API' : (apiKey ? 'Неверный формат ключа' : 'Ключ не введён');
+}
+
+function toggleApiVis() {
+  const i = document.getElementById('apiKeyInput');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = {
+    student: ['Решить задание','Введите решение — ИИ проверит и объяснит ошибки'],
+    teacher: ['Журнал класса','Результаты учеников · Статус проверки'],
+    analytics: ['Аналитика системы','Метрики из НИРМ 04 · Тестирование и апробация'],
+    history: ['История проверок','Ваши предыдущие решения'],
+    config: ['Настройки','Конфигурация ИИ-модели и функций'],
+  };
+  document.getElementById('pageTitle').textContent = titles[name][0];
+  document.getElementById('pageSub').textContent = titles[name][1];
+  if (name === 'history') renderHistory();
+}
+
+function selectTask(idx, el) {
+  currentTaskIdx = idx;
+  document.querySelectorAll('.task-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const t = TASKS[idx];
+  document.getElementById('taskSubLabel').textContent = t.name;
+  const fd = document.getElementById('formulaDisplay');
+  if (t.custom) {
+    fd.innerHTML = '<div class="formula-main" style="font-size:16px;color:var(--text3)">Введите задачу ниже</div><div class="formula-desc">Произвольная математическая задача</div>';
+    document.getElementById('customTaskWrap').style.display = 'block';
+  } else {
+    fd.innerHTML = `<div class="formula-main">${t.formula.replace('\n','<br>')}</div><div class="formula-desc">${t.desc}</div>`;
+    document.getElementById('customTaskWrap').style.display = 'none';
+  }
+  document.getElementById('hintGrid').innerHTML = t.hints.map(h =>
+    `<button class="hint-btn" onclick="ins(${JSON.stringify(h)})">${h.trim()||'...'}</button>`).join('');
+  clearAll();
+}
+
+function ins(text) {
+  const ta = document.getElementById('studentAnswer');
+  const p = ta.selectionStart;
+  ta.value = ta.value.slice(0,p) + text + ta.value.slice(ta.selectionEnd);
+  ta.selectionStart = ta.selectionEnd = p + text.length;
+  ta.focus();
+}
+
+function clearAll() {
+  document.getElementById('studentAnswer').value = '';
+  removePhoto();
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-placeholder">
+      <div class="result-placeholder-icon">🤖</div>
+      <div>Введите решение и нажмите<br>«Проверить с помощью ИИ»</div>
+    </div>`;
+}
+
+// ── PHOTO UPLOAD ──────────────────────────────────────────
+let uploadedPhotoBase64 = null;
+let uploadedPhotoName = '';
+let uploadedPhotoType = 'image/jpeg';
+
+function handlePhotoFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('Файл слишком большой. Максимум 10 МБ'); return; }
+  if (!file.type.startsWith('image/')) { showToast('Пожалуйста, загрузите изображение'); return; }
+  uploadedPhotoName = file.name;
+  uploadedPhotoType = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    uploadedPhotoBase64 = dataUrl.split(',')[1];
+    renderPhotoPreview(dataUrl, file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handlePhotoDrop(e) {
+  e.preventDefault();
+  document.getElementById('photoZone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) handlePhotoFile(file);
+}
+
+function renderPhotoPreview(dataUrl, name) {
+  document.getElementById('photoZone').style.display = 'none';
+  document.getElementById('photoPreview').style.display = 'block';
+  document.getElementById('photoPreview').innerHTML = `
+    <div class="photo-preview-wrap">
+      <img src="${dataUrl}" alt="Фото решения" style="width:100%;max-height:280px;object-fit:contain;display:block;background:var(--bg4);border-radius:0">
+      <div class="photo-preview-bar">
+        <span class="photo-preview-name">📷 ${name}</span>
+        <button class="photo-remove-btn" onclick="removePhoto()">✕ Удалить</button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 0 4px;font-size:12px;color:var(--teal)">
+      <span>✅</span><span>Фото загружено — нажмите кнопку ниже для анализа</span>
+    </div>`;
+  document.getElementById('checkPhotoBtn').style.display = 'flex';
+}
+
+function removePhoto() {
+  uploadedPhotoBase64 = null;
+  uploadedPhotoName = '';
+  uploadedPhotoType = 'image/jpeg';
+  document.getElementById('photoZone').style.display = 'block';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('checkPhotoBtn').style.display = 'none';
+  document.getElementById('photoFileInput').value = '';
+}
+
+async function checkPhotoWithAI() {
+  if (isChecking) return;
+  if (!uploadedPhotoBase64) { showToast('Сначала загрузите фото'); return; }
+  if (!apiKey || !apiKey.startsWith('sk-ant')) { showToast('Введите API ключ Anthropic в боковой панели'); return; }
+
+  const task = TASKS[currentTaskIdx];
+  const taskText = task.custom
+    ? (document.getElementById('customTask').value.trim() || 'произвольная задача')
+    : `${task.formula} — ${task.desc}`;
+  const lang = document.getElementById('langSelect').value;
+  const style = document.getElementById('styleSelect').value;
+  const model = document.getElementById('modelSelect').value;
+
+  isChecking = true;
+  const btn = document.getElementById('checkPhotoBtn');
+  btn.disabled = true;
+  document.getElementById('photoBtnIcon').innerHTML = '<div class="spin" style="border-top-color:var(--teal)"></div>';
+  document.getElementById('photoBtnText').textContent = 'Анализирую фото...';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      <div class="ai-block">
+        <div class="ai-badge">ИИ читает фото</div>
+        <div class="ai-text" style="color:var(--text3)">Распознаю рукописное решение и анализирую...</div>
+      </div>
+    </div>`;
+
+  const prompt = `Ты — педагогический ИИ-ассистент по математике. На фото — рукописное решение ученика в тетради или скриншот.
+
+ЗАДАЧА (если видна): ${taskText}
+
+Твоя задача:
+1. Распознай рукописный текст и математические выражения с фото
+2. Проверь решение на правильность
+3. Найди ошибки и объясни их пошагово
+
+Стиль объяснения: ${style}.
+Отвечай на ${lang} языке.
+
+Верни ТОЛЬКО JSON без markdown:
+{
+  "recognized": "распознанный текст с фото",
+  "verdict": "correct" | "wrong" | "partial",
+  "verdict_text": "краткий вердикт",
+  "steps": [{"status": "ok"|"err"|"info", "text": "описание шага"}],
+  "comment": "подробный педагогический комментарий 3-5 предложений"
+}`;
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+      body: JSON.stringify({
+        model,
+        max_tokens: 1500,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: uploadedPhotoType, data: uploadedPhotoBase64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || `Ошибка ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text || '';
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    } catch {
+      parsed = { verdict:'partial', verdict_text:'Ответ получен', recognized:'', steps:[{status:'info',text:'Смотрите комментарий ниже'}], comment: raw };
+    }
+
+    // Show recognized text + result
+    renderPhotoResult(parsed);
+
+    history.unshift({ task: taskText, answer: `[Фото] ${parsed.recognized||''}`, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') });
+    if (history.length > 20) history.pop();
+    localStorage.setItem('mathcheck_history', JSON.stringify(history));
+
+  } catch(err) {
+    document.getElementById('resultArea').innerHTML = `
+      <div class="result-block">
+        <div class="verdict wrong">
+          <div class="verdict-icon">⚠️</div>
+          <div><div class="verdict-title">Ошибка</div><div class="verdict-sub">${err.message}</div></div>
+        </div>
+      </div>`;
+  } finally {
+    isChecking = false;
+    btn.disabled = false;
+    document.getElementById('photoBtnIcon').textContent = '📷';
+    document.getElementById('photoBtnText').textContent = 'Проверить фото с помощью ИИ';
+  }
+}
+
+function renderPhotoResult(data) {
+  const icons = { correct:'✅', wrong:'❌', partial:'⚠️' };
+  const labels = { correct:'Решение верное!', wrong:'Обнаружена ошибка', partial:'Частично верно' };
+  const stepsHtml = (data.steps||[]).map((s,i) => `
+    <div class="step-row">
+      <div class="step-num ${s.status}">${i+1}</div>
+      <div class="step-text">${s.text}</div>
+    </div>`).join('');
+  const recognizedHtml = data.recognized ? `
+    <div class="ai-block" style="margin-bottom:14px;border-color:rgba(45,212,191,.2)">
+      <div class="ai-badge" style="color:var(--teal)">📷 Распознанный текст</div>
+      <div class="ai-text" style="font-family:var(--font-mono);font-size:12px">${data.recognized}</div>
+    </div>` : '';
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      ${recognizedHtml}
+      <div class="verdict ${data.verdict}">
+        <div class="verdict-icon">${icons[data.verdict]||'📝'}</div>
+        <div><div class="verdict-title">${labels[data.verdict]||data.verdict}</div><div class="verdict-sub">${data.verdict_text||''}</div></div>
+      </div>
+      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">Разбор по шагам</div>${stepsHtml}</div>` : ''}
+      <div class="ai-block">
+        <div class="ai-badge">Комментарий ИИ · Claude</div>
+        <div class="ai-text">${data.comment||''}</div>
+      </div>
+    </div>`;
+}
+
+// ── TEXT CHECK ────────────────────────────────────────────
+async function checkWithAI() {
+  if (isChecking) return;
+  const answer = document.getElementById('studentAnswer').value.trim();
+  if (!answer) { showToast('Введите ваше решение'); return; }
+  if (!apiKey || !apiKey.startsWith('sk-ant')) { showToast('Введите API ключ Anthropic в боковой панели'); return; }
+
+  const task = TASKS[currentTaskIdx];
+  const taskText = task.custom
+    ? (document.getElementById('customTask').value.trim() || 'произвольная задача')
+    : `${task.formula} — ${task.desc}`;
+
+  const model = document.getElementById('modelSelect').value;
+  const lang = document.getElementById('langSelect').value;
+  const style = document.getElementById('styleSelect').value;
+
+  isChecking = true;
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  document.getElementById('btnIcon').innerHTML = '<div class="spin"></div>';
+  document.getElementById('btnText').textContent = 'Анализирую...';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      <div class="ai-block">
+        <div class="ai-badge">ИИ анализирует решение</div>
+        <div class="ai-text" style="color:var(--text3)">Отправляю запрос к Claude ${model}...</div>
+      </div>
+    </div>`;
+
+  const prompt = `Ты — педагогический ИИ-ассистент по математике. Проверь решение ученика.
+
+ЗАДАЧА: ${taskText}
+
+РЕШЕНИЕ УЧЕНИКА:
+${answer}
+
+Стиль объяснения: ${style}.
+Отвечай на ${lang} языке.
+
+Верни ТОЛЬКО JSON без markdown:
+{
+  "verdict": "correct" | "wrong" | "partial",
+  "verdict_text": "краткий вердикт",
+  "steps": [{"status": "ok"|"err"|"info", "text": "описание шага"}],
+  "comment": "подробный педагогический комментарий 3-5 предложений"
+}`;
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || `Ошибка ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text || '';
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    } catch {
+      parsed = { verdict:'partial', verdict_text:'Ответ получен', steps:[{status:'info',text:'Смотрите комментарий ниже'}], comment: raw };
+    }
+
+    renderResult(parsed);
+
+    // Save to history
+    history.unshift({ task: taskText, answer, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') });
+    if (history.length > 20) history.pop();
+    localStorage.setItem('mathcheck_history', JSON.stringify(history));
+
+  } catch(err) {
+    document.getElementById('resultArea').innerHTML = `
+      <div class="result-block">
+        <div class="verdict wrong">
+          <div class="verdict-icon">⚠️</div>
+          <div><div class="verdict-title">Ошибка подключения</div><div class="verdict-sub">${err.message}</div></div>
+        </div>
+        <div class="ai-block">
+          <div class="ai-badge">Что делать</div>
+          <div class="ai-text">1. Убедитесь что сайт задеплоен на Vercel (не открыт как локальный файл)\n2. Проверьте правильность API ключа\n3. Убедитесь что на счету Anthropic есть кредиты</div>
+        </div>
+      </div>`;
+  } finally {
+    isChecking = false;
+    btn.disabled = false;
+    document.getElementById('btnIcon').textContent = '🔍';
+    document.getElementById('btnText').textContent = 'Проверить с помощью ИИ';
+  }
+}
+
+function renderResult(data) {
+  const icons = { correct:'✅', wrong:'❌', partial:'⚠️' };
+  const labels = { correct:'Решение верное!', wrong:'Обнаружена ошибка', partial:'Частично верно' };
+  const stepsHtml = (data.steps||[]).map((s,i) => `
+    <div class="step-row">
+      <div class="step-num ${s.status}">${i+1}</div>
+      <div class="step-text">${s.text}</div>
+    </div>`).join('');
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      <div class="verdict ${data.verdict}">
+        <div class="verdict-icon">${icons[data.verdict]||'📝'}</div>
+        <div><div class="verdict-title">${labels[data.verdict]||data.verdict}</div><div class="verdict-sub">${data.verdict_text||''}</div></div>
+      </div>
+      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">Разбор по шагам</div>${stepsHtml}</div>` : ''}
+      <div class="ai-block">
+        <div class="ai-badge">Комментарий ИИ · Claude</div>
+        <div class="ai-text">${data.comment||''}</div>
+      </div>
+    </div>`;
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (!history.length) {
+    el.innerHTML = '<div class="result-placeholder"><div class="result-placeholder-icon">🕒</div><div>История пуста.<br>Проверьте первое задание!</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="history-list">' + history.map((h,i) => `
+    <div class="history-item">
+      <div class="history-meta">
+        <span class="pill ${h.verdict==='correct'?'ok':h.verdict==='wrong'?'err':'pend'}">${h.verdict==='correct'?'✓ Верно':h.verdict==='wrong'?'✗ Ошибка':'⚠ Частично'}</span>
+        <span class="history-task">${h.task.substring(0,40)}</span>
+        <span class="history-time">${h.time}</span>
+      </div>
+      <div class="history-answer">${h.answer.substring(0,80)}${h.answer.length>80?'...':''}</div>
+    </div>`).join('') + '</div>';
+}
+
+function renderAnalytics() {
+  const acc = [
+    {label:'Линейные уравнения',pct:95,color:'#4ade80'},
+    {label:'Арифметические ошибки',pct:93,color:'#4ade80'},
+    {label:'Системы уравнений',pct:88,color:'#6c63ff'},
+    {label:'Квадратные (стандарт)',pct:86,color:'#6c63ff'},
+    {label:'Квадратные (нестандарт)',pct:78,color:'#fbbf24'},
+  ];
+  document.getElementById('accuracyBars').innerHTML = acc.map(d=>`
+    <div class="h-bar-row">
+      <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
+    </div>`).join('');
+  const errs = [
+    {label:'Арифметическая ошибка',pct:42,color:'#f87171'},
+    {label:'Неверный знак',pct:28,color:'#fbbf24'},
+    {label:'Пропуск шага',pct:18,color:'#a78bfa'},
+    {label:'Нестандартный метод',pct:12,color:'#2dd4bf'},
+  ];
+  document.getElementById('errorBars').innerHTML = errs.map(d=>`
+    <div class="h-bar-row">
+      <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
+    </div>`).join('');
+  const perf = [
+    {label:'10 пользователей → 1.9с',pct:95,color:'#4ade80'},
+    {label:'50 пользователей → 2.4с',pct:76,color:'#6c63ff'},
+    {label:'100 пользователей → 4.1с',pct:50,color:'#fbbf24'},
+  ];
+  document.getElementById('perfBars').innerHTML = perf.map(d=>`
+    <div class="h-bar-row">
+      <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
+    </div>`).join('');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+init();
+</script>
+</body>
+</html>
