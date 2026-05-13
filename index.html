@@ -7,15 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #ffffff;
-  --bg2: #f7f7f9;
-  --bg3: #eeeeF2;
-  --bg4: #e4e4ea;
-  --border: rgba(0,0,0,0.08);
-  --border2: rgba(0,0,0,0.15);
-  --accent: #5b5bd6;
-  --accent2: #7c7cf0;
-  --accent-glow: rgba(91,91,214,0.1);
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #18181f;
+  --bg4: #1e1e28;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --accent-glow: rgba(108,99,255,0.15);
   --teal: #2dd4bf;
   --red: #f87171;
   --red-dim: rgba(248,113,113,0.12);
@@ -23,9 +23,9 @@
   --green-dim: rgba(74,222,128,0.12);
   --amber: #fbbf24;
   --amber-dim: rgba(251,191,36,0.1);
-  --text: #1a1a1a;
-  --text2: #555;
-  --text3: #888;
+  --text: #f0f0f8;
+  --text2: #9090a8;
+  --text3: #5a5a72;
   --r: 10px;
   --r2: 16px;
   --font: 'Manrope', sans-serif;
@@ -68,6 +68,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .auth-divider::before{left:0}.auth-divider::after{right:0}
 .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px;background:transparent;border:1px solid transparent;width:100%}
 .logout-btn:hover{background:var(--red-dim);color:var(--red);border-color:rgba(248,113,113,.2)}
+
+/* PHOTO UPLOAD */
+.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;background:var(--bg3)}
+.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
+.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-upload-icon{font-size:28px;margin-bottom:8px}
+.photo-upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.photo-upload-sub{font-size:11px;color:var(--text3)}
+.photo-preview-wrap{position:relative;margin-bottom:14px;border-radius:var(--r2);overflow:hidden;border:1px solid var(--border2)}
+.photo-preview-wrap img{width:100%;max-height:260px;object-fit:contain;display:block;background:#000}
+.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
+.photo-preview-name{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:2px 8px;border-radius:4px;background:var(--red-dim);border:none;font-family:var(--font)}
+.photo-remove-btn:hover{background:rgba(248,113,113,.2)}
+.photo-mode-toggle{display:flex;gap:8px;margin-bottom:14px}
+.mode-btn{flex:1;padding:9px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s;font-family:var(--font)}
+.mode-btn.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
 
 .layout{display:flex;min-height:100vh}
 
@@ -151,6 +168,24 @@ textarea.math-area::placeholder{color:var(--text3)}
 .btn-check:disabled{background:var(--bg4);color:var(--text3);cursor:not-allowed;box-shadow:none}
 .btn-clear{width:100%;margin-top:8px;padding:9px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;transition:all .15s}
 .btn-clear:hover{border-color:var(--border2);color:var(--text2)}
+
+/* PHOTO UPLOAD */
+.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;background:var(--bg3)}
+.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
+.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-upload-icon{font-size:26px;margin-bottom:6px}
+.photo-upload-text{font-size:13px;color:var(--text2);font-weight:500}
+.photo-upload-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.photo-preview-wrap{position:relative;margin-bottom:14px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border2)}
+.photo-preview-wrap img{width:100%;max-height:200px;object-fit:contain;background:var(--bg4);display:block}
+.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
+.photo-preview-name{font-size:12px;color:var(--text2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:3px 8px;border-radius:4px;border:1px solid rgba(248,113,113,.3);background:var(--red-dim);transition:all .15s;white-space:nowrap}
+.photo-remove-btn:hover{background:rgba(248,113,113,.2)}
+.divider-or{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:11px;color:var(--text3)}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-photo{width:100%;margin-bottom:8px;padding:11px;background:linear-gradient(135deg,rgba(45,212,191,.15),rgba(108,99,255,.1));border:1px solid rgba(45,212,191,.3);color:var(--teal);border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-photo:hover{background:linear-gradient(135deg,rgba(45,212,191,.25),rgba(108,99,255,.15));border-color:var(--teal);box-shadow:0 0 16px rgba(45,212,191,.2)}
 
 /* RESULT */
 .result-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:220px;color:var(--text3);font-size:13px;text-align:center;gap:10px}
@@ -443,7 +478,31 @@ textarea.math-area::placeholder{color:var(--text3)}
                 <button class="hint-btn" onclick="ins('Ответ: x = ')">ответ</button>
               </div>
               <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Ваше решение</div>
+
+              <!-- PHOTO UPLOAD -->
+              <div class="photo-upload-zone" id="photoZone"
+                ondragover="event.preventDefault();this.classList.add('drag')"
+                ondragleave="this.classList.remove('drag')"
+                ondrop="handlePhotoDrop(event)">
+                <input type="file" accept="image/*" onchange="handlePhotoFile(this.files[0])" id="photoFileInput">
+                <div class="photo-upload-icon">📸</div>
+                <div class="photo-upload-text">Нажмите чтобы выбрать фото</div>
+                <div class="photo-upload-sub">Скриншот или фото тетради · JPG, PNG, HEIC · до 10 МБ</div>
+                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">📱 Фото с телефона</span>
+                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">🖼️ Скриншот</span>
+                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">📓 Фото тетради</span>
+                </div>
+              </div>
+              <div id="photoPreview" style="display:none"></div>
+
+              <div class="divider-or">или введите текстом</div>
+
               <textarea class="math-area" id="studentAnswer" placeholder="Запишите ход решения и ответ...&#10;&#10;Например:&#10;3x + 7 = 22&#10;3x = 22 - 7 = 15&#10;x = 15 / 3&#10;x = 5"></textarea>
+              <button class="btn-photo" id="checkPhotoBtn" onclick="checkPhotoWithAI()" style="display:none">
+                <span id="photoBtnIcon">📷</span>
+                <span id="photoBtnText">Проверить фото с помощью ИИ</span>
+              </button>
               <button class="btn-check" id="checkBtn" onclick="checkWithAI()">
                 <span id="btnIcon">🔍</span>
                 <span id="btnText">Проверить с помощью ИИ</span>
@@ -766,6 +825,7 @@ function ins(text) {
 
 function clearAll() {
   document.getElementById('studentAnswer').value = '';
+  removePhoto();
   document.getElementById('resultArea').innerHTML = `
     <div class="result-placeholder">
       <div class="result-placeholder-icon">🤖</div>
@@ -773,6 +833,191 @@ function clearAll() {
     </div>`;
 }
 
+// ── PHOTO UPLOAD ──────────────────────────────────────────
+let uploadedPhotoBase64 = null;
+let uploadedPhotoName = '';
+let uploadedPhotoType = 'image/jpeg';
+
+function handlePhotoFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('Файл слишком большой. Максимум 10 МБ'); return; }
+  if (!file.type.startsWith('image/')) { showToast('Пожалуйста, загрузите изображение'); return; }
+  uploadedPhotoName = file.name;
+  uploadedPhotoType = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    uploadedPhotoBase64 = dataUrl.split(',')[1];
+    renderPhotoPreview(dataUrl, file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handlePhotoDrop(e) {
+  e.preventDefault();
+  document.getElementById('photoZone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) handlePhotoFile(file);
+}
+
+function renderPhotoPreview(dataUrl, name) {
+  document.getElementById('photoZone').style.display = 'none';
+  document.getElementById('photoPreview').style.display = 'block';
+  document.getElementById('photoPreview').innerHTML = `
+    <div class="photo-preview-wrap">
+      <img src="${dataUrl}" alt="Фото решения" style="width:100%;max-height:280px;object-fit:contain;display:block;background:var(--bg4);border-radius:0">
+      <div class="photo-preview-bar">
+        <span class="photo-preview-name">📷 ${name}</span>
+        <button class="photo-remove-btn" onclick="removePhoto()">✕ Удалить</button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 0 4px;font-size:12px;color:var(--teal)">
+      <span>✅</span><span>Фото загружено — нажмите кнопку ниже для анализа</span>
+    </div>`;
+  document.getElementById('checkPhotoBtn').style.display = 'flex';
+}
+
+function removePhoto() {
+  uploadedPhotoBase64 = null;
+  uploadedPhotoName = '';
+  uploadedPhotoType = 'image/jpeg';
+  document.getElementById('photoZone').style.display = 'block';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('checkPhotoBtn').style.display = 'none';
+  document.getElementById('photoFileInput').value = '';
+}
+
+async function checkPhotoWithAI() {
+  if (isChecking) return;
+  if (!uploadedPhotoBase64) { showToast('Сначала загрузите фото'); return; }
+  if (!apiKey || !apiKey.startsWith('sk-ant')) { showToast('Введите API ключ Anthropic в боковой панели'); return; }
+
+  const task = TASKS[currentTaskIdx];
+  const taskText = task.custom
+    ? (document.getElementById('customTask').value.trim() || 'произвольная задача')
+    : `${task.formula} — ${task.desc}`;
+  const lang = document.getElementById('langSelect').value;
+  const style = document.getElementById('styleSelect').value;
+  const model = document.getElementById('modelSelect').value;
+
+  isChecking = true;
+  const btn = document.getElementById('checkPhotoBtn');
+  btn.disabled = true;
+  document.getElementById('photoBtnIcon').innerHTML = '<div class="spin" style="border-top-color:var(--teal)"></div>';
+  document.getElementById('photoBtnText').textContent = 'Анализирую фото...';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      <div class="ai-block">
+        <div class="ai-badge">ИИ читает фото</div>
+        <div class="ai-text" style="color:var(--text3)">Распознаю рукописное решение и анализирую...</div>
+      </div>
+    </div>`;
+
+  const prompt = `Ты — педагогический ИИ-ассистент по математике. На фото — рукописное решение ученика в тетради или скриншот.
+
+ЗАДАЧА (если видна): ${taskText}
+
+Твоя задача:
+1. Распознай рукописный текст и математические выражения с фото
+2. Проверь решение на правильность
+3. Найди ошибки и объясни их пошагово
+
+Стиль объяснения: ${style}.
+Отвечай на ${lang} языке.
+
+Верни ТОЛЬКО JSON без markdown:
+{
+  "recognized": "распознанный текст с фото",
+  "verdict": "correct" | "wrong" | "partial",
+  "verdict_text": "краткий вердикт",
+  "steps": [{"status": "ok"|"err"|"info", "text": "описание шага"}],
+  "comment": "подробный педагогический комментарий 3-5 предложений"
+}`;
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+      body: JSON.stringify({
+        model,
+        max_tokens: 1500,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: uploadedPhotoType, data: uploadedPhotoBase64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || `Ошибка ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text || '';
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    } catch {
+      parsed = { verdict:'partial', verdict_text:'Ответ получен', recognized:'', steps:[{status:'info',text:'Смотрите комментарий ниже'}], comment: raw };
+    }
+
+    // Show recognized text + result
+    renderPhotoResult(parsed);
+
+    history.unshift({ task: taskText, answer: `[Фото] ${parsed.recognized||''}`, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') });
+    if (history.length > 20) history.pop();
+    localStorage.setItem('mathcheck_history', JSON.stringify(history));
+
+  } catch(err) {
+    document.getElementById('resultArea').innerHTML = `
+      <div class="result-block">
+        <div class="verdict wrong">
+          <div class="verdict-icon">⚠️</div>
+          <div><div class="verdict-title">Ошибка</div><div class="verdict-sub">${err.message}</div></div>
+        </div>
+      </div>`;
+  } finally {
+    isChecking = false;
+    btn.disabled = false;
+    document.getElementById('photoBtnIcon').textContent = '📷';
+    document.getElementById('photoBtnText').textContent = 'Проверить фото с помощью ИИ';
+  }
+}
+
+function renderPhotoResult(data) {
+  const icons = { correct:'✅', wrong:'❌', partial:'⚠️' };
+  const labels = { correct:'Решение верное!', wrong:'Обнаружена ошибка', partial:'Частично верно' };
+  const stepsHtml = (data.steps||[]).map((s,i) => `
+    <div class="step-row">
+      <div class="step-num ${s.status}">${i+1}</div>
+      <div class="step-text">${s.text}</div>
+    </div>`).join('');
+  const recognizedHtml = data.recognized ? `
+    <div class="ai-block" style="margin-bottom:14px;border-color:rgba(45,212,191,.2)">
+      <div class="ai-badge" style="color:var(--teal)">📷 Распознанный текст</div>
+      <div class="ai-text" style="font-family:var(--font-mono);font-size:12px">${data.recognized}</div>
+    </div>` : '';
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      ${recognizedHtml}
+      <div class="verdict ${data.verdict}">
+        <div class="verdict-icon">${icons[data.verdict]||'📝'}</div>
+        <div><div class="verdict-title">${labels[data.verdict]||data.verdict}</div><div class="verdict-sub">${data.verdict_text||''}</div></div>
+      </div>
+      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">Разбор по шагам</div>${stepsHtml}</div>` : ''}
+      <div class="ai-block">
+        <div class="ai-badge">Комментарий ИИ · Claude</div>
+        <div class="ai-text">${data.comment||''}</div>
+      </div>
+    </div>`;
+}
+
+// ── TEXT CHECK ────────────────────────────────────────────
 async function checkWithAI() {
   if (isChecking) return;
   const answer = document.getElementById('studentAnswer').value.trim();
