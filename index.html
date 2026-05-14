@@ -535,10 +535,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
             <div class="config-title" data-i18n="change_password">Сменить пароль</div>
             <div class="change-pw-form">
               <div>
-                <div class="field-label" data-i18n="current_password">Текущий пароль</div>
-                <input class="auth-input" type="password" id="pwCurrent" placeholder="••••••">
-              </div>
-              <div>
                 <div class="field-label" data-i18n="new_password">Новый пароль</div>
                 <input class="auth-input" type="password" id="pwNew" placeholder="минимум 6 символов">
               </div>
@@ -560,9 +556,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ── API KEY (hardcoded — students never see it) ───────────
-const API_KEY = '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'; // ← замените один раз
+// ── SUPABASE CONFIG — замените на свои значения ──────────
+const SUPABASE_URL = 'https://lkdgcjgutdgoqfwpeatg.supabase.co/rest/v1/';   // https://xxx.supabase.co
+const SUPABASE_KEY = 'sb_publishable_1TbRuO484hKyieKEhYTJsA_8cmvSV0a';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── ANTHROPIC API KEY (hardcoded — students never see it) ─
+const API_KEY = 'PASTE_YOUR_KEY_HERE'; // ← замените один раз
 const API_URL = '/api/check';
 const MODEL   = 'claude-sonnet-4-5';
 
@@ -791,22 +793,7 @@ function toggleTheme() {
   applyTheme();
 }
 
-// ── USER STORE (localStorage) ─────────────────────────────
-// Format: { [username]: { firstName, lastName, role, passwordHash } }
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem('mc_users') || '{}'); } catch { return {}; }
-}
-function saveUsers(u) { localStorage.setItem('mc_users', JSON.stringify(u)); }
-
-// Seed teacher account if not exists
-function seedTeacher() {
-  const users = getUsers();
-  if (!users['teacher']) {
-    users['teacher'] = { firstName:'Данияр', lastName:'Ахтаев', role:'teacher', password:'teach123' };
-    saveUsers(users);
-  }
-}
-
+// ── AUTH STATE ────────────────────────────────────────────
 let currentUser = null;
 let currentPanel = 'student';
 
@@ -821,22 +808,31 @@ function switchAuthTab(tab) {
   document.getElementById('registerSuccess').classList.remove('show');
 }
 
-function doLogin() {
-  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+// ── LOGIN via Supabase Auth ───────────────────────────────
+async function doLogin() {
+  const email    = document.getElementById('loginUsername').value.trim().toLowerCase();
   const password = document.getElementById('loginPassword').value;
-  const errEl = document.getElementById('loginError');
+  const errEl    = document.getElementById('loginError');
   errEl.classList.remove('show');
 
-  const users = getUsers();
-  if (!users[username]) { errEl.textContent = t('err_no_user'); errEl.classList.add('show'); return; }
-  if (users[username].password !== password) { errEl.textContent = t('err_wrong_pw'); errEl.classList.add('show'); return; }
+  // Accept plain username — convert to fake email for Supabase
+  const emailAddr = email.includes('@') ? email : `${email}@mathcheck.app`;
 
-  currentUser = { username, ...users[username] };
-  localStorage.setItem('mc_session', JSON.stringify({ username }));
+  const { data, error } = await sb.auth.signInWithPassword({ email: emailAddr, password });
+  if (error) {
+    errEl.textContent = error.message.includes('Invalid') ? t('err_wrong_pw') : error.message;
+    errEl.classList.add('show');
+    return;
+  }
+
+  // Load profile
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+  currentUser = { id: data.user.id, username: email, ...profile };
   startSession();
 }
 
-function doRegister() {
+// ── REGISTER via Supabase Auth ────────────────────────────
+async function doRegister() {
   const firstName = document.getElementById('regFirstName').value.trim();
   const lastName  = document.getElementById('regLastName').value.trim();
   const username  = document.getElementById('regUsername').value.trim().toLowerCase();
@@ -849,20 +845,26 @@ function doRegister() {
   if (username.length < 3) { errEl.textContent = t('err_login_short'); errEl.classList.add('show'); return; }
   if (password.length < 6) { errEl.textContent = t('err_pw_short'); errEl.classList.add('show'); return; }
 
-  const users = getUsers();
-  if (users[username]) { errEl.textContent = t('err_login_taken'); errEl.classList.add('show'); return; }
+  const emailAddr = `${username}@mathcheck.app`;
+  const { error } = await sb.auth.signUp({
+    email: emailAddr,
+    password,
+    options: { data: { first_name: firstName, last_name: lastName, role: 'student' } }
+  });
 
-  users[username] = { firstName, lastName, role: 'student', password };
-  saveUsers(users);
+  if (error) {
+    errEl.textContent = error.message.includes('already') ? t('err_login_taken') : error.message;
+    errEl.classList.add('show');
+    return;
+  }
+
   okEl.textContent = t('registered_ok'); okEl.classList.add('show');
-  document.getElementById('regFirstName').value = '';
-  document.getElementById('regLastName').value  = '';
-  document.getElementById('regUsername').value  = '';
-  document.getElementById('regPassword').value  = '';
+  ['regFirstName','regLastName','regUsername','regPassword'].forEach(id => document.getElementById(id).value = '');
 }
 
-function doLogout() {
-  localStorage.removeItem('mc_session');
+// ── LOGOUT ────────────────────────────────────────────────
+async function doLogout() {
+  await sb.auth.signOut();
   currentUser = null;
   document.getElementById('authScreen').classList.remove('hidden');
   document.getElementById('appLayout').style.display = 'none';
@@ -870,51 +872,45 @@ function doLogout() {
   document.getElementById('loginPassword').value = '';
 }
 
-function startSession() {
+// ── START SESSION ─────────────────────────────────────────
+async function startSession() {
   document.getElementById('authScreen').classList.add('hidden');
   document.getElementById('appLayout').style.display = 'grid';
 
-  const initials = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
+  const initials = ((currentUser.first_name||'?')[0] + (currentUser.last_name||'?')[0]).toUpperCase();
   document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-  document.getElementById('userRole').textContent = currentUser.role === 'teacher' ? t('role_teacher') : t('role_student');
+  document.getElementById('userName').textContent   = `${currentUser.first_name} ${currentUser.last_name}`;
+  document.getElementById('userRole').textContent   = currentUser.role === 'teacher' ? t('role_teacher') : t('role_student');
 
-  // Teacher-only nav items
   const isTeacher = currentUser.role === 'teacher';
   document.getElementById('navTeacher').style.display   = isTeacher ? '' : 'none';
   document.getElementById('navAnalytics').style.display = isTeacher ? '' : 'none';
 
-  // Load user history
-  history = JSON.parse(localStorage.getItem(`mc_history_${currentUser.username}`) || '[]');
   applyLang();
   applyTheme();
+  await loadHistory();
   renderAnalytics();
   renderHistory();
+  if (isTeacher) loadTeacherData();
   showPanel('student', document.querySelector('.nav-item'));
 }
 
-// ── CHANGE PASSWORD ───────────────────────────────────────
-function changePassword() {
-  const cur = document.getElementById('pwCurrent').value;
+// ── CHANGE PASSWORD via Supabase ──────────────────────────
+async function changePassword() {
   const nw  = document.getElementById('pwNew').value;
   const cnf = document.getElementById('pwConfirm').value;
   const err = document.getElementById('pwError');
   const ok  = document.getElementById('pwSuccess');
   err.classList.remove('show'); ok.classList.remove('show');
 
-  const users = getUsers();
-  if (users[currentUser.username].password !== cur) { err.textContent = t('pw_wrong_current'); err.classList.add('show'); return; }
   if (nw.length < 6) { err.textContent = t('pw_too_short'); err.classList.add('show'); return; }
-  if (nw !== cnf)    { err.textContent = t('pw_no_match'); err.classList.add('show'); return; }
+  if (nw !== cnf)    { err.textContent = t('pw_no_match');  err.classList.add('show'); return; }
 
-  users[currentUser.username].password = nw;
-  currentUser.password = nw;
-  saveUsers(users);
-  localStorage.setItem('mc_session', JSON.stringify({ username: currentUser.username }));
+  const { error } = await sb.auth.updateUser({ password: nw });
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+
   ok.textContent = t('pw_saved'); ok.classList.add('show');
-  document.getElementById('pwCurrent').value = '';
-  document.getElementById('pwNew').value     = '';
-  document.getElementById('pwConfirm').value = '';
+  ['pwCurrent','pwNew','pwConfirm'].forEach(id => document.getElementById(id).value = '');
 }
 
 // ── PANELS ────────────────────────────────────────────────
@@ -925,7 +921,7 @@ function showPanel(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
   updatePanelTitles(name);
-  if (name === 'history') renderHistory();
+  if (name === 'history') { loadHistory().then(renderHistory); }
 }
 function updatePanelTitles(name) {
   const key = `panel_${name}`;
@@ -1131,9 +1127,17 @@ async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPr
 
     mode === 'photo' ? renderPhotoResult(parsed) : renderResult(parsed);
 
-    history.unshift({ task: taskText, answer: answerPreview, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') });
-    if (history.length > 30) history.pop();
-    localStorage.setItem(`mc_history_${currentUser.username}`, JSON.stringify(history));
+    // Save to Supabase
+    const newEntry = { task: taskText, answer: answerPreview, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') };
+    history.unshift(newEntry);
+    renderHistory();
+    await sb.from('checks').insert({
+      user_id: currentUser.id,
+      task:    taskText,
+      answer:  answerPreview,
+      verdict: parsed.verdict,
+      comment: parsed.comment
+    });
 
   } catch(err) {
     document.getElementById('resultArea').innerHTML = `
@@ -1259,30 +1263,89 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+// ── LOAD HISTORY from Supabase ───────────────────────────
+async function loadHistory() {
+  if (!currentUser?.id) return;
+  const { data } = await sb.from('checks')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  history = (data || []).map(r => ({
+    task:    r.task,
+    answer:  r.answer,
+    verdict: r.verdict,
+    comment: r.comment,
+    time:    new Date(r.created_at).toLocaleString('ru')
+  }));
+}
+
+// ── LOAD TEACHER DATA from Supabase ──────────────────────
+async function loadTeacherData() {
+  const { data: rows } = await sb
+    .from('checks')
+    .select('*, profiles(first_name, last_name)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (!rows) return;
+  const tbody = document.querySelector('.table-wrap');
+  if (!tbody) return;
+  const head = tbody.querySelector('.table-head');
+  const existingRows = tbody.querySelectorAll('.table-row');
+  existingRows.forEach(r => r.remove());
+  rows.slice(0,10).forEach(r => {
+    const p = r.profiles;
+    const name = p ? `${p.first_name} ${p.last_name}` : '—';
+    const initials = p ? (p.first_name[0]+p.last_name[0]).toUpperCase() : '??';
+    const colors = ['a','b','c','d'];
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const pill = r.verdict==='correct' ? 'ok' : r.verdict==='wrong' ? 'err' : 'pend';
+    const pillText = r.verdict==='correct' ? '✓' : r.verdict==='wrong' ? '✗' : '⚠';
+    const row = document.createElement('div');
+    row.className = 'table-row';
+    row.innerHTML = `
+      <div class="stu-name-cell"><div class="stu-av ${color}">${initials}</div><div class="stu-name">${name}</div></div>
+      <div class="stu-task">${r.task.substring(0,20)}</div>
+      <div><span class="pill ${pill}">${pillText} ${r.verdict}</span></div>
+      <div style="font-size:12px;color:var(--text3)">${new Date(r.created_at).toLocaleString('ru')}</div>
+      <div></div>`;
+    tbody.appendChild(row);
+  });
+}
+
 // ── INIT ──────────────────────────────────────────────────
-function init() {
-  seedTeacher();
+async function init() {
   applyTheme();
 
-  // Restore lang
   const savedLang = localStorage.getItem('mc_lang') || 'ru';
   lang = savedLang;
   document.getElementById('langSelect').value = savedLang;
 
-  // Restore session
-  try {
-    const s = JSON.parse(localStorage.getItem('mc_session') || 'null');
-    if (s?.username) {
-      const users = getUsers();
-      if (users[s.username]) {
-        currentUser = { username: s.username, ...users[s.username] };
-        startSession();
-        return;
-      }
+  // Check for existing Supabase session (persists across devices via token)
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    if (profile) {
+      currentUser = { id: session.user.id, username: session.user.email?.replace('@mathcheck.app',''), ...profile };
+      await startSession();
+      return;
     }
-  } catch {}
+  }
 
   applyLang();
+
+  // Listen for auth changes (login/logout from other tabs)
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+      if (profile) {
+        currentUser = { id: session.user.id, username: session.user.email?.replace('@mathcheck.app',''), ...profile };
+        await startSession();
+      }
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+    }
+  });
 }
 
 init();
