@@ -658,8 +658,9 @@ const SUPABASE_URL = 'https://lkdgcjgutdgoqfwpeatg.supabase.co';   // https://xx
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrZGdjamd1dGRnb3Fmd3BlYXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MjUxMjksImV4cCI6MjA5NDMwMTEyOX0.S-mxaAiNtJQBW6SS6RFOWoYko_bLBaHqV2bVdaHeKlk';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── ANTHROPIC API KEY (hardcoded — students never see it) ─
-const API_KEY = ''; // ← замените один раз
+// ── ANTHROPIC CONFIG ──────────────────────────────────────
+// Ключ хранится ТОЛЬКО в Vercel Environment Variables (ANTHROPIC_API_KEY)
+// Здесь ключа нет — это безопасно
 const API_URL = '/api/check';
 const MODEL   = 'claude-sonnet-4-5';
 
@@ -1240,44 +1241,76 @@ ${taskHint ? `УСЛОВИЕ ЗАДАЧИ (если совпадает с фот
 
 async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPreview) {
   try {
+    // Запрос идёт на наш Vercel serverless endpoint /api/check
+    // Ключ Anthropic хранится там в process.env.ANTHROPIC_API_KEY — клиент его не видит
     const resp = await fetch(API_URL, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json'},
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: MODEL, max_tokens: 1500, messages })
     });
+
+    // Читаем тело ответа один раз
+    const data = await resp.json().catch(() => null);
+
     if (!resp.ok) {
-      const err = await resp.json().catch(()=>({error:{message:`HTTP ${resp.status}`}}));
-      const msg = resp.status === 401
-        ? 'Неверный API ключ Anthropic. Обновите его в коде.'
-        : (err.error?.message || `Ошибка ${resp.status}`);
+      let msg;
+      if (resp.status === 401) {
+        msg = 'Ошибка авторизации: проверьте ANTHROPIC_API_KEY в настройках Vercel';
+      } else if (resp.status === 429) {
+        msg = 'Слишком много запросов — подождите немного и попробуйте снова';
+      } else if (resp.status === 500) {
+        msg = data?.error || `Ошибка сервера (${resp.status})`;
+      } else {
+        msg = data?.error?.message || `Ошибка ${resp.status}`;
+      }
       throw new Error(msg);
     }
-    const data = await resp.json();
-    const raw = data.content?.[0]?.text || '';
+
+    // Парсим ответ Claude
+    const raw = data?.content?.[0]?.text || '';
     let parsed;
-    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
-    catch { parsed = { verdict:'partial', verdict_text:'Ответ получен', steps:[{status:'info',text:'Смотрите комментарий'}], comment: raw }; }
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch {
+      parsed = {
+        verdict: 'partial',
+        verdict_text: 'Ответ получен',
+        steps: [{ status: 'info', text: 'Смотрите комментарий' }],
+        comment: raw
+      };
+    }
 
     mode === 'photo' ? renderPhotoResult(parsed) : renderResult(parsed);
 
-    // Save to Supabase
-    const newEntry = { task: taskText, answer: answerPreview, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') };
+    // Сохраняем в Supabase (не блокируем UI если упадёт)
+    const newEntry = {
+      task: taskText, answer: answerPreview,
+      verdict: parsed.verdict, comment: parsed.comment,
+      time: new Date().toLocaleString('ru')
+    };
     history.unshift(newEntry);
     renderHistory();
-    await sb.from('checks').insert({
+
+    sb.from('checks').insert({
       user_id:  currentUser.id,
       topic_id: TOPIC_MAP[currentTaskIdx] || null,
       task:     taskText,
       answer:   answerPreview,
       verdict:  parsed.verdict,
       comment:  parsed.comment
+    }).then(({ error }) => {
+      if (error) console.warn('Supabase insert error:', error.message);
     });
 
   } catch(err) {
     document.getElementById('resultArea').innerHTML = `
       <div class="result-block">
-        <div class="verdict wrong"><div class="verdict-icon">⚠️</div>
-          <div><div class="verdict-title">${t('error_connection')}</div><div class="verdict-sub">${err.message}</div></div>
+        <div class="verdict wrong">
+          <div class="verdict-icon">⚠️</div>
+          <div>
+            <div class="verdict-title">${t('error_connection')}</div>
+            <div class="verdict-sub">${err.message}</div>
+          </div>
         </div>
       </div>`;
   } finally {
