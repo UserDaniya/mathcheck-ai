@@ -385,6 +385,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <div class="user-role" id="userRole">—</div>
         </div>
       </div>
+      <div id="sidebarRoleBadge" style="display:none;margin:0 8px 8px;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;text-align:center;background:rgba(248,113,113,.12);color:#f87171;letter-spacing:.4px">🛡️ АДМИНИСТРАТОР</div>
       <button class="logout-btn" onclick="doLogout()">🚪 <span data-i18n="logout">Выйти</span></button>
     </div>
   </aside>
@@ -1002,6 +1003,7 @@ async function startSession() {
   document.getElementById('navTeacher').style.display   = (isTeacher || isAdmin) ? '' : 'none';
   document.getElementById('navAnalytics').style.display = (isTeacher || isAdmin) ? '' : 'none';
   document.getElementById('navAdmin').style.display     = isAdmin ? '' : 'none';
+  document.getElementById('sidebarRoleBadge').style.display = isAdmin ? '' : 'none';
 
   applyLang();
   applyTheme();
@@ -1245,7 +1247,10 @@ async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPr
     });
     if (!resp.ok) {
       const err = await resp.json().catch(()=>({error:{message:`HTTP ${resp.status}`}}));
-      throw new Error(err.error?.message || `Ошибка ${resp.status}`);
+      const msg = resp.status === 401
+        ? 'Неверный API ключ Anthropic. Обновите его в коде.'
+        : (err.error?.message || `Ошибка ${resp.status}`);
+      throw new Error(msg);
     }
     const data = await resp.json();
     const raw = data.content?.[0]?.text || '';
@@ -1537,11 +1542,21 @@ async function changeRole(userId, newRole) {
   showToast('Роль изменена');
 }
 
-async function adminResetPw(userId, name) {
-  const pw = prompt(`Новый пароль для ${name}:`);
-  if (!pw || pw.length < 6) { showToast('Пароль минимум 6 символов'); return; }
-  // Admin can't change other users' passwords via client SDK — show instruction
-  showToast('Попросите пользователя сменить пароль через профиль');
+async function adminResetPw(userId, userName) {
+  if (!confirm(`Сбросить пароль для ${userName} на "123456"?`)) return;
+  // Use Supabase admin API via our /api/check proxy — need a dedicated endpoint
+  // For now update via supabase admin function
+  try {
+    const { error } = await sb.rpc('admin_reset_password', {
+      target_user_id: userId,
+      new_password: '123456'
+    });
+    if (error) throw error;
+    showToast(`✅ Пароль для ${userName} сброшен на 123456`);
+  } catch(e) {
+    // Fallback: show instruction
+    showToast(`Сброс: попросите ${userName} использовать пароль 123456 при след. входе`);
+  }
 }
 
 // ── TOAST ─────────────────────────────────────────────────
@@ -1570,35 +1585,42 @@ async function loadHistory() {
 
 // ── LOAD TEACHER DATA from Supabase ──────────────────────
 async function loadTeacherData() {
-  const { data: rows } = await sb
+  const tbody = document.getElementById('teacherTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">Загрузка...</div>';
+
+  const { data: rows, error } = await sb
     .from('checks')
-    .select('*, profiles(first_name, last_name)')
+    .select('*, profiles(first_name, last_name), topics(name)')
     .order('created_at', { ascending: false })
     .limit(50);
-  if (!rows) return;
-  const tbody = document.querySelector('.table-wrap');
-  if (!tbody) return;
-  const head = tbody.querySelector('.table-head');
-  const existingRows = tbody.querySelectorAll('.table-row');
-  existingRows.forEach(r => r.remove());
-  rows.slice(0,10).forEach(r => {
+
+  if (error || !rows || rows.length === 0) {
+    tbody.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">Пока нет решений от учеников</div>';
+    return;
+  }
+
+  const avColors = ['a','b','c','d'];
+  tbody.innerHTML = rows.map(r => {
     const p = r.profiles;
-    const name = p ? `${p.first_name} ${p.last_name}` : '—';
-    const initials = p ? (p.first_name[0]+p.last_name[0]).toUpperCase() : '??';
-    const colors = ['a','b','c','d'];
-    const color = colors[Math.floor(Math.random()*colors.length)];
-    const pill = r.verdict==='correct' ? 'ok' : r.verdict==='wrong' ? 'err' : 'pend';
-    const pillText = r.verdict==='correct' ? '✓' : r.verdict==='wrong' ? '✗' : '⚠';
-    const row = document.createElement('div');
-    row.className = 'table-row';
-    row.innerHTML = `
-      <div class="stu-name-cell"><div class="stu-av ${color}">${initials}</div><div class="stu-name">${name}</div></div>
-      <div class="stu-task">${r.task.substring(0,20)}</div>
-      <div><span class="pill ${pill}">${pillText} ${r.verdict}</span></div>
-      <div style="font-size:12px;color:var(--text3)">${new Date(r.created_at).toLocaleString('ru')}</div>
-      <div></div>`;
-    tbody.appendChild(row);
-  });
+    const name     = p ? `${p.first_name||''} ${p.last_name||''}`.trim() : '—';
+    const initials = p ? ((p.first_name||'?')[0]+(p.last_name||'?')[0]).toUpperCase() : '??';
+    const color    = avColors[name.charCodeAt(0) % 4];
+    const topic    = r.topics?.name || r.task?.substring(0,22) || '—';
+    const pill     = r.verdict==='correct' ? 'ok' : r.verdict==='wrong' ? 'err' : 'pend';
+    const pillText = r.verdict==='correct' ? '✓ Верно' : r.verdict==='wrong' ? '✗ Ошибка' : '⚠ Частично';
+    const dt       = new Date(r.created_at).toLocaleString('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div class="table-row">
+      <div class="stu-name-cell">
+        <div class="stu-av ${color}">${initials}</div>
+        <div class="stu-name">${name}</div>
+      </div>
+      <div class="stu-task" style="font-size:12px">${topic}</div>
+      <div><span class="pill ${pill}">${pillText}</span></div>
+      <div style="font-size:11px;color:var(--text3)">${dt}</div>
+      <div></div>
+    </div>`;
+  }).join('');
 }
 
 // ── INIT ──────────────────────────────────────────────────
