@@ -937,13 +937,23 @@ async function doLogin() {
       last_name:  meta.last_name  || '',
       role:       meta.role       || 'student'
     };
-    await sb.from('profiles').upsert(fallback);
+    const { error: upsertErr } = await sb.from('profiles').upsert(fallback);
+    if (upsertErr) {
+      errEl.textContent = 'Ошибка профиля: ' + upsertErr.message;
+      errEl.classList.add('show');
+      return;
+    }
     currentUser = { username: email, ...fallback };
   } else {
     currentUser = { id: data.user.id, username: email, ...profile };
   }
 
-  await startSession();
+  try {
+    await startSession();
+  } catch(e) {
+    errEl.textContent = 'Ошибка входа: ' + e.message;
+    errEl.classList.add('show');
+  }
 }
 
 // ── REGISTER via Supabase Auth ────────────────────────────
@@ -990,6 +1000,7 @@ async function doLogout() {
 
 // ── START SESSION ─────────────────────────────────────────
 async function startSession() {
+  try {
   document.getElementById('authScreen').classList.add('hidden');
   document.getElementById('appLayout').style.display = 'grid';
 
@@ -1013,6 +1024,14 @@ async function startSession() {
   renderHistory();
   if (isTeacher || isAdmin) { loadTeacherData(); loadAnalytics(); }
   showPanel('student', document.querySelector('.nav-item'));
+  } catch(e) {
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('appLayout').style.display = 'none';
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = 'startSession error: ' + e.message;
+    errEl.classList.add('show');
+    console.error('startSession failed:', e);
+  }
 }
 
 // ── CHANGE PASSWORD via Supabase ──────────────────────────
