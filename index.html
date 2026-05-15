@@ -233,6 +233,47 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .change-pw-btn{padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
 .change-pw-btn:hover{background:#5a52e0}
 
+/* ── PROFILE PANEL ──────────────────────────────────────── */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.profile-avatar-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2)}
+.profile-avatar-big{width:72px;height:72px;border-radius:20px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:#fff}
+.profile-name-big{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);text-align:center}
+.profile-role-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.profile-role-badge.student{background:var(--accent-glow);color:var(--accent)}
+.profile-role-badge.teacher{background:rgba(45,212,191,.15);color:var(--teal)}
+.profile-role-badge.admin{background:rgba(248,113,113,.12);color:var(--red)}
+.profile-stats-mini{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;margin-top:4px}
+.profile-stat{background:var(--bg3);border-radius:var(--r);padding:10px;text-align:center}
+.profile-stat-val{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text)}
+.profile-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.profile-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px;display:flex;flex-direction:column;gap:12px}
+.profile-form-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.profile-save-btn{padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+.profile-save-btn:hover{background:#5a52e0}
+
+/* ── ADMIN PANEL ─────────────────────────────────────────── */
+.admin-users-table{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.admin-table-head,.admin-table-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;padding:11px 16px;font-size:12px;align-items:center}
+.admin-table-head{background:var(--bg3);color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+.admin-table-row{border-bottom:1px solid var(--border);color:var(--text2)}
+.admin-table-row:last-child{border-bottom:none}
+.role-select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;color:var(--text);font-family:var(--font);cursor:pointer}
+.reset-pw-btn{padding:4px 10px;background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:6px;font-size:11px;color:var(--red);cursor:pointer;font-family:var(--font)}
+.reset-pw-btn:hover{background:rgba(248,113,113,.2)}
+
+/* ── ANALYTICS LIVE ──────────────────────────────────────── */
+.analytics-student-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px}
+.analytics-student-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.analytics-student-name{font-size:14px;font-weight:600;color:var(--text)}
+.analytics-student-total{font-size:11px;color:var(--text3);margin-left:auto}
+.topic-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.topic-name{font-size:12px;color:var(--text2);min-width:160px}
+.topic-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px}
+.topic-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.topic-pct{font-size:11px;font-weight:600;min-width:36px;text-align:right}
+.topic-counts{font-size:10px;color:var(--text3);min-width:60px;text-align:right}
+
 /* ── TOAST ──────────────────────────────────────────────── */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text);box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:9999;max-width:300px}
 .toast.show{opacity:1;transform:translateY(0)}
@@ -286,6 +327,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <div class="auth-title" data-i18n="create_account">Создать аккаунт</div>
       <div class="auth-error" id="registerError"></div>
       <div class="auth-success" id="registerSuccess"></div>
+      <div class="auth-field">
+        <label class="auth-label">Роль</label>
+        <select class="auth-input" id="regRole" style="cursor:pointer">
+          <option value="student">🎓 Ученик</option>
+          <option value="teacher">👨‍🏫 Учитель</option>
+        </select>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="auth-field">
           <label class="auth-label" data-i18n="first_name">Имя</label>
@@ -325,6 +373,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <div class="nav-item" id="navTeacher" onclick="showPanel('teacher',this)"><span class="nav-icon">📋</span><span data-i18n="nav_journal">Журнал класса</span></div>
       <div class="nav-item" id="navAnalytics" onclick="showPanel('analytics',this)"><span class="nav-icon">📊</span><span data-i18n="nav_analytics">Аналитика</span></div>
       <div class="nav-item" onclick="showPanel('history',this)"><span class="nav-icon">🕒</span><span data-i18n="nav_history">История проверок</span></div>
+      <div class="nav-item" onclick="showPanel('profile',this)"><span class="nav-icon">👤</span><span data-i18n="nav_profile">Мой профиль</span></div>
+      <div class="nav-item" id="navAdmin" onclick="showPanel('admin',this)" style="display:none"><span class="nav-icon">🛡️</span><span data-i18n="nav_admin">Управление</span></div>
       <div class="nav-item" onclick="showPanel('config',this)"><span class="nav-icon">⚙️</span><span data-i18n="nav_settings">Настройки</span></div>
     </nav>
     <div class="sidebar-footer">
@@ -452,49 +502,101 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <div class="stat-box"><div class="stat-val">73%</div><div class="stat-lbl" data-i18n="success_rate">Успеваемость</div><div class="stat-trend up">↑ +5%</div></div>
           <div class="stat-box"><div class="stat-val">1.8с</div><div class="stat-lbl" data-i18n="avg_time">Среднее время ИИ</div><div class="stat-trend up">↓ ок</div></div>
         </div>
-        <div class="table-wrap">
-          <div class="table-head"><span data-i18n="student">Ученик</span><span data-i18n="task">Задание</span><span data-i18n="status">Статус</span><span data-i18n="score">Оценка</span><span data-i18n="time">Время</span></div>
-          <div class="table-row"><div class="stu-name-cell"><div class="stu-av a">АС</div><div class="stu-name">Ахметов Санжар</div></div><div class="stu-task">3x+7=22</div><div><span class="pill ok">✓ Верно</span></div><div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">100%</span></div></div><div style="font-size:12px;color:var(--text3)">2 мин</div></div>
-          <div class="table-row"><div class="stu-name-cell"><div class="stu-av b">БА</div><div class="stu-name">Байжанова Айгерим</div></div><div class="stu-task">x²−5x+6=0</div><div><span class="pill err">✗ Ошибка</span></div><div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:60%;background:#f87171"></div></div><span class="bar-val">60%</span></div></div><div style="font-size:12px;color:var(--text3)">5 мин</div></div>
-          <div class="table-row"><div class="stu-name-cell"><div class="stu-av c">ДМ</div><div class="stu-name">Досанов Марат</div></div><div class="stu-task">x+y=10</div><div><span class="pill ok">✓ Верно</span></div><div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><span class="bar-val">95%</span></div></div><div style="font-size:12px;color:var(--text3)">12 мин</div></div>
-          <div class="table-row"><div class="stu-name-cell"><div class="stu-av d">НЗ</div><div class="stu-name">Нурланова Зарина</div></div><div class="stu-task">2x−4>8</div><div><span class="pill pend">⏳ Ожидание</span></div><div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val">—</span></div></div><div style="font-size:12px;color:var(--text3)">Сейчас</div></div>
+        <div class="table-wrap" id="teacherTable">
+          <div class="table-head" id="teacherTableHead">
+            <span data-i18n="student">Ученик</span>
+            <span data-i18n="task">Тема</span>
+            <span data-i18n="status">Статус</span>
+            <span data-i18n="time">Время</span>
+            <span></span>
+          </div>
+          <div id="teacherTableBody" style="color:var(--text3);font-size:13px;padding:20px;text-align:center">Загрузка...</div>
         </div>
       </div>
 
       <!-- ANALYTICS PANEL -->
       <div class="panel" id="panel-analytics">
-        <div class="charts-grid">
-          <div class="chart-box">
-            <div class="chart-title" data-i18n="accuracy_chart">Точность ИИ по разделам</div>
-            <div class="chart-sub" data-i18n="based_on">На основе 247 заданий</div>
-            <div id="accuracyBars"></div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-title">Индекс удобства (SUS)</div>
-            <div class="chart-sub" data-i18n="aprobation">Апробация с 28 участниками</div>
-            <div class="sus-big">73.8</div>
-            <div class="sus-track"><div class="sus-fill"></div></div>
-            <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Хороший уровень · порог: 68</div>
-            <span class="pill ok">77.5% готовы использовать</span>
-          </div>
+        <div class="stats-row" id="analyticsStats">
+          <div class="stat-box"><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">Всего учеников</div></div>
+          <div class="stat-box"><div class="stat-val" id="statChecks">—</div><div class="stat-lbl">Всего решений</div></div>
+          <div class="stat-box"><div class="stat-val" id="statCorrect">—</div><div class="stat-lbl">Успеваемость</div></div>
+          <div class="stat-box"><div class="stat-val" id="statTopTopic">—</div><div class="stat-lbl">Лучшая тема</div></div>
         </div>
-        <div class="charts-grid">
-          <div class="chart-box">
-            <div class="chart-title" data-i18n="error_types">Типы ошибок учеников</div>
-            <div class="chart-sub" data-i18n="current_month">Статистика за месяц</div>
-            <div id="errorBars"></div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-title" data-i18n="perf_chart">Производительность (JMeter)</div>
-            <div class="chart-sub" data-i18n="load_test">Нагрузочное тестирование</div>
-            <div id="perfBars"></div>
-          </div>
-        </div>
+        <div id="analyticsBody" style="color:var(--text3);font-size:13px;padding:40px;text-align:center">Загрузка аналитики...</div>
       </div>
 
       <!-- HISTORY PANEL -->
       <div class="panel" id="panel-history">
         <div id="historyList"></div>
+      </div>
+
+      <!-- PROFILE PANEL -->
+      <div class="panel" id="panel-profile">
+        <div class="profile-grid">
+          <div class="profile-avatar-box">
+            <div class="profile-avatar-big" id="profileAvatarBig">?</div>
+            <div class="profile-name-big" id="profileNameBig">—</div>
+            <div class="profile-role-badge student" id="profileRoleBadge">Ученик</div>
+            <div class="profile-stats-mini">
+              <div class="profile-stat"><div class="profile-stat-val" id="pstatTotal">0</div><div class="profile-stat-lbl">Решений</div></div>
+              <div class="profile-stat"><div class="profile-stat-val" id="pstatCorrect">0</div><div class="profile-stat-lbl">Верно</div></div>
+              <div class="profile-stat"><div class="profile-stat-val" id="pstatPct">0%</div><div class="profile-stat-lbl">Успех</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="profile-form">
+              <div class="profile-form-title">Личные данные</div>
+              <div class="profile-row">
+                <div>
+                  <div class="field-label">Имя</div>
+                  <input class="auth-input" type="text" id="profileFirstName" placeholder="Имя">
+                </div>
+                <div>
+                  <div class="field-label">Фамилия</div>
+                  <input class="auth-input" type="text" id="profileLastName" placeholder="Фамилия">
+                </div>
+              </div>
+              <div class="auth-error" id="profileError"></div>
+              <div class="auth-success" id="profileSuccess"></div>
+              <button class="profile-save-btn" onclick="saveProfile()">💾 Сохранить изменения</button>
+            </div>
+            <div class="profile-form">
+              <div class="profile-form-title">Сменить пароль</div>
+              <div>
+                <div class="field-label">Новый пароль</div>
+                <input class="auth-input" type="password" id="profilePwNew" placeholder="минимум 6 символов">
+              </div>
+              <div>
+                <div class="field-label">Подтвердите пароль</div>
+                <input class="auth-input" type="password" id="profilePwConfirm" placeholder="повторите пароль">
+              </div>
+              <div class="auth-error" id="profilePwError"></div>
+              <div class="auth-success" id="profilePwSuccess"></div>
+              <button class="profile-save-btn" onclick="savePassword()">🔒 Изменить пароль</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="config-title" style="margin-bottom:12px">📈 Моя успеваемость по темам</div>
+          <div id="myTopicStats" style="color:var(--text3);font-size:13px;text-align:center;padding:20px">Загрузка...</div>
+        </div>
+      </div>
+
+      <!-- ADMIN PANEL -->
+      <div class="panel" id="panel-admin">
+        <div class="stats-row" style="margin-bottom:20px">
+          <div class="stat-box"><div class="stat-val" id="adminStatUsers">—</div><div class="stat-lbl">Пользователей</div></div>
+          <div class="stat-box"><div class="stat-val" id="adminStatStudents">—</div><div class="stat-lbl">Учеников</div></div>
+          <div class="stat-box"><div class="stat-val" id="adminStatTeachers">—</div><div class="stat-lbl">Учителей</div></div>
+          <div class="stat-box"><div class="stat-val" id="adminStatChecks">—</div><div class="stat-lbl">Всего решений</div></div>
+        </div>
+        <div class="config-title" style="margin-bottom:12px">🛡️ Управление пользователями</div>
+        <div class="admin-users-table">
+          <div class="admin-table-head">
+            <span>Пользователь</span><span>Роль</span><span>Решений</span><span>Дата регистрации</span><span>Действия</span>
+          </div>
+          <div id="adminTableBody" style="color:var(--text3);font-size:13px;padding:20px;text-align:center">Загрузка...</div>
+        </div>
       </div>
 
       <!-- CONFIG PANEL -->
@@ -532,19 +634,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           </div>
 
           <div class="config-box">
-            <div class="config-title" data-i18n="change_password">Сменить пароль</div>
-            <div class="change-pw-form">
-              <div>
-                <div class="field-label" data-i18n="new_password">Новый пароль</div>
-                <input class="auth-input" type="password" id="pwNew" placeholder="минимум 6 символов">
-              </div>
-              <div>
-                <div class="field-label" data-i18n="confirm_password">Подтвердите пароль</div>
-                <input class="auth-input" type="password" id="pwConfirm" placeholder="повторите пароль">
-              </div>
-              <div class="auth-error" id="pwError"></div>
-              <div class="auth-success" id="pwSuccess"></div>
-              <button class="change-pw-btn" onclick="changePassword()" data-i18n="save_password">Сохранить пароль</button>
+            <div class="config-title">Пароль и безопасность</div>
+            <div style="font-size:13px;color:var(--text3);line-height:1.7">
+              Для смены пароля перейдите в раздел<br>
+              <strong style="color:var(--accent)">👤 Мой профиль</strong><br>
+              там доступны все настройки аккаунта.
             </div>
           </div>
         </div>
@@ -559,8 +653,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── SUPABASE CONFIG — замените на свои значения ──────────
-const SUPABASE_URL = 'https://lkdgcjgutdgoqfwpeatg.supabase.co/';   // https://xxx.supabase.co
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrZGdjamd1dGRnb3Fmd3BlYXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MjUxMjksImV4cCI6MjA5NDMwMTEyOX0.S-mxaAiNtJQBW6SS6RFOWoYko_bLBaHqV2bVdaHeKlk';
+const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL';   // https://xxx.supabase.co
+const SUPABASE_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── ANTHROPIC API KEY (hardcoded — students never see it) ─
@@ -577,7 +671,7 @@ const STRINGS = {
     login_btn:'Войти', register_btn:'Создать аккаунт',
     navigation:'Навигация', nav_solve:'Решить задание', nav_journal:'Журнал класса',
     nav_analytics:'Аналитика', nav_history:'История проверок', nav_settings:'Настройки',
-    logout:'Выйти',
+    logout:'Выйти', nav_profile:'Мой профиль', nav_admin:'Управление',
     task_linear:'Линейное уравнение', task_quadratic:'Квадратное уравнение',
     task_system:'Система уравнений', task_ineq:'Неравенство',
     task_discrim:'Дискриминант', task_custom:'Своя задача',
@@ -796,6 +890,7 @@ function toggleTheme() {
 // ── AUTH STATE ────────────────────────────────────────────
 let currentUser = null;
 let currentPanel = 'student';
+const TOPIC_MAP = {0:1,1:2,2:3,3:4,4:5,5:6}; // task index → topic_id
 
 // ── AUTH TABS ─────────────────────────────────────────────
 function switchAuthTab(tab) {
@@ -845,11 +940,12 @@ async function doRegister() {
   if (username.length < 3) { errEl.textContent = t('err_login_short'); errEl.classList.add('show'); return; }
   if (password.length < 6) { errEl.textContent = t('err_pw_short'); errEl.classList.add('show'); return; }
 
+  const role = document.getElementById('regRole').value || 'student';
   const emailAddr = `${username}@mathcheck.app`;
   const { error } = await sb.auth.signUp({
     email: emailAddr,
     password,
-    options: { data: { first_name: firstName, last_name: lastName, role: 'student' } }
+    options: { data: { first_name: firstName, last_name: lastName, role } }
   });
 
   if (error) {
@@ -877,21 +973,25 @@ async function startSession() {
   document.getElementById('authScreen').classList.add('hidden');
   document.getElementById('appLayout').style.display = 'grid';
 
-  const initials = ((currentUser.first_name||'?')[0] + (currentUser.last_name||'?')[0]).toUpperCase();
+  const fn = currentUser.first_name || '';
+  const ln = currentUser.last_name  || '';
+  const initials = ((fn[0]||'?') + (ln[0]||'?')).toUpperCase();
   document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('userName').textContent   = `${currentUser.first_name} ${currentUser.last_name}`;
-  document.getElementById('userRole').textContent   = currentUser.role === 'teacher' ? t('role_teacher') : t('role_student');
+  document.getElementById('userName').textContent   = `${fn} ${ln}`.trim() || currentUser.username || '—';
+  const roleLabel = {teacher: t('role_teacher'), admin: 'Администратор', student: t('role_student')};
+  document.getElementById('userRole').textContent   = roleLabel[currentUser.role] || t('role_student');
 
   const isTeacher = currentUser.role === 'teacher';
-  document.getElementById('navTeacher').style.display   = isTeacher ? '' : 'none';
-  document.getElementById('navAnalytics').style.display = isTeacher ? '' : 'none';
+  const isAdmin   = currentUser.role === 'admin';
+  document.getElementById('navTeacher').style.display   = (isTeacher || isAdmin) ? '' : 'none';
+  document.getElementById('navAnalytics').style.display = (isTeacher || isAdmin) ? '' : 'none';
+  document.getElementById('navAdmin').style.display     = isAdmin ? '' : 'none';
 
   applyLang();
   applyTheme();
   await loadHistory();
-  renderAnalytics();
   renderHistory();
-  if (isTeacher) loadTeacherData();
+  if (isTeacher || isAdmin) { loadTeacherData(); loadAnalytics(); }
   showPanel('student', document.querySelector('.nav-item'));
 }
 
@@ -921,7 +1021,11 @@ function showPanel(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
   updatePanelTitles(name);
-  if (name === 'history') { loadHistory().then(renderHistory); }
+  if (name === 'history')   loadHistory().then(renderHistory);
+  if (name === 'profile')   loadProfilePanel();
+  if (name === 'admin')     loadAdminPanel();
+  if (name === 'analytics') loadAnalytics();
+  if (name === 'teacher')   loadTeacherData();
 }
 function updatePanelTitles(name) {
   const key = `panel_${name}`;
@@ -1132,11 +1236,12 @@ async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPr
     history.unshift(newEntry);
     renderHistory();
     await sb.from('checks').insert({
-      user_id: currentUser.id,
-      task:    taskText,
-      answer:  answerPreview,
-      verdict: parsed.verdict,
-      comment: parsed.comment
+      user_id:  currentUser.id,
+      topic_id: TOPIC_MAP[currentTaskIdx] || null,
+      task:     taskText,
+      answer:   answerPreview,
+      verdict:  parsed.verdict,
+      comment:  parsed.comment
     });
 
   } catch(err) {
@@ -1227,33 +1332,192 @@ function renderHistory() {
     </div>`).join('') + '</div>';
 }
 
-// ── ANALYTICS ─────────────────────────────────────────────
-function renderAnalytics() {
-  const bars = (id, items) => {
-    document.getElementById(id).innerHTML = items.map(d => `
-      <div class="h-bar-row">
-        <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
-        <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
-      </div>`).join('');
-  };
-  bars('accuracyBars',[
-    {label:'Линейные уравнения',pct:95,color:'#4ade80'},
-    {label:'Арифметические ошибки',pct:93,color:'#4ade80'},
-    {label:'Системы уравнений',pct:88,color:'#6c63ff'},
-    {label:'Квадратные (стандарт)',pct:86,color:'#6c63ff'},
-    {label:'Квадратные (нестандарт)',pct:78,color:'#fbbf24'},
-  ]);
-  bars('errorBars',[
-    {label:'Арифметическая ошибка',pct:42,color:'#f87171'},
-    {label:'Неверный знак',pct:28,color:'#fbbf24'},
-    {label:'Пропуск шага',pct:18,color:'#a78bfa'},
-    {label:'Нестандартный метод',pct:12,color:'#2dd4bf'},
-  ]);
-  bars('perfBars',[
-    {label:'10 польз. → 1.9с',pct:95,color:'#4ade80'},
-    {label:'50 польз. → 2.4с',pct:76,color:'#6c63ff'},
-    {label:'100 польз. → 4.1с',pct:50,color:'#fbbf24'},
-  ]);
+// ── ANALYTICS (live from Supabase) ───────────────────────
+async function loadAnalytics() {
+  // Load topic_stats view
+  const { data: rows } = await sb.from('topic_stats').select('*').order('user_id');
+  if (!rows || rows.length === 0) {
+    document.getElementById('analyticsBody').innerHTML =
+      '<div style="padding:40px;text-align:center;color:var(--text3)">Пока нет данных</div>';
+    return;
+  }
+
+  // Group by student
+  const students = {};
+  let totalChecks = 0, totalCorrect = 0, topicTotals = {};
+  rows.forEach(r => {
+    if (!students[r.user_id]) students[r.user_id] = { name:`${r.first_name} ${r.last_name}`, topics:[], total:0, correct:0 };
+    students[r.user_id].topics.push(r);
+    students[r.user_id].total   += Number(r.total);
+    students[r.user_id].correct += Number(r.correct);
+    totalChecks  += Number(r.total);
+    totalCorrect += Number(r.correct);
+    if (!topicTotals[r.topic_name]) topicTotals[r.topic_name] = {correct:0,total:0};
+    topicTotals[r.topic_name].correct += Number(r.correct);
+    topicTotals[r.topic_name].total   += Number(r.total);
+  });
+
+  const studentList = Object.values(students);
+  const overallPct = totalChecks ? Math.round(totalCorrect/totalChecks*100) : 0;
+  const topTopic = Object.entries(topicTotals).sort((a,b)=>{
+    const pa = b[1].total ? b[1].correct/b[1].total : 0;
+    const pb = a[1].total ? a[1].correct/a[1].total : 0;
+    return pa - pb;
+  })[0]?.[0] || '—';
+
+  document.getElementById('statStudents').textContent = studentList.length;
+  document.getElementById('statChecks').textContent   = totalChecks;
+  document.getElementById('statCorrect').textContent  = overallPct + '%';
+  document.getElementById('statTopTopic').textContent = topTopic.split(' ')[0];
+
+  // Render per-student topic breakdown
+  const colors = ['#4ade80','#6c63ff','#fbbf24','#f87171','#2dd4bf','#a78bfa'];
+  document.getElementById('analyticsBody').innerHTML = studentList.map(s => {
+    const pct = s.total ? Math.round(s.correct/s.total*100) : 0;
+    const initials = s.name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+    const topicsHtml = s.topics.map((tp,i) => {
+      const p = Number(tp.pct)||0;
+      const col = p>=80?'#4ade80':p>=50?'#fbbf24':'#f87171';
+      return `<div class="topic-row">
+        <div class="topic-name">${tp.topic_name}</div>
+        <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${p}%;background:${col}"></div></div>
+        <div class="topic-pct" style="color:${col}">${p}%</div>
+        <div class="topic-counts">${tp.correct}/${tp.total}</div>
+      </div>`;
+    }).join('');
+    return `<div class="analytics-student-card">
+      <div class="analytics-student-header">
+        <div class="stu-av a" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--accent-glow);color:var(--accent)">${initials}</div>
+        <div class="analytics-student-name">${s.name}</div>
+        <div class="analytics-student-total">Итого: <strong>${pct}%</strong> (${s.correct}/${s.total})</div>
+      </div>
+      ${topicsHtml}
+    </div>`;
+  }).join('');
+}
+
+// ── PROFILE FUNCTIONS ─────────────────────────────────────
+async function loadProfilePanel() {
+  const fn = currentUser.first_name || '';
+  const ln = currentUser.last_name  || '';
+  document.getElementById('profileFirstName').value = fn;
+  document.getElementById('profileLastName').value  = ln;
+  const initials = ((fn[0]||'?') + (ln[0]||'?')).toUpperCase();
+  document.getElementById('profileAvatarBig').textContent = initials;
+  document.getElementById('profileNameBig').textContent   = `${fn} ${ln}`.trim() || '—';
+  const badge = document.getElementById('profileRoleBadge');
+  badge.textContent = currentUser.role === 'teacher' ? 'Учитель' : currentUser.role === 'admin' ? 'Администратор' : 'Ученик';
+  badge.className = `profile-role-badge ${currentUser.role}`;
+
+  // Load personal topic stats
+  const { data: rows } = await sb.from('topic_stats')
+    .select('*').eq('user_id', currentUser.id);
+
+  const total   = rows?.reduce((s,r)=>s+Number(r.total),0) || 0;
+  const correct = rows?.reduce((s,r)=>s+Number(r.correct),0) || 0;
+  const pct     = total ? Math.round(correct/total*100) : 0;
+  document.getElementById('pstatTotal').textContent   = total;
+  document.getElementById('pstatCorrect').textContent = correct;
+  document.getElementById('pstatPct').textContent     = pct + '%';
+
+  if (!rows || rows.length === 0) {
+    document.getElementById('myTopicStats').innerHTML =
+      '<div style="color:var(--text3);padding:20px;text-align:center">Ещё нет решений</div>';
+    return;
+  }
+  document.getElementById('myTopicStats').innerHTML = rows.map(r => {
+    const p = Number(r.pct)||0;
+    const col = p>=80?'#4ade80':p>=50?'#fbbf24':'#f87171';
+    return `<div class="topic-row" style="margin-bottom:10px">
+      <div class="topic-name" style="font-size:13px;min-width:180px">${r.topic_name}</div>
+      <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${p}%;background:${col}"></div></div>
+      <div class="topic-pct" style="color:${col};font-size:12px;font-weight:700">${p}%</div>
+      <div class="topic-counts" style="font-size:11px;color:var(--text3)">${r.correct}✓ ${r.wrong}✗</div>
+    </div>`;
+  }).join('');
+}
+
+async function saveProfile() {
+  const fn  = document.getElementById('profileFirstName').value.trim();
+  const ln  = document.getElementById('profileLastName').value.trim();
+  const err = document.getElementById('profileError');
+  const ok  = document.getElementById('profileSuccess');
+  err.classList.remove('show'); ok.classList.remove('show');
+  if (!fn || !ln) { err.textContent = 'Заполните имя и фамилию'; err.classList.add('show'); return; }
+
+  const { error } = await sb.from('profiles').update({ first_name: fn, last_name: ln }).eq('id', currentUser.id);
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+
+  currentUser.first_name = fn; currentUser.last_name = ln;
+  const initials = (fn[0] + ln[0]).toUpperCase();
+  document.getElementById('userAvatar').textContent    = initials;
+  document.getElementById('userName').textContent      = `${fn} ${ln}`;
+  document.getElementById('profileAvatarBig').textContent = initials;
+  document.getElementById('profileNameBig').textContent   = `${fn} ${ln}`;
+  ok.textContent = '✅ Данные сохранены!'; ok.classList.add('show');
+}
+
+async function savePassword() {
+  const nw  = document.getElementById('profilePwNew').value;
+  const cnf = document.getElementById('profilePwConfirm').value;
+  const err = document.getElementById('profilePwError');
+  const ok  = document.getElementById('profilePwSuccess');
+  err.classList.remove('show'); ok.classList.remove('show');
+  if (nw.length < 6) { err.textContent = t('pw_too_short'); err.classList.add('show'); return; }
+  if (nw !== cnf)    { err.textContent = t('pw_no_match');  err.classList.add('show'); return; }
+  const { error } = await sb.auth.updateUser({ password: nw });
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+  ok.textContent = t('pw_saved'); ok.classList.add('show');
+  document.getElementById('profilePwNew').value    = '';
+  document.getElementById('profilePwConfirm').value = '';
+}
+
+// ── ADMIN FUNCTIONS ────────────────────────────────────────
+async function loadAdminPanel() {
+  const { data: profiles } = await sb.from('profiles').select('*').order('created_at');
+  const { data: checks }   = await sb.from('checks').select('user_id');
+
+  if (!profiles) return;
+  const checkCount = {};
+  (checks||[]).forEach(c => { checkCount[c.user_id] = (checkCount[c.user_id]||0) + 1; });
+
+  document.getElementById('adminStatUsers').textContent    = profiles.length;
+  document.getElementById('adminStatStudents').textContent = profiles.filter(p=>p.role==='student').length;
+  document.getElementById('adminStatTeachers').textContent = profiles.filter(p=>p.role==='teacher').length;
+  document.getElementById('adminStatChecks').textContent   = (checks||[]).length;
+
+  document.getElementById('adminTableBody').innerHTML = profiles.map(p => {
+    const fn = p.first_name||''; const ln = p.last_name||'';
+    const initials = ((fn[0]||'?')+(ln[0]||'?')).toUpperCase();
+    const name = `${fn} ${ln}`.trim() || '—';
+    const dt   = new Date(p.created_at).toLocaleDateString('ru');
+    return `<div class="admin-table-row">
+      <div class="stu-name-cell">
+        <div class="stu-av a" style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent)">${initials}</div>
+        <div style="font-size:13px;color:var(--text)">${name}</div>
+      </div>
+      <select class="role-select" onchange="changeRole('${p.id}',this.value)">
+        <option value="student"  ${p.role==='student' ?'selected':''}>🎓 Ученик</option>
+        <option value="teacher"  ${p.role==='teacher' ?'selected':''}>👨‍🏫 Учитель</option>
+        <option value="admin"    ${p.role==='admin'   ?'selected':''}>🛡️ Админ</option>
+      </select>
+      <div style="font-size:13px">${checkCount[p.id]||0}</div>
+      <div style="font-size:12px;color:var(--text3)">${dt}</div>
+      <button class="reset-pw-btn" onclick="adminResetPw('${p.id}','${name}')">Сбросить пароль</button>
+    </div>`;
+  }).join('');
+}
+
+async function changeRole(userId, newRole) {
+  await sb.from('profiles').update({ role: newRole }).eq('id', userId);
+  showToast('Роль изменена');
+}
+
+async function adminResetPw(userId, name) {
+  const pw = prompt(`Новый пароль для ${name}:`);
+  if (!pw || pw.length < 6) { showToast('Пароль минимум 6 символов'); return; }
+  // Admin can't change other users' passwords via client SDK — show instruction
+  showToast('Попросите пользователя сменить пароль через профиль');
 }
 
 // ── TOAST ─────────────────────────────────────────────────
