@@ -1,277 +1,225 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathCheck AI — Проверка домашних заданий</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<title>MathCheck AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ── THEMES ─────────────────────────────────────────────── */
 :root {
-  --bg: #0a0a0f;
-  --bg2: #111118;
-  --bg3: #18181f;
-  --bg4: #1e1e28;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --accent: #6c63ff;
-  --accent2: #a78bfa;
-  --accent-glow: rgba(108,99,255,0.15);
-  --teal: #2dd4bf;
-  --red: #f87171;
-  --red-dim: rgba(248,113,113,0.12);
-  --green: #4ade80;
-  --green-dim: rgba(74,222,128,0.12);
-  --amber: #fbbf24;
-  --amber-dim: rgba(251,191,36,0.1);
-  --text: #f0f0f8;
-  --text2: #9090a8;
-  --text3: #5a5a72;
-  --r: 10px;
-  --r2: 16px;
-  --font: 'Manrope', sans-serif;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --accent:#6c63ff; --accent2:#a78bfa; --accent-glow:rgba(108,99,255,.15);
+  --teal:#2dd4bf; --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --green:#4ade80; --green-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24; --r:10px; --r2:16px;
+  --font:'Manrope',sans-serif; --font-display:'Syne',sans-serif; --font-mono:'JetBrains Mono',monospace;
 }
+[data-theme="dark"] {
+  --bg:#0a0a0f; --bg2:#111118; --bg3:#18181f; --bg4:#1e1e28;
+  --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.12);
+  --text:#f0f0f8; --text2:#9090a8; --text3:#5a5a72;
+  --shadow:0 8px 32px rgba(0,0,0,.5);
+}
+[data-theme="light"] {
+  --bg:#f4f4f8; --bg2:#ffffff; --bg3:#f0f0f5; --bg4:#e8e8f0;
+  --border:rgba(0,0,0,.08); --border2:rgba(0,0,0,.14);
+  --text:#1a1a2e; --text2:#5a5a72; --text3:#9090a8;
+  --shadow:0 8px 32px rgba(0,0,0,.1);
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;transition:background .3s,color .3s}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* AUTH SCREEN */
+/* ── AUTH ───────────────────────────────────────────────── */
 #authScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
 #authScreen.hidden{display:none}
-.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.5)}
-.auth-logo{display:flex;align-items:center;gap:14px;margin-bottom:32px;justify-content:center}
-.auth-logo-icon{width:48px;height:48px;background:var(--accent);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:22px;color:white;box-shadow:0 0 24px rgba(108,99,255,.4)}
-.auth-logo-text{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--text)}
-.auth-logo-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.auth-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px}
-.auth-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:28px}
-.auth-field{margin-bottom:16px}
-.auth-label{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
-.auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:11px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--font);transition:border-color .2s}
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:36px;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;justify-content:center}
+.auth-logo-icon{width:44px;height:44px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:20px;color:#fff}
+.auth-logo-text{font-family:var(--font-display);font-weight:800;font-size:19px;color:var(--text)}
+.auth-logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:var(--r);padding:4px;margin-bottom:24px;gap:4px}
+.auth-tab{flex:1;padding:9px;border:none;background:transparent;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s}
+.auth-tab.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.auth-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px;text-align:center}
+.auth-field{margin-bottom:14px}
+.auth-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;display:block}
+.auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--font);transition:border-color .2s}
 .auth-input:focus{border-color:var(--accent)}
 .auth-input::placeholder{color:var(--text3)}
-.auth-btn{width:100%;margin-top:8px;padding:13px;background:var(--accent);color:white;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
-.auth-btn:hover{background:#5a52e0;box-shadow:0 0 20px rgba(108,99,255,.35)}
-.auth-error{background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.auth-btn{width:100%;margin-top:6px;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.auth-btn:hover{background:#5a52e0}
+.auth-error{background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:var(--r);padding:9px 12px;font-size:13px;color:var(--red);margin-bottom:12px;display:none}
 .auth-error.show{display:block}
-.auth-roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.auth-role-btn{padding:12px;background:var(--bg3);border:2px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:center;transition:all .2s}
-.auth-role-btn:hover{border-color:var(--border2)}
-.auth-role-btn.selected{border-color:var(--accent);background:var(--accent-glow)}
-.auth-role-icon{font-size:22px;margin-bottom:6px}
-.auth-role-name{font-size:13px;font-weight:600;color:var(--text)}
-.auth-role-hint{font-size:11px;color:var(--text3);margin-top:2px}
-.auth-divider{text-align:center;font-size:11px;color:var(--text3);margin:16px 0;position:relative}
-.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border)}
-.auth-divider::before{left:0}.auth-divider::after{right:0}
-.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px;background:transparent;border:1px solid transparent;width:100%}
+.auth-success{background:var(--green-dim);border:1px solid rgba(74,222,128,.3);border-radius:var(--r);padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:12px;display:none}
+.auth-success.show{display:block}
+.auth-switch{text-align:center;font-size:12px;color:var(--text3);margin-top:14px}
+.auth-switch a{color:var(--accent);cursor:pointer;text-decoration:none}
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 16px;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{display:flex;align-items:center;gap:12px;padding:4px 8px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.logo-icon{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:16px;color:#fff;flex-shrink:0}
+.logo-text{font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--text)}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-section{flex:1}
+.nav-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);font-weight:600}
+.nav-icon{font-size:15px;width:20px;text-align:center}
+.sidebar-footer{border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--r);margin-bottom:4px}
+.avatar{width:34px;height:34px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:12px;color:#fff;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:var(--text)}
+.user-role{font-size:11px;color:var(--text3)}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;background:transparent;border:1px solid transparent;width:100%}
 .logout-btn:hover{background:var(--red-dim);color:var(--red);border-color:rgba(248,113,113,.2)}
 
-/* PHOTO UPLOAD */
-.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;background:var(--bg3)}
-.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
-.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.photo-upload-icon{font-size:28px;margin-bottom:8px}
-.photo-upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
-.photo-upload-sub{font-size:11px;color:var(--text3)}
-.photo-preview-wrap{position:relative;margin-bottom:14px;border-radius:var(--r2);overflow:hidden;border:1px solid var(--border2)}
-.photo-preview-wrap img{width:100%;max-height:260px;object-fit:contain;display:block;background:#000}
-.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
-.photo-preview-name{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
-.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:2px 8px;border-radius:4px;background:var(--red-dim);border:none;font-family:var(--font)}
-.photo-remove-btn:hover{background:rgba(248,113,113,.2)}
-.photo-mode-toggle{display:flex;gap:8px;margin-bottom:14px}
-.mode-btn{flex:1;padding:9px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s;font-family:var(--font)}
-.mode-btn.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
-
-.layout{display:flex;min-height:100vh}
-
-/* SIDEBAR */
-.sidebar{width:260px;min-width:260px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-.logo{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.logo-icon{width:38px;height:38px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:white;box-shadow:0 0 20px rgba(108,99,255,0.4);flex-shrink:0}
-.logo-text{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--text)}
-.logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
-
-.api-section{padding:16px;border-bottom:1px solid var(--border)}
-.api-label{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.api-input-wrap{position:relative}
-.api-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 36px 9px 12px;font-family:var(--font-mono);font-size:11px;color:var(--text2);outline:none;transition:border-color .2s}
-.api-input:focus{border-color:var(--accent);color:var(--text)}
-.api-input::placeholder{color:var(--text3)}
-.api-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text3);font-size:14px;user-select:none}
-.api-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--text3)}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:background .3s}
-.dot.connected{background:var(--green);box-shadow:0 0 6px var(--green)}
-
-.nav-section{padding:12px 10px;flex:1}
-.nav-title{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);padding:0 10px;margin-bottom:6px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px;border:1px solid transparent}
-.nav-item:hover{background:var(--bg3);color:var(--text)}
-.nav-item.active{background:var(--accent-glow);color:var(--accent2);border-color:rgba(108,99,255,.2)}
-.nav-icon{font-size:16px;width:20px;text-align:center}
-
-.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border)}
-.avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0}
-.user-name{font-size:13px;font-weight:500;color:var(--text)}
-.user-role{font-size:11px;color:var(--text3)}
-
-/* MAIN */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0}
-.page-title{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text)}
+/* ── MAIN ───────────────────────────────────────────────── */
+.main{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--bg2);gap:16px}
+.page-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text)}
 .page-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.badge-model{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--accent-glow);border:1px solid rgba(108,99,255,.25);border-radius:20px;font-size:11px;font-weight:600;color:var(--accent2)}
-.badge-model::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.theme-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;font-size:13px;cursor:pointer;color:var(--text2);transition:all .2s;font-family:var(--font)}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+.badge-model{background:var(--accent-glow);border:1px solid rgba(108,99,255,.25);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--accent2);font-family:var(--font-mono)}
+.content{padding:24px 28px;flex:1;overflow-y:auto}
+.panel{display:none}.panel.active{display:block}
 
-.content{flex:1;overflow-y:auto;padding:28px}
-.panel{display:none}
-.panel.active{display:block}
+/* ── TASKS GRID ─────────────────────────────────────────── */
+.tasks-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.task-chip{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:30px;cursor:pointer;transition:all .15s;user-select:none}
+.task-chip:hover{border-color:var(--border2);background:var(--bg3)}
+.task-chip.selected{border-color:var(--accent);background:var(--accent-glow)}
+.task-chip-icon{font-size:15px}
+.task-chip-name{font-size:13px;font-weight:600;color:var(--text)}
+.task-chip.selected .task-chip-name{color:var(--accent)}
+.task-chip-formula{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+.task-chip.selected .task-chip-formula{color:var(--accent2)}
 
-/* TASK CARDS */
-.tasks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
-.task-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.task-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .2s}
-.task-card:hover{border-color:var(--border2);transform:translateY(-1px)}
-.task-card.selected{border-color:rgba(108,99,255,.4);background:rgba(108,99,255,.06)}
-.task-card.selected::before{background:var(--accent)}
-.task-icon{font-size:24px;margin-bottom:10px}
-.task-name{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
-.task-formula{font-family:var(--font-mono);font-size:12px;color:var(--accent2);background:var(--accent-glow);padding:4px 8px;border-radius:6px;display:inline-block;margin-bottom:8px}
-.task-diff{font-size:11px;color:var(--text3)}
-
-/* SOLVE AREA */
+/* ── SOLVE AREA ─────────────────────────────────────────── */
 .solve-area{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .panel-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
-.panel-box-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
-.panel-box-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text)}
-.panel-box-sub{font-size:11px;color:var(--text3)}
-.panel-box-body{padding:18px}
-
-.formula-display{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:16px}
-.formula-main{font-family:var(--font-mono);font-size:22px;color:var(--accent2);font-weight:500}
-.formula-desc{font-size:12px;color:var(--text3);margin-top:8px}
-
+.panel-box-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-box-title{font-size:14px;font-weight:600;color:var(--text)}
+.panel-box-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.panel-box-body{padding:14px 16px}
+.formula-display{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;text-align:center}
+.formula-main{font-family:var(--font-mono);font-size:20px;color:var(--accent2);margin-bottom:6px}
+.formula-desc{font-size:12px;color:var(--text3)}
+.field-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:6px}
 .hint-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.hint-btn{font-family:var(--font-mono);font-size:12px;padding:5px 12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .15s}
-.hint-btn:hover{background:var(--accent-glow);border-color:rgba(108,99,255,.3);color:var(--accent2)}
-
-textarea.math-area{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-family:var(--font-mono);font-size:14px;color:var(--text);resize:none;outline:none;height:140px;line-height:1.6;transition:border-color .2s}
-textarea.math-area:focus{border-color:var(--accent)}
-textarea.math-area::placeholder{color:var(--text3)}
-
-.btn-check{width:100%;margin-top:12px;padding:13px;background:var(--accent);color:white;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-check:hover{background:#5a52e0;box-shadow:0 0 20px rgba(108,99,255,.3)}
-.btn-check:disabled{background:var(--bg4);color:var(--text3);cursor:not-allowed;box-shadow:none}
-.btn-clear{width:100%;margin-top:8px;padding:9px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;transition:all .15s}
-.btn-clear:hover{border-color:var(--border2);color:var(--text2)}
-
-/* PHOTO UPLOAD */
-.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;background:var(--bg3)}
-.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
-.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.photo-upload-icon{font-size:26px;margin-bottom:6px}
-.photo-upload-text{font-size:13px;color:var(--text2);font-weight:500}
-.photo-upload-sub{font-size:11px;color:var(--text3);margin-top:3px}
-.photo-preview-wrap{position:relative;margin-bottom:14px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border2)}
-.photo-preview-wrap img{width:100%;max-height:200px;object-fit:contain;background:var(--bg4);display:block}
-.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
-.photo-preview-name{font-size:12px;color:var(--text2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
-.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:3px 8px;border-radius:4px;border:1px solid rgba(248,113,113,.3);background:var(--red-dim);transition:all .15s;white-space:nowrap}
-.photo-remove-btn:hover{background:rgba(248,113,113,.2)}
-.divider-or{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:11px;color:var(--text3)}
+.hint-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font-mono);transition:all .15s}
+.hint-btn:hover{border-color:var(--accent);color:var(--accent)}
+.math-area{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--font-mono);resize:vertical;min-height:120px;line-height:1.6;transition:border-color .2s}
+.math-area:focus{border-color:var(--accent)}
+.btn-check{width:100%;margin-top:12px;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.btn-check:hover{background:#5a52e0}
+.btn-check:disabled{opacity:.5;cursor:not-allowed}
+.btn-photo{width:100%;margin-top:8px;padding:11px;background:linear-gradient(135deg,rgba(45,212,191,.15),rgba(108,99,255,.1));border:1px solid rgba(45,212,191,.3);color:var(--teal);border-radius:var(--r);font-family:var(--font-display);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.btn-photo:hover{border-color:var(--teal)}
+.btn-clear{width:100%;margin-top:6px;padding:9px;background:transparent;border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text3);cursor:pointer;font-family:var(--font);transition:all .2s}
+.btn-clear:hover{border-color:var(--border2);color:var(--text)}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider-or{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:11px;color:var(--text3)}
 .divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
-.btn-photo{width:100%;margin-bottom:8px;padding:11px;background:linear-gradient(135deg,rgba(45,212,191,.15),rgba(108,99,255,.1));border:1px solid rgba(45,212,191,.3);color:var(--teal);border-radius:var(--r);font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-photo:hover{background:linear-gradient(135deg,rgba(45,212,191,.25),rgba(108,99,255,.15));border-color:var(--teal);box-shadow:0 0 16px rgba(45,212,191,.2)}
 
-/* RESULT */
-.result-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:220px;color:var(--text3);font-size:13px;text-align:center;gap:10px}
-.result-placeholder-icon{font-size:36px;opacity:.4}
-.result-block{animation:fadeSlide .4s ease}
-@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-.verdict{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);margin-bottom:14px;border:1px solid}
-.verdict.correct{background:var(--green-dim);border-color:rgba(74,222,128,.25)}
-.verdict.wrong{background:var(--red-dim);border-color:rgba(248,113,113,.25)}
-.verdict.partial{background:var(--amber-dim);border-color:rgba(251,191,36,.2)}
-.verdict-icon{font-size:22px;flex-shrink:0}
-.verdict-title{font-family:var(--font-display);font-weight:700;font-size:15px}
-.verdict.correct .verdict-title{color:var(--green)}
-.verdict.wrong .verdict-title{color:var(--red)}
-.verdict.partial .verdict-title{color:var(--amber)}
-.verdict-sub{font-size:12px;margin-top:2px}
-.verdict.correct .verdict-sub{color:rgba(74,222,128,.7)}
-.verdict.wrong .verdict-sub{color:rgba(248,113,113,.7)}
-.verdict.partial .verdict-sub{color:rgba(251,191,36,.7)}
-
-.steps-block{margin-bottom:14px}
-.steps-title{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
-.step-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.step-row:last-child{border-bottom:none}
-.step-num{width:20px;height:20px;border-radius:50%;background:var(--bg4);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;margin-top:1px}
+/* ── RESULT ─────────────────────────────────────────────── */
+.result-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:200px;color:var(--text3);font-size:13px;text-align:center}
+.result-placeholder-icon{font-size:36px}
+.result-block{display:flex;flex-direction:column;gap:12px}
+.verdict{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid}
+.verdict.correct{background:var(--green-dim);border-color:rgba(74,222,128,.3)}
+.verdict.wrong{background:var(--red-dim);border-color:rgba(248,113,113,.3)}
+.verdict.partial{background:var(--amber-dim,rgba(251,191,36,.1));border-color:rgba(251,191,36,.3)}
+.verdict-icon{font-size:22px}
+.verdict-title{font-size:14px;font-weight:700;color:var(--text)}
+.verdict-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.steps-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.steps-title{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.step-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.step-row:last-child{margin-bottom:0}
+.step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
 .step-num.ok{background:var(--green-dim);color:var(--green)}
 .step-num.err{background:var(--red-dim);color:var(--red)}
-.step-text{color:var(--text2);line-height:1.5;font-family:var(--font-mono);font-size:12px}
+.step-num.info{background:var(--accent-glow);color:var(--accent)}
+.step-text{font-size:13px;color:var(--text2);line-height:1.5}
+.ai-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.ai-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--accent2);margin-bottom:6px}
+.ai-text{font-size:13px;color:var(--text2);line-height:1.6}
 
-.ai-block{background:linear-gradient(135deg,rgba(108,99,255,.06),rgba(45,212,191,.04));border:1px solid rgba(108,99,255,.2);border-radius:var(--r);padding:14px}
-.ai-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent2);margin-bottom:8px}
-.ai-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent)}
-.ai-text{font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap}
+/* ── PHOTO UPLOAD ───────────────────────────────────────── */
+.photo-upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;position:relative;background:var(--bg3)}
+.photo-upload-zone:hover,.photo-upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
+.photo-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-upload-icon{font-size:26px;margin-bottom:8px}
+.photo-upload-text{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.photo-upload-sub{font-size:11px;color:var(--text3)}
+.photo-preview-wrap{border-radius:var(--r2);overflow:hidden;border:1px solid var(--border2);margin-bottom:12px}
+.photo-preview-wrap img{width:100%;max-height:260px;object-fit:contain;display:block;background:var(--bg4)}
+.photo-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-top:1px solid var(--border)}
+.photo-preview-name{font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.photo-remove-btn{font-size:11px;color:var(--red);cursor:pointer;padding:3px 8px;border-radius:4px;background:var(--red-dim);border:none;font-family:var(--font)}
 
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* TEACHER */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px}
-.stat-val{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--text)}
-.stat-lbl{font-size:12px;color:var(--text3);margin-top:4px}
-.stat-trend{font-size:11px;margin-top:6px}
-.up{color:var(--green)}
+/* ── TEACHER / ANALYTICS ────────────────────────────────── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px}
+.stat-val{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px}
+.stat-lbl{font-size:12px;color:var(--text3)}
+.stat-trend{font-size:11px;margin-top:6px}.stat-trend.up{color:var(--green)}
 .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
-.table-head{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;padding:12px 18px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3)}
-.table-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s}
+.table-head,.table-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 2fr 1fr;gap:12px;padding:12px 16px;font-size:12px}
+.table-head{background:var(--bg3);color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.table-row{border-bottom:1px solid var(--border);color:var(--text2);align-items:center}
 .table-row:last-child{border-bottom:none}
-.table-row:hover{background:var(--bg3)}
-.stu-name-cell{display:flex;align-items:center;gap:10px}
-.stu-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.stu-name-cell{display:flex;align-items:center;gap:8px}
+.stu-av{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .stu-av.a{background:rgba(108,99,255,.2);color:var(--accent2)}
-.stu-av.b{background:rgba(45,212,191,.15);color:var(--teal)}
-.stu-av.c{background:rgba(251,191,36,.15);color:var(--amber)}
-.stu-av.d{background:rgba(248,113,113,.15);color:var(--red)}
-.stu-name{font-size:13px;color:var(--text);font-weight:500}
-.stu-task{font-size:12px;color:var(--text3);font-family:var(--font-mono)}
-.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.stu-av.b{background:rgba(45,212,191,.2);color:var(--teal)}
+.stu-av.c{background:rgba(74,222,128,.2);color:var(--green)}
+.stu-av.d{background:rgba(251,191,36,.2);color:var(--amber)}
+.stu-name{font-size:13px;color:var(--text)}
+.stu-task{font-family:var(--font-mono);font-size:11px;color:var(--text2)}
+.pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:600}
 .pill.ok{background:var(--green-dim);color:var(--green)}
 .pill.err{background:var(--red-dim);color:var(--red)}
-.pill.pend{background:var(--amber-dim);color:var(--amber)}
-.score-bar{display:flex;align-items:center;gap:8px}
-.bar-track{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
-.bar-fill{height:100%;border-radius:2px;background:var(--accent)}
-.bar-val{font-size:12px;font-weight:600;color:var(--text2);min-width:32px;text-align:right}
-
-/* ANALYTICS */
+.pill.pend{background:var(--amber-dim,rgba(251,191,36,.1));color:var(--amber)}
+.score-bar{display:flex;align-items:center;gap:6px}
+.bar-track{height:6px;background:var(--bg4);border-radius:3px;flex:1}
+.bar-fill{height:100%;border-radius:3px;background:var(--green)}
+.bar-val{font-size:11px;color:var(--text2);min-width:28px}
 .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .chart-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
-.chart-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
-.chart-sub{font-size:11px;color:var(--text3);margin-bottom:16px}
+.chart-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.chart-sub{font-size:11px;color:var(--text3);margin-bottom:14px}
 .h-bar-row{margin-bottom:10px}
 .h-bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px}
-.h-bar-track{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
-.h-bar-fill{height:100%;border-radius:3px}
-.sus-big{font-family:var(--font-display);font-size:52px;font-weight:800;color:var(--accent2)}
-.sus-track{height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin:12px 0 8px}
-.sus-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--teal));width:73.8%}
+.h-bar-track{height:7px;background:var(--bg3);border-radius:4px}
+.h-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.sus-big{font-family:var(--font-display);font-size:48px;font-weight:800;color:var(--accent);margin:10px 0 6px}
+.sus-track{height:8px;background:var(--bg3);border-radius:4px;margin-bottom:8px}
+.sus-fill{height:100%;width:73.8%;background:var(--accent);border-radius:4px}
 
-/* CONFIG */
+/* ── HISTORY ────────────────────────────────────────────── */
+.history-list{display:flex;flex-direction:column;gap:10px}
+.history-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px}
+.history-item:hover{border-color:var(--border2)}
+.history-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.history-task{font-family:var(--font-mono);font-size:11px;color:var(--accent2)}
+.history-time{font-size:11px;color:var(--text3);margin-left:auto}
+.history-answer{font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── CONFIG ─────────────────────────────────────────────── */
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .config-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
-.config-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px}
+.config-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px}
 .field{margin-bottom:14px}
-.field-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
 .field-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;font-size:13px;color:var(--text);outline:none;font-family:var(--font);cursor:pointer}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
 .toggle-row:last-child{border-bottom:none}
@@ -279,25 +227,60 @@ textarea.math-area::placeholder{color:var(--text3)}
 .toggle-text .t2{font-size:11px;color:var(--text3);margin-top:2px}
 .toggle{width:36px;height:20px;border-radius:10px;background:var(--bg4);border:1px solid var(--border2);cursor:pointer;position:relative;transition:background .2s}
 .toggle.on{background:var(--accent);border-color:var(--accent)}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;transition:transform .2s}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s}
 .toggle.on::after{transform:translateX(16px)}
+.change-pw-form{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.change-pw-btn{padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.change-pw-btn:hover{background:#5a52e0}
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:999;max-width:300px}
+/* ── PROFILE PANEL ──────────────────────────────────────── */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.profile-avatar-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2)}
+.profile-avatar-big{width:72px;height:72px;border-radius:20px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:#fff}
+.profile-name-big{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);text-align:center}
+.profile-role-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.profile-role-badge.student{background:var(--accent-glow);color:var(--accent)}
+.profile-role-badge.teacher{background:rgba(45,212,191,.15);color:var(--teal)}
+.profile-role-badge.admin{background:rgba(248,113,113,.12);color:var(--red)}
+.profile-stats-mini{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;margin-top:4px}
+.profile-stat{background:var(--bg3);border-radius:var(--r);padding:10px;text-align:center}
+.profile-stat-val{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text)}
+.profile-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.profile-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px;display:flex;flex-direction:column;gap:12px}
+.profile-form-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.profile-save-btn{padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+.profile-save-btn:hover{background:#5a52e0}
+
+/* ── ADMIN PANEL ─────────────────────────────────────────── */
+.admin-users-table{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.admin-table-head,.admin-table-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;padding:11px 16px;font-size:12px;align-items:center}
+.admin-table-head{background:var(--bg3);color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+.admin-table-row{border-bottom:1px solid var(--border);color:var(--text2)}
+.admin-table-row:last-child{border-bottom:none}
+.role-select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px;color:var(--text);font-family:var(--font);cursor:pointer}
+.reset-pw-btn{padding:4px 10px;background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:6px;font-size:11px;color:var(--red);cursor:pointer;font-family:var(--font)}
+.reset-pw-btn:hover{background:rgba(248,113,113,.2)}
+
+/* ── ANALYTICS LIVE ──────────────────────────────────────── */
+.analytics-student-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px}
+.analytics-student-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.analytics-student-name{font-size:14px;font-weight:600;color:var(--text)}
+.analytics-student-total{font-size:11px;color:var(--text3);margin-left:auto}
+.topic-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.topic-name{font-size:12px;color:var(--text2);min-width:160px}
+.topic-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:3px}
+.topic-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.topic-pct{font-size:11px;font-weight:600;min-width:36px;text-align:right}
+.topic-counts{font-size:10px;color:var(--text3);min-width:60px;text-align:right}
+
+/* ── TOAST ──────────────────────────────────────────────── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text);box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:9999;max-width:300px}
 .toast.show{opacity:1;transform:translateY(0)}
-
-/* HISTORY */
-.history-list{display:flex;flex-direction:column;gap:10px}
-.history-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;cursor:pointer;transition:all .15s}
-.history-item:hover{border-color:var(--border2)}
-.history-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.history-task{font-family:var(--font-mono);font-size:12px;color:var(--accent2)}
-.history-time{font-size:11px;color:var(--text3);margin-left:auto}
-.history-answer{font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 @media(max-width:900px){
   .sidebar{display:none}
-  .tasks-grid{grid-template-columns:1fr 1fr}
+  .tasks-chips{gap:6px}
   .solve-area{grid-template-columns:1fr}
   .stats-row{grid-template-columns:1fr 1fr}
   .charts-grid{grid-template-columns:1fr}
@@ -307,150 +290,149 @@ textarea.math-area::placeholder{color:var(--text3)}
 </style>
 </head>
 <body>
-<!-- AUTH SCREEN -->
+
+<!-- ── AUTH SCREEN ──────────────────────────────────────── -->
 <div id="authScreen">
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-icon">∑</div>
       <div>
         <div class="auth-logo-text">MathCheck AI</div>
-        <div class="auth-logo-sub">Powered by Claude Sonnet</div>
+        <div class="auth-logo-sub" data-i18n="powered_by">Powered by Claude Sonnet</div>
       </div>
     </div>
-    <div class="auth-title">Добро пожаловать</div>
-    <div class="auth-sub">Выберите роль и войдите в систему</div>
-    <div class="auth-roles">
-      <div class="auth-role-btn selected" id="roleTeacher" onclick="selectRole('teacher')">
-        <div class="auth-role-icon">👨‍🏫</div>
-        <div class="auth-role-name">Учитель</div>
-        <div class="auth-role-hint">Все функции</div>
-      </div>
-      <div class="auth-role-btn" id="roleStudent" onclick="selectRole('student')">
-        <div class="auth-role-icon">🎓</div>
-        <div class="auth-role-name">Ученик</div>
-        <div class="auth-role-hint">Решение задач</div>
-      </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')" data-i18n="login">Войти</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')" data-i18n="register">Создать аккаунт</button>
     </div>
-    <div class="auth-error" id="authError">Неверный логин или пароль</div>
-    <div class="auth-field">
-      <label class="auth-label" for="authLogin">Логин</label>
-      <input class="auth-input" type="text" id="authLogin" placeholder="Введите логин" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="auth-field">
-      <label class="auth-label" for="authPassword">Пароль</label>
-      <input class="auth-input" type="password" id="authPassword" placeholder="Введите пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="auth-btn" onclick="doLogin()">Войти</button>
-    <div class="auth-divider" style="margin-top:20px">тестовые аккаунты</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
-        <div style="color:var(--accent2);font-weight:600;margin-bottom:4px">👨‍🏫 Учитель</div>
-        <div>Логин: <span style="color:var(--text);font-family:var(--font-mono)">teacher</span></div>
-        <div>Пароль: <span style="color:var(--text);font-family:var(--font-mono)">teach123</span></div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="auth-title" data-i18n="welcome">Добро пожаловать</div>
+      <div class="auth-error" id="loginError"></div>
+      <div class="auth-field">
+        <label class="auth-label" data-i18n="login_label">Логин</label>
+        <input class="auth-input" type="text" id="loginUsername" placeholder="your_login" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--text3)">
-        <div style="color:var(--teal);font-weight:600;margin-bottom:4px">🎓 Ученик</div>
-        <div>Логин: <span style="color:var(--text);font-family:var(--font-mono)">student</span></div>
-        <div>Пароль: <span style="color:var(--text);font-family:var(--font-mono)">math123</span></div>
+      <div class="auth-field">
+        <label class="auth-label" data-i18n="password_label">Пароль</label>
+        <input class="auth-input" type="password" id="loginPassword" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
+      <button class="auth-btn" onclick="doLogin()" data-i18n="login_btn">Войти</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none">
+      <div class="auth-title" data-i18n="create_account">Создать аккаунт</div>
+      <div class="auth-error" id="registerError"></div>
+      <div class="auth-success" id="registerSuccess"></div>
+      <div class="auth-field">
+        <label class="auth-label">Роль</label>
+        <select class="auth-input" id="regRole" style="cursor:pointer">
+          <option value="student">🎓 Ученик</option>
+          <option value="teacher">👨‍🏫 Учитель</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="first_name">Имя</label>
+          <input class="auth-input" type="text" id="regFirstName" placeholder="Данияр">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="last_name">Фамилия</label>
+          <input class="auth-input" type="text" id="regLastName" placeholder="Ахтаев">
+        </div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" data-i18n="login_label">Логин</label>
+        <input class="auth-input" type="text" id="regUsername" placeholder="daniyar_akhtaev" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" data-i18n="password_label">Пароль</label>
+        <input class="auth-input" type="password" id="regPassword" placeholder="минимум 6 символов" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="auth-btn" onclick="doRegister()" data-i18n="register_btn">Создать аккаунт</button>
     </div>
   </div>
 </div>
-<div class="layout">
 
-  <!-- SIDEBAR -->
+<!-- ── APP ──────────────────────────────────────────────── -->
+<div class="layout" id="appLayout" style="display:none">
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-icon">∑</div>
       <div>
         <div class="logo-text">MathCheck AI</div>
-        <div class="logo-sub">Powered by Claude Sonnet</div>
+        <div class="logo-sub">Claude Sonnet</div>
       </div>
     </div>
-
-    <div class="api-section">
-      <div class="api-label">API ключ Anthropic</div>
-      <div class="api-input-wrap">
-        <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." oninput="onApiKeyChange()">
-        <span class="api-eye" onclick="toggleApiVis()">👁</span>
-      </div>
-      <div class="api-status">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Ключ не введён</span>
-      </div>
-    </div>
-
     <nav class="nav-section">
-      <div class="nav-title">Навигация</div>
-      <div class="nav-item active" onclick="showPanel('student',this)"><span class="nav-icon">✏️</span><span>Решить задание</span></div>
-      <div class="nav-item" onclick="showPanel('teacher',this)"><span class="nav-icon">📋</span><span>Журнал класса</span></div>
-      <div class="nav-item" onclick="showPanel('analytics',this)"><span class="nav-icon">📊</span><span>Аналитика</span></div>
-      <div class="nav-item" onclick="showPanel('history',this)"><span class="nav-icon">🕒</span><span>История проверок</span></div>
-      <div class="nav-item" onclick="showPanel('config',this)"><span class="nav-icon">⚙️</span><span>Настройки</span></div>
+      <div class="nav-title" data-i18n="navigation">Навигация</div>
+      <div class="nav-item active" onclick="showPanel('student',this)"><span class="nav-icon">✏️</span><span data-i18n="nav_solve">Решить задание</span></div>
+      <div class="nav-item" id="navTeacher" onclick="showPanel('teacher',this)"><span class="nav-icon">📋</span><span data-i18n="nav_journal">Журнал класса</span></div>
+      <div class="nav-item" id="navAnalytics" onclick="showPanel('analytics',this)"><span class="nav-icon">📊</span><span data-i18n="nav_analytics">Аналитика</span></div>
+      <div class="nav-item" onclick="showPanel('history',this)"><span class="nav-icon">🕒</span><span data-i18n="nav_history">История проверок</span></div>
+      <div class="nav-item" onclick="showPanel('profile',this)"><span class="nav-icon">👤</span><span data-i18n="nav_profile">Мой профиль</span></div>
+      <div class="nav-item" id="navAdmin" onclick="showPanel('admin',this)" style="display:none"><span class="nav-icon">🛡️</span><span data-i18n="nav_admin">Управление</span></div>
+      <div class="nav-item" onclick="showPanel('config',this)"><span class="nav-icon">⚙️</span><span data-i18n="nav_settings">Настройки</span></div>
     </nav>
-
     <div class="sidebar-footer">
       <div class="user-card">
-        <div class="avatar" id="userAvatar">АД</div>
+        <div class="avatar" id="userAvatar">?</div>
         <div>
-          <div class="user-name" id="userName">Ахтаев Данияр</div>
-          <div class="user-role" id="userRole">Магистрант · НИРМ</div>
+          <div class="user-name" id="userName">—</div>
+          <div class="user-role" id="userRole">—</div>
         </div>
       </div>
-      <button class="logout-btn" onclick="doLogout()">🚪 Выйти из системы</button>
+      <button class="logout-btn" onclick="doLogout()">🚪 <span data-i18n="logout">Выйти</span></button>
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
     <div class="topbar">
       <div>
         <div class="page-title" id="pageTitle">Решить задание</div>
-        <div class="page-sub" id="pageSub">Введите решение — ИИ проверит и объяснит ошибки</div>
+        <div class="page-sub" id="pageSub"></div>
       </div>
-      <div class="badge-model">claude-sonnet-4-5</div>
+      <div class="topbar-right">
+        <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Тёмная</button>
+      </div>
     </div>
 
     <div class="content">
 
       <!-- STUDENT PANEL -->
       <div class="panel active" id="panel-student">
-        <div class="tasks-grid">
-          <div class="task-card selected" onclick="selectTask(0,this)">
-            <div class="task-icon">➗</div>
-            <div class="task-name">Линейное уравнение</div>
-            <div class="task-formula">3x + 7 = 22</div>
-            <div class="task-diff">🟢 Начальный уровень</div>
+        <div class="tasks-chips">
+          <div class="task-chip selected" onclick="selectTask(0,this)">
+            <span class="task-chip-icon">➗</span>
+            <span class="task-chip-name" data-i18n="task_linear">Линейное уравнение</span>
+            <span class="task-chip-formula">3x+7=22</span>
           </div>
-          <div class="task-card" onclick="selectTask(1,this)">
-            <div class="task-icon">📐</div>
-            <div class="task-name">Квадратное уравнение</div>
-            <div class="task-formula">x² − 5x + 6 = 0</div>
-            <div class="task-diff">🟡 Средний уровень</div>
+          <div class="task-chip" onclick="selectTask(1,this)">
+            <span class="task-chip-icon">📐</span>
+            <span class="task-chip-name" data-i18n="task_quadratic">Квадратное уравнение</span>
+            <span class="task-chip-formula">x²−5x+6=0</span>
           </div>
-          <div class="task-card" onclick="selectTask(2,this)">
-            <div class="task-icon">🔢</div>
-            <div class="task-name">Система уравнений</div>
-            <div class="task-formula">x+y=10; 2x−y=5</div>
-            <div class="task-diff">🟡 Средний уровень</div>
+          <div class="task-chip" onclick="selectTask(2,this)">
+            <span class="task-chip-icon">🔢</span>
+            <span class="task-chip-name" data-i18n="task_system">Система уравнений</span>
+            <span class="task-chip-formula">x+y=10</span>
           </div>
-          <div class="task-card" onclick="selectTask(3,this)">
-            <div class="task-icon">📏</div>
-            <div class="task-name">Неравенство</div>
-            <div class="task-formula">2x − 4 > 8</div>
-            <div class="task-diff">🟢 Начальный уровень</div>
+          <div class="task-chip" onclick="selectTask(3,this)">
+            <span class="task-chip-icon">📏</span>
+            <span class="task-chip-name" data-i18n="task_ineq">Неравенство</span>
+            <span class="task-chip-formula">2x−4&gt;8</span>
           </div>
-          <div class="task-card" onclick="selectTask(4,this)">
-            <div class="task-icon">🧮</div>
-            <div class="task-name">Дискриминант</div>
-            <div class="task-formula">x² + 4x + 4 = 0</div>
-            <div class="task-diff">🟡 Средний уровень</div>
+          <div class="task-chip" onclick="selectTask(4,this)">
+            <span class="task-chip-icon">🧮</span>
+            <span class="task-chip-name" data-i18n="task_discrim">Дискриминант</span>
+            <span class="task-chip-formula">x²+4x+4=0</span>
           </div>
-          <div class="task-card" onclick="selectTask(5,this)">
-            <div class="task-icon">📌</div>
-            <div class="task-name">Своя задача</div>
-            <div class="task-formula">Произвольная</div>
-            <div class="task-diff">✏️ Ввести вручную</div>
+          <div class="task-chip" onclick="selectTask(5,this)">
+            <span class="task-chip-icon">✏️</span>
+            <span class="task-chip-name" data-i18n="task_custom">Своя задача</span>
           </div>
         </div>
 
@@ -458,71 +440,53 @@ textarea.math-area::placeholder{color:var(--text3)}
           <div class="panel-box">
             <div class="panel-box-header">
               <div>
-                <div class="panel-box-title">Условие задачи</div>
-                <div class="panel-box-sub" id="taskSubLabel">Линейное уравнение</div>
+                <div class="panel-box-title" data-i18n="task_condition">Условие задачи</div>
+                <div class="panel-box-sub" id="taskSubLabel"></div>
               </div>
             </div>
             <div class="panel-box-body">
               <div class="formula-display" id="formulaDisplay">
                 <div class="formula-main">3x + 7 = 22</div>
-                <div class="formula-desc">Найдите значение x</div>
+                <div class="formula-desc" data-i18n="find_x">Найдите значение x</div>
               </div>
               <div id="customTaskWrap" style="display:none;margin-bottom:14px">
-                <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Введите своё условие</div>
+                <div class="field-label" data-i18n="enter_condition">Введите своё условие</div>
                 <textarea class="math-area" id="customTask" style="height:60px" placeholder="Например: 5x - 3 = 12"></textarea>
               </div>
-              <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Быстрый ввод</div>
-              <div class="hint-grid" id="hintGrid">
-                <button class="hint-btn" onclick="ins('x = ')">x =</button>
-                <button class="hint-btn" onclick="ins('Шаг 1: ')">шаг</button>
-                <button class="hint-btn" onclick="ins('Ответ: x = ')">ответ</button>
-              </div>
-              <div class="field-label" style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Ваше решение</div>
-
-              <!-- PHOTO UPLOAD -->
+              <div class="hint-grid" id="hintGrid" style="margin-bottom:14px"></div>
+              <!-- PHOTO ZONE -->
               <div class="photo-upload-zone" id="photoZone"
                 ondragover="event.preventDefault();this.classList.add('drag')"
                 ondragleave="this.classList.remove('drag')"
                 ondrop="handlePhotoDrop(event)">
                 <input type="file" accept="image/*" onchange="handlePhotoFile(this.files[0])" id="photoFileInput">
                 <div class="photo-upload-icon">📸</div>
-                <div class="photo-upload-text">Нажмите чтобы выбрать фото</div>
-                <div class="photo-upload-sub">Скриншот или фото тетради · JPG, PNG, HEIC · до 10 МБ</div>
-                <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
-                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">📱 Фото с телефона</span>
-                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">🖼️ Скриншот</span>
-                  <span style="font-size:10px;background:var(--bg4);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text3)">📓 Фото тетради</span>
-                </div>
+                <div class="photo-upload-text" data-i18n="upload_photo">Нажмите чтобы выбрать фото</div>
+                <div class="photo-upload-sub" data-i18n="upload_sub">Скриншот или фото тетради · JPG, PNG · до 10 МБ</div>
               </div>
               <div id="photoPreview" style="display:none"></div>
 
-              <div class="divider-or">или введите текстом</div>
+              <div class="divider-or" data-i18n="or_type">или введите текстом</div>
+              <textarea class="math-area" id="studentAnswer" placeholder="Запишите ход решения..."></textarea>
 
-              <textarea class="math-area" id="studentAnswer" placeholder="Запишите ход решения и ответ...&#10;&#10;Например:&#10;3x + 7 = 22&#10;3x = 22 - 7 = 15&#10;x = 15 / 3&#10;x = 5"></textarea>
               <button class="btn-photo" id="checkPhotoBtn" onclick="checkPhotoWithAI()" style="display:none">
                 <span id="photoBtnIcon">📷</span>
-                <span id="photoBtnText">Проверить фото с помощью ИИ</span>
+                <span id="photoBtnText" data-i18n="check_photo">Проверить фото с помощью ИИ</span>
               </button>
               <button class="btn-check" id="checkBtn" onclick="checkWithAI()">
                 <span id="btnIcon">🔍</span>
-                <span id="btnText">Проверить с помощью ИИ</span>
+                <span id="btnText" data-i18n="check_text">Проверить с помощью ИИ</span>
               </button>
-              <button class="btn-clear" onclick="clearAll()">Очистить</button>
+              <button class="btn-clear" onclick="clearAll()" data-i18n="clear">Очистить</button>
             </div>
           </div>
 
           <div class="panel-box">
-            <div class="panel-box-header">
-              <div>
-                <div class="panel-box-title">Результат проверки</div>
-                <div class="panel-box-sub">Анализ ИИ · Claude Sonnet</div>
-              </div>
-            </div>
             <div class="panel-box-body">
               <div id="resultArea">
                 <div class="result-placeholder">
                   <div class="result-placeholder-icon">🤖</div>
-                  <div>Введите решение и нажмите<br>«Проверить с помощью ИИ»</div>
+                  <div data-i18n="result_placeholder">Введите решение и нажмите «Проверить»</div>
                 </div>
               </div>
             </div>
@@ -533,78 +497,32 @@ textarea.math-area::placeholder{color:var(--text3)}
       <!-- TEACHER PANEL -->
       <div class="panel" id="panel-teacher">
         <div class="stats-row">
-          <div class="stat-box"><div class="stat-val">28</div><div class="stat-lbl">Всего учеников</div><div class="stat-trend up">↑ +3 за неделю</div></div>
-          <div class="stat-box"><div class="stat-val">247</div><div class="stat-lbl">Заданий сдано</div><div class="stat-trend up">↑ +42 сегодня</div></div>
-          <div class="stat-box"><div class="stat-val">73%</div><div class="stat-lbl">Успеваемость</div><div class="stat-trend up">↑ +5% за месяц</div></div>
-          <div class="stat-box"><div class="stat-val">1.8с</div><div class="stat-lbl">Среднее время ИИ</div><div class="stat-trend up">↓ оптимально</div></div>
+          <div class="stat-box"><div class="stat-val">28</div><div class="stat-lbl" data-i18n="total_students">Всего учеников</div><div class="stat-trend up">↑ +3</div></div>
+          <div class="stat-box"><div class="stat-val">247</div><div class="stat-lbl" data-i18n="tasks_done">Заданий сдано</div><div class="stat-trend up">↑ +42</div></div>
+          <div class="stat-box"><div class="stat-val">73%</div><div class="stat-lbl" data-i18n="success_rate">Успеваемость</div><div class="stat-trend up">↑ +5%</div></div>
+          <div class="stat-box"><div class="stat-val">1.8с</div><div class="stat-lbl" data-i18n="avg_time">Среднее время ИИ</div><div class="stat-trend up">↓ ок</div></div>
         </div>
-        <div class="table-wrap">
-          <div class="table-head"><span>Ученик</span><span>Задание</span><span>Статус</span><span>Оценка</span><span>Время</span></div>
-          <div class="table-row">
-            <div class="stu-name-cell"><div class="stu-av a">АС</div><div class="stu-name">Ахметов Санжар</div></div>
-            <div class="stu-task">3x+7=22</div><div><span class="pill ok">✓ Верно</span></div>
-            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">100%</span></div></div>
-            <div style="font-size:12px;color:var(--text3)">2 мин назад</div>
+        <div class="table-wrap" id="teacherTable">
+          <div class="table-head" id="teacherTableHead">
+            <span data-i18n="student">Ученик</span>
+            <span data-i18n="task">Тема</span>
+            <span data-i18n="status">Статус</span>
+            <span data-i18n="time">Время</span>
+            <span></span>
           </div>
-          <div class="table-row">
-            <div class="stu-name-cell"><div class="stu-av b">БА</div><div class="stu-name">Байжанова Айгерим</div></div>
-            <div class="stu-task">x²−5x+6=0</div><div><span class="pill err">✗ Ошибка</span></div>
-            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:60%;background:#f87171"></div></div><span class="bar-val">60%</span></div></div>
-            <div style="font-size:12px;color:var(--text3)">5 мин назад</div>
-          </div>
-          <div class="table-row">
-            <div class="stu-name-cell"><div class="stu-av c">ДМ</div><div class="stu-name">Досанов Марат</div></div>
-            <div class="stu-task">x+y=10</div><div><span class="pill ok">✓ Верно</span></div>
-            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><span class="bar-val">95%</span></div></div>
-            <div style="font-size:12px;color:var(--text3)">12 мин назад</div>
-          </div>
-          <div class="table-row">
-            <div class="stu-name-cell"><div class="stu-av d">НЗ</div><div class="stu-name">Нурланова Зарина</div></div>
-            <div class="stu-task">2x−4>8</div><div><span class="pill pend">⏳ На проверке</span></div>
-            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val">—</span></div></div>
-            <div style="font-size:12px;color:var(--text3)">Только что</div>
-          </div>
-          <div class="table-row">
-            <div class="stu-name-cell"><div class="stu-av a">КЕ</div><div class="stu-name">Касымов Ерлан</div></div>
-            <div class="stu-task">x²+4x+4=0</div><div><span class="pill err">✗ Ошибка</span></div>
-            <div><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:40%;background:#f87171"></div></div><span class="bar-val">40%</span></div></div>
-            <div style="font-size:12px;color:var(--text3)">18 мин назад</div>
-          </div>
+          <div id="teacherTableBody" style="color:var(--text3);font-size:13px;padding:20px;text-align:center">Загрузка...</div>
         </div>
       </div>
 
       <!-- ANALYTICS PANEL -->
       <div class="panel" id="panel-analytics">
-        <div class="charts-grid">
-          <div class="chart-box">
-            <div class="chart-title">Точность ИИ по разделам</div>
-            <div class="chart-sub">На основе 247 проверенных заданий</div>
-            <div id="accuracyBars"></div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-title">Индекс удобства (SUS)</div>
-            <div class="chart-sub">Апробация с 28 участниками</div>
-            <div class="sus-big">73.8</div>
-            <div class="sus-track"><div class="sus-fill"></div></div>
-            <div style="font-size:12px;color:var(--text3)">Хороший уровень · порог: 68 баллов</div>
-            <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-              <span class="pill ok">77.5% готовы использовать</span>
-              <span class="pill pend">90% точность системы</span>
-            </div>
-          </div>
+        <div class="stats-row" id="analyticsStats">
+          <div class="stat-box"><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">Всего учеников</div></div>
+          <div class="stat-box"><div class="stat-val" id="statChecks">—</div><div class="stat-lbl">Всего решений</div></div>
+          <div class="stat-box"><div class="stat-val" id="statCorrect">—</div><div class="stat-lbl">Успеваемость</div></div>
+          <div class="stat-box"><div class="stat-val" id="statTopTopic">—</div><div class="stat-lbl">Лучшая тема</div></div>
         </div>
-        <div class="charts-grid">
-          <div class="chart-box">
-            <div class="chart-title">Типы ошибок учеников</div>
-            <div class="chart-sub">Статистика за текущий месяц</div>
-            <div id="errorBars"></div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-title">Производительность (JMeter)</div>
-            <div class="chart-sub">Нагрузочное тестирование</div>
-            <div id="perfBars"></div>
-          </div>
-        </div>
+        <div id="analyticsBody" style="color:var(--text3);font-size:13px;padding:40px;text-align:center">Загрузка аналитики...</div>
       </div>
 
       <!-- HISTORY PANEL -->
@@ -612,49 +530,115 @@ textarea.math-area::placeholder{color:var(--text3)}
         <div id="historyList"></div>
       </div>
 
+      <!-- PROFILE PANEL -->
+      <div class="panel" id="panel-profile">
+        <div class="profile-grid">
+          <div class="profile-avatar-box">
+            <div class="profile-avatar-big" id="profileAvatarBig">?</div>
+            <div class="profile-name-big" id="profileNameBig">—</div>
+            <div class="profile-role-badge student" id="profileRoleBadge">Ученик</div>
+            <div class="profile-stats-mini">
+              <div class="profile-stat"><div class="profile-stat-val" id="pstatTotal">0</div><div class="profile-stat-lbl">Решений</div></div>
+              <div class="profile-stat"><div class="profile-stat-val" id="pstatCorrect">0</div><div class="profile-stat-lbl">Верно</div></div>
+              <div class="profile-stat"><div class="profile-stat-val" id="pstatPct">0%</div><div class="profile-stat-lbl">Успех</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="profile-form">
+              <div class="profile-form-title">Личные данные</div>
+              <div class="profile-row">
+                <div>
+                  <div class="field-label">Имя</div>
+                  <input class="auth-input" type="text" id="profileFirstName" placeholder="Имя">
+                </div>
+                <div>
+                  <div class="field-label">Фамилия</div>
+                  <input class="auth-input" type="text" id="profileLastName" placeholder="Фамилия">
+                </div>
+              </div>
+              <div class="auth-error" id="profileError"></div>
+              <div class="auth-success" id="profileSuccess"></div>
+              <button class="profile-save-btn" onclick="saveProfile()">💾 Сохранить изменения</button>
+            </div>
+            <div class="profile-form">
+              <div class="profile-form-title">Сменить пароль</div>
+              <div>
+                <div class="field-label">Новый пароль</div>
+                <input class="auth-input" type="password" id="profilePwNew" placeholder="минимум 6 символов">
+              </div>
+              <div>
+                <div class="field-label">Подтвердите пароль</div>
+                <input class="auth-input" type="password" id="profilePwConfirm" placeholder="повторите пароль">
+              </div>
+              <div class="auth-error" id="profilePwError"></div>
+              <div class="auth-success" id="profilePwSuccess"></div>
+              <button class="profile-save-btn" onclick="savePassword()">🔒 Изменить пароль</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="config-title" style="margin-bottom:12px">📈 Моя успеваемость по темам</div>
+          <div id="myTopicStats" style="color:var(--text3);font-size:13px;text-align:center;padding:20px">Загрузка...</div>
+        </div>
+      </div>
+
+      <!-- ADMIN PANEL -->
+      <div class="panel" id="panel-admin">
+        <div class="stats-row" style="margin-bottom:20px">
+          <div class="stat-box"><div class="stat-val" id="adminStatUsers">—</div><div class="stat-lbl">Пользователей</div></div>
+          <div class="stat-box"><div class="stat-val" id="adminStatStudents">—</div><div class="stat-lbl">Учеников</div></div>
+          <div class="stat-box"><div class="stat-val" id="adminStatTeachers">—</div><div class="stat-lbl">Учителей</div></div>
+          <div class="stat-box"><div class="stat-val" id="adminStatChecks">—</div><div class="stat-lbl">Всего решений</div></div>
+        </div>
+        <div class="config-title" style="margin-bottom:12px">🛡️ Управление пользователями</div>
+        <div class="admin-users-table">
+          <div class="admin-table-head">
+            <span>Пользователь</span><span>Роль</span><span>Решений</span><span>Дата регистрации</span><span>Действия</span>
+          </div>
+          <div id="adminTableBody" style="color:var(--text3);font-size:13px;padding:20px;text-align:center">Загрузка...</div>
+        </div>
+      </div>
+
       <!-- CONFIG PANEL -->
       <div class="panel" id="panel-config">
         <div class="config-grid">
           <div class="config-box">
-            <div class="config-title">Настройки ИИ</div>
+            <div class="config-title" data-i18n="settings_title">Настройки</div>
+
             <div class="field">
-              <div class="field-label">Модель</div>
-              <select class="field-select" id="modelSelect">
-                <option value="claude-sonnet-4-5" selected>claude-sonnet-4-5 (рекомендуется)</option>
-                <option value="claude-haiku-4-5">claude-haiku-4-5 (быстрее/дешевле)</option>
-                <option value="claude-opus-4-5">claude-opus-4-5 (мощнее)</option>
+              <div class="field-label" data-i18n="interface_lang">Язык интерфейса</div>
+              <select class="field-select" id="langSelect" onchange="onLangChange(this.value)">
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="kz">🇰🇿 Қазақша</option>
+                <option value="en">🇬🇧 English</option>
               </select>
             </div>
+
             <div class="field">
-              <div class="field-label">Язык объяснений</div>
-              <select class="field-select" id="langSelect">
-                <option value="русском" selected>Русский</option>
-                <option value="казахском">Казахский</option>
-                <option value="английском">Английский</option>
+              <div class="field-label" data-i18n="ai_comment_lang">Язык объяснений ИИ</div>
+              <select class="field-select" id="aiLangSelect">
+                <option value="русском">Русский</option>
+                <option value="казахском">Қазақша</option>
+                <option value="английском">English</option>
               </select>
             </div>
+
             <div class="field">
-              <div class="field-label">Стиль комментариев</div>
+              <div class="field-label" data-i18n="comment_style">Стиль комментариев ИИ</div>
               <select class="field-select" id="styleSelect">
-                <option value="педагогический подробный" selected>Педагогический (подробный)</option>
-                <option value="краткий">Краткий (только результат)</option>
-                <option value="сократовский через наводящие вопросы">Сократовский (через вопросы)</option>
+                <option value="педагогический подробный" data-i18n-opt="style_pedagogical">Педагогический (подробный)</option>
+                <option value="краткий" data-i18n-opt="style_short">Краткий</option>
+                <option value="сократовский через наводящие вопросы" data-i18n-opt="style_socratic">Сократовский</option>
               </select>
             </div>
           </div>
+
           <div class="config-box">
-            <div class="config-title">Функции системы</div>
-            <div class="toggle-row">
-              <div class="toggle-text"><div class="t1">Пошаговый разбор</div><div class="t2">ИИ объясняет каждый шаг</div></div>
-              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-text"><div class="t1">Педагогические подсказки</div><div class="t2">Направляет к правильному ответу</div></div>
-              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-text"><div class="t1">Сохранение истории</div><div class="t2">В памяти браузера (localStorage)</div></div>
-              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            <div class="config-title">Пароль и безопасность</div>
+            <div style="font-size:13px;color:var(--text3);line-height:1.7">
+              Для смены пароля перейдите в раздел<br>
+              <strong style="color:var(--accent)">👤 Мой профиль</strong><br>
+              там доступны все настройки аккаунта.
             </div>
           </div>
         </div>
@@ -666,151 +650,457 @@ textarea.math-area::placeholder{color:var(--text3)}
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ── AUTH ─────────────────────────────────────────────────
-const USERS = {
-  teacher: { password: 'teach123', role: 'teacher', name: 'Ахтаев Данияр', initials: 'АД', roleLabel: 'Учитель · НИРМ' },
-  student: { password: 'math123',  role: 'student', name: 'Ученик',        initials: 'У',  roleLabel: 'Ученик' },
+// ── SUPABASE CONFIG — замените на свои значения ──────────
+const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL';   // https://xxx.supabase.co
+const SUPABASE_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── ANTHROPIC API KEY (hardcoded — students never see it) ─
+const API_KEY = 'PASTE_YOUR_KEY_HERE'; // ← замените один раз
+const API_URL = '/api/check';
+const MODEL   = 'claude-sonnet-4-5';
+
+// ── I18N ─────────────────────────────────────────────────
+const STRINGS = {
+  ru: {
+    powered_by:'Powered by Claude Sonnet', login:'Войти', register:'Создать аккаунт',
+    welcome:'Добро пожаловать', create_account:'Создать аккаунт',
+    login_label:'Логин', password_label:'Пароль', first_name:'Имя', last_name:'Фамилия',
+    login_btn:'Войти', register_btn:'Создать аккаунт',
+    navigation:'Навигация', nav_solve:'Решить задание', nav_journal:'Журнал класса',
+    nav_analytics:'Аналитика', nav_history:'История проверок', nav_settings:'Настройки',
+    logout:'Выйти', nav_profile:'Мой профиль', nav_admin:'Управление',
+    task_linear:'Линейное уравнение', task_quadratic:'Квадратное уравнение',
+    task_system:'Система уравнений', task_ineq:'Неравенство',
+    task_discrim:'Дискриминант', task_custom:'Своя задача',
+    arbitrary:'Произвольная', enter_manually:'Ввести вручную',
+    level_easy:'Начальный', level_mid:'Средний',
+    task_condition:'Условие задачи', find_x:'Найдите значение x',
+    enter_condition:'Введите своё условие', quick_input:'Быстрый ввод',
+    your_solution:'Ваше решение',
+    upload_photo:'Нажмите чтобы выбрать фото',
+    upload_sub:'Скриншот или фото тетради · JPG, PNG · до 10 МБ',
+    or_type:'или введите текстом',
+    check_photo:'Проверить фото с помощью ИИ', check_text:'Проверить с помощью ИИ',
+    clear:'Очистить', result_title:'Результат проверки',
+    result_sub:'Анализ ИИ · Claude Sonnet',
+    result_placeholder:'Введите решение и нажмите «Проверить»',
+    checking:'Анализирую...', reading_photo:'Анализирую фото...',
+    total_students:'Всего учеников', tasks_done:'Заданий сдано',
+    success_rate:'Успеваемость', avg_time:'Среднее время ИИ',
+    student:'Ученик', task:'Задание', status:'Статус', score:'Оценка', time:'Время',
+    accuracy_chart:'Точность ИИ по разделам', based_on:'На основе 247 заданий',
+    aprobation:'Апробация с 28 участниками',
+    error_types:'Типы ошибок учеников', current_month:'Статистика за месяц',
+    perf_chart:'Производительность (JMeter)', load_test:'Нагрузочное тестирование',
+    settings_title:'Настройки', interface_lang:'Язык интерфейса',
+    ai_comment_lang:'Язык объяснений ИИ', comment_style:'Стиль комментариев ИИ',
+    change_password:'Сменить пароль', current_password:'Текущий пароль',
+    new_password:'Новый пароль', confirm_password:'Подтвердите пароль',
+    save_password:'Сохранить пароль',
+    panel_student:['Решить задание','Введите решение — ИИ проверит и объяснит'],
+    panel_teacher:['Журнал класса','Результаты учеников'],
+    panel_analytics:['Аналитика системы','Метрики тестирования'],
+    panel_history:['История проверок','Ваши предыдущие решения'],
+    panel_config:['Настройки','Конфигурация системы'],
+    verdict_correct:'Решение верное!', verdict_wrong:'Обнаружена ошибка', verdict_partial:'Частично верно',
+    step_analysis:'Разбор по шагам', ai_comment:'Комментарий ИИ · Claude',
+    ai_analyzing:'ИИ анализирует решение', ai_reading:'ИИ читает фото',
+    history_empty:'История пуста.\nПроверьте первое задание!',
+    correct:'✓ Верно', wrong:'✗ Ошибка', partial:'⚠ Частично',
+    recognized_text:'📷 Распознанный текст',
+    error_no_answer:'Введите ваше решение', error_no_photo:'Сначала загрузите фото',
+    error_connection:'Ошибка подключения',
+    pw_wrong_current:'Неверный текущий пароль',
+    pw_too_short:'Пароль минимум 6 символов',
+    pw_no_match:'Пароли не совпадают',
+    pw_saved:'Пароль успешно изменён!',
+    theme_dark:'🌙 Тёмная', theme_light:'☀️ Светлая',
+    style_pedagogical:'Педагогический (подробный)', style_short:'Краткий', style_socratic:'Сократовский',
+    role_teacher:'Учитель', role_student:'Ученик',
+    err_fill_all:'Заполните все поля', err_login_short:'Логин минимум 3 символа',
+    err_pw_short:'Пароль минимум 6 символов', err_login_taken:'Логин уже занят',
+    registered_ok:'Аккаунт создан! Войдите.', err_no_user:'Пользователь не найден',
+    err_wrong_pw:'Неверный пароль',
+    ai_lang_ru:'русском', ai_lang_kz:'казахском', ai_lang_en:'английском',
+  },
+  kz: {
+    powered_by:'Claude Sonnet арқылы жұмыс істейді', login:'Кіру', register:'Аккаунт жасау',
+    welcome:'Қош келдіңіз', create_account:'Аккаунт жасау',
+    login_label:'Логин', password_label:'Құпия сөз', first_name:'Аты', last_name:'Тегі',
+    login_btn:'Кіру', register_btn:'Аккаунт жасау',
+    navigation:'Навигация', nav_solve:'Есеп шешу', nav_journal:'Сынып журналы',
+    nav_analytics:'Аналитика', nav_history:'Тексеру тарихы', nav_settings:'Параметрлер',
+    logout:'Шығу',
+    task_linear:'Сызықтық теңдеу', task_quadratic:'Квадрат теңдеу',
+    task_system:'Теңдеулер жүйесі', task_ineq:'Теңсіздік',
+    task_discrim:'Дискриминант', task_custom:'Өз есебің',
+    arbitrary:'Еркін', enter_manually:'Қолмен енгізу',
+    level_easy:'Бастапқы', level_mid:'Орта',
+    task_condition:'Есеп шарты', find_x:'x мәнін табыңыз',
+    enter_condition:'Шартты енгізіңіз', quick_input:'Жылдам енгізу',
+    your_solution:'Сіздің шешіміңіз',
+    upload_photo:'Фото таңдау үшін басыңыз',
+    upload_sub:'Скриншот немесе дәптер суреті · JPG, PNG · 10 МБ дейін',
+    or_type:'немесе мәтін енгізіңіз',
+    check_photo:'Фотоны ЖИ арқылы тексеру', check_text:'ЖИ арқылы тексеру',
+    clear:'Тазалау', result_title:'Тексеру нәтижесі',
+    result_sub:'ЖИ талдауы · Claude Sonnet',
+    result_placeholder:'Шешімді енгізіп «Тексеру» батырмасын басыңыз',
+    checking:'Талдануда...', reading_photo:'Фото талдануда...',
+    total_students:'Барлық оқушылар', tasks_done:'Тапсырмалар өткізілді',
+    success_rate:'Үлгерімділік', avg_time:'ЖИ орташа уақыты',
+    student:'Оқушы', task:'Тапсырма', status:'Мәртебе', score:'Баға', time:'Уақыт',
+    accuracy_chart:'Бөлімдер бойынша ЖИ дәлдігі', based_on:'247 тапсырма негізінде',
+    aprobation:'28 қатысушымен апробация',
+    error_types:'Оқушы қателерінің түрлері', current_month:'Ай статистикасы',
+    perf_chart:'Өнімділік (JMeter)', load_test:'Жүктемелік тестілеу',
+    settings_title:'Параметрлер', interface_lang:'Интерфейс тілі',
+    ai_comment_lang:'ЖИ түсіндірме тілі', comment_style:'ЖИ түсіндірме стилі',
+    change_password:'Құпия сөзді өзгерту', current_password:'Ағымдағы құпия сөз',
+    new_password:'Жаңа құпия сөз', confirm_password:'Растаңыз',
+    save_password:'Сақтау',
+    panel_student:['Есеп шешу','Шешімді енгізіңіз — ЖИ тексереді'],
+    panel_teacher:['Сынып журналы','Оқушылар нәтижелері'],
+    panel_analytics:['Жүйе аналитикасы','Тестілеу көрсеткіштері'],
+    panel_history:['Тексеру тарихы','Алдыңғы шешімдер'],
+    panel_config:['Параметрлер','Жүйе конфигурациясы'],
+    verdict_correct:'Шешім дұрыс!', verdict_wrong:'Қате табылды', verdict_partial:'Ішінара дұрыс',
+    step_analysis:'Қадам бойынша талдау', ai_comment:'ЖИ түсіндірмесі · Claude',
+    ai_analyzing:'ЖИ шешімді талдауда', ai_reading:'ЖИ фотоны оқуда',
+    history_empty:'Тарих бос.\nБірінші тапсырманы тексеріңіз!',
+    correct:'✓ Дұрыс', wrong:'✗ Қате', partial:'⚠ Ішінара',
+    recognized_text:'📷 Танылған мәтін',
+    error_no_answer:'Шешімді енгізіңіз', error_no_photo:'Алдымен фото жүктеңіз',
+    error_connection:'Қосылу қатесі',
+    pw_wrong_current:'Ағымдағы құпия сөз дұрыс емес',
+    pw_too_short:'Құпия сөз кемінде 6 таңба',
+    pw_no_match:'Құпия сөздер сәйкес келмейді',
+    pw_saved:'Құпия сөз өзгертілді!',
+    theme_dark:'🌙 Қараңғы', theme_light:'☀️ Жарық',
+    style_pedagogical:'Педагогикалық (толық)', style_short:'Қысқаша', style_socratic:'Сократтық',
+    role_teacher:'Мұғалім', role_student:'Оқушы',
+    err_fill_all:'Барлық өрістерді толтырыңыз', err_login_short:'Логин кемінде 3 таңба',
+    err_pw_short:'Құпия сөз кемінде 6 таңба', err_login_taken:'Логин бос емес',
+    registered_ok:'Аккаунт жасалды! Кіріңіз.', err_no_user:'Пайдаланушы табылмады',
+    err_wrong_pw:'Қате құпия сөз',
+    ai_lang_ru:'орыс', ai_lang_kz:'қазақ', ai_lang_en:'ағылшын',
+  },
+  en: {
+    powered_by:'Powered by Claude Sonnet', login:'Sign in', register:'Create account',
+    welcome:'Welcome back', create_account:'Create account',
+    login_label:'Username', password_label:'Password', first_name:'First name', last_name:'Last name',
+    login_btn:'Sign in', register_btn:'Create account',
+    navigation:'Navigation', nav_solve:'Solve task', nav_journal:'Class journal',
+    nav_analytics:'Analytics', nav_history:'Check history', nav_settings:'Settings',
+    logout:'Sign out',
+    task_linear:'Linear equation', task_quadratic:'Quadratic equation',
+    task_system:'System of equations', task_ineq:'Inequality',
+    task_discrim:'Discriminant', task_custom:'Custom task',
+    arbitrary:'Custom', enter_manually:'Enter manually',
+    level_easy:'Beginner', level_mid:'Intermediate',
+    task_condition:'Task condition', find_x:'Find the value of x',
+    enter_condition:'Enter your problem', quick_input:'Quick input',
+    your_solution:'Your solution',
+    upload_photo:'Click to upload a photo',
+    upload_sub:'Screenshot or notebook photo · JPG, PNG · up to 10 MB',
+    or_type:'or type your answer',
+    check_photo:'Check photo with AI', check_text:'Check with AI',
+    clear:'Clear', result_title:'Check result',
+    result_sub:'AI analysis · Claude Sonnet',
+    result_placeholder:'Enter your solution and click «Check»',
+    checking:'Analysing...', reading_photo:'Reading photo...',
+    total_students:'Total students', tasks_done:'Tasks submitted',
+    success_rate:'Success rate', avg_time:'Avg AI time',
+    student:'Student', task:'Task', status:'Status', score:'Score', time:'Time',
+    accuracy_chart:'AI accuracy by topic', based_on:'Based on 247 tasks',
+    aprobation:'Pilot with 28 participants',
+    error_types:'Student error types', current_month:'This month statistics',
+    perf_chart:'Performance (JMeter)', load_test:'Load testing',
+    settings_title:'Settings', interface_lang:'Interface language',
+    ai_comment_lang:'AI explanation language', comment_style:'AI comment style',
+    change_password:'Change password', current_password:'Current password',
+    new_password:'New password', confirm_password:'Confirm password',
+    save_password:'Save password',
+    panel_student:['Solve task','Enter your solution — AI will check and explain'],
+    panel_teacher:['Class journal','Student results'],
+    panel_analytics:['System analytics','Testing metrics'],
+    panel_history:['Check history','Your previous solutions'],
+    panel_config:['Settings','System configuration'],
+    verdict_correct:'Solution is correct!', verdict_wrong:'Error found', verdict_partial:'Partially correct',
+    step_analysis:'Step-by-step breakdown', ai_comment:'AI comment · Claude',
+    ai_analyzing:'AI is analysing the solution', ai_reading:'AI is reading the photo',
+    history_empty:'History is empty.\nCheck your first task!',
+    correct:'✓ Correct', wrong:'✗ Wrong', partial:'⚠ Partial',
+    recognized_text:'📷 Recognised text',
+    error_no_answer:'Enter your solution', error_no_photo:'Upload a photo first',
+    error_connection:'Connection error',
+    pw_wrong_current:'Current password is incorrect',
+    pw_too_short:'Password must be at least 6 characters',
+    pw_no_match:'Passwords do not match',
+    pw_saved:'Password changed successfully!',
+    theme_dark:'🌙 Dark', theme_light:'☀️ Light',
+    style_pedagogical:'Pedagogical (detailed)', style_short:'Brief', style_socratic:'Socratic',
+    role_teacher:'Teacher', role_student:'Student',
+    err_fill_all:'Please fill in all fields', err_login_short:'Username must be at least 3 chars',
+    err_pw_short:'Password must be at least 6 chars', err_login_taken:'Username is already taken',
+    registered_ok:'Account created! You can sign in now.', err_no_user:'User not found',
+    err_wrong_pw:'Wrong password',
+    ai_lang_ru:'Russian', ai_lang_kz:'Kazakh', ai_lang_en:'English',
+  }
 };
 
-let currentUser = null;
-let selectedRole = 'teacher';
+let lang = localStorage.getItem('mc_lang') || 'ru';
+function t(key){ return STRINGS[lang]?.[key] || STRINGS.ru[key] || key; }
 
-function selectRole(role) {
-  selectedRole = role;
-  document.getElementById('roleTeacher').classList.toggle('selected', role === 'teacher');
-  document.getElementById('roleStudent').classList.toggle('selected', role === 'student');
-  document.getElementById('authError').classList.remove('show');
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (key) el.textContent = t(key);
+  });
+  document.getElementById('themeBtn').textContent =
+    document.documentElement.getAttribute('data-theme') === 'dark' ? t('theme_dark') : t('theme_light');
 }
 
-function doLogin() {
-  const login = document.getElementById('authLogin').value.trim();
-  const pass  = document.getElementById('authPassword').value;
-  const errEl = document.getElementById('authError');
+function onLangChange(val) {
+  lang = val;
+  localStorage.setItem('mc_lang', lang);
+  // sync AI lang select to match UI lang as default
+  const aiLangMap = { ru: t('ai_lang_ru'), kz: t('ai_lang_kz'), en: t('ai_lang_en') };
+  // just update UI lang dropdown visual
+  applyLang();
+  updatePanelTitles(currentPanel);
+}
+
+// ── THEME ─────────────────────────────────────────────────
+let currentTheme = localStorage.getItem('mc_theme') || 'dark';
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = currentTheme === 'dark' ? t('theme_dark') : t('theme_light');
+}
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('mc_theme', currentTheme);
+  applyTheme();
+}
+
+// ── AUTH STATE ────────────────────────────────────────────
+let currentUser = null;
+let currentPanel = 'student';
+const TOPIC_MAP = {0:1,1:2,2:3,3:4,4:5,5:6}; // task index → topic_id
+
+// ── AUTH TABS ─────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('registerError').classList.remove('show');
+  document.getElementById('registerSuccess').classList.remove('show');
+}
+
+// ── LOGIN via Supabase Auth ───────────────────────────────
+async function doLogin() {
+  const email    = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
   errEl.classList.remove('show');
-  const user = USERS[login];
-  if (!user || user.password !== pass || user.role !== selectedRole) {
+
+  if (!email || !password) {
+    errEl.textContent = 'Введите логин и пароль';
     errEl.classList.add('show');
-    document.getElementById('authPassword').value = '';
     return;
   }
-  currentUser = { login, ...user };
-  localStorage.setItem('mathcheck_session', JSON.stringify({ login, role: user.role }));
-  applySession();
-  document.getElementById('authScreen').classList.add('hidden');
-}
 
-function doLogout() {
-  localStorage.removeItem('mathcheck_session');
-  currentUser = null;
-  document.getElementById('authLogin').value = '';
-  document.getElementById('authPassword').value = '';
-  document.getElementById('authError').classList.remove('show');
-  document.getElementById('authScreen').classList.remove('hidden');
-}
+  const emailAddr = email.includes('@') ? email : `${email}@mathcheck.app`;
 
-function applySession() {
-  if (!currentUser) return;
-  document.getElementById('userAvatar').textContent = currentUser.initials;
-  document.getElementById('userName').textContent   = currentUser.name;
-  document.getElementById('userRole').textContent   = currentUser.roleLabel;
-  const teacherOnly = ['teacher', 'analytics'];
-  document.querySelectorAll('.nav-item').forEach(el => {
-    const panel = el.getAttribute('onclick')?.match(/showPanel\('(\w+)'/)?.[1];
-    if (panel && teacherOnly.includes(panel) && currentUser.role === 'student') {
-      el.style.display = 'none';
-    } else {
-      el.style.display = '';
-    }
-  });
-}
-
-// ── APP ───────────────────────────────────────────────────
-const TASKS = [
-  { name:'Линейное уравнение', formula:'3x + 7 = 22', desc:'Найдите значение x', hints:['x = ','3x = ','Шаг 1: ','Ответ: x = '], custom:false },
-  { name:'Квадратное уравнение', formula:'x² − 5x + 6 = 0', desc:'Найдите все корни уравнения', hints:['D = ','x₁ = ','x₂ = ','Ответ: '], custom:false },
-  { name:'Система уравнений', formula:'x + y = 10\n2x − y = 5', desc:'Найдите x и y', hints:['x = ','y = ','Шаг 1: ','Ответ: '], custom:false },
-  { name:'Неравенство', formula:'2x − 4 > 8', desc:'Найдите множество решений', hints:['2x > ','x > ','Ответ: x ∈ '], custom:false },
-  { name:'Дискриминант', formula:'x² + 4x + 4 = 0', desc:'Найдите все корни', hints:['D = ','x = ','Ответ: x = '], custom:false },
-  { name:'Своя задача', formula:'', desc:'Ваше условие', hints:['Дано: ','Найти: ','Решение: ','Ответ: '], custom:true },
-];
-
-let currentTaskIdx = 0;
-let apiKey = '';
-let isChecking = false;
-let history = [];
-
-const API_URL = '/api/check';
-
-function init() {
-  // Restore session
-  const saved = localStorage.getItem('mathcheck_session');
-  if (saved) {
-    try {
-      const s = JSON.parse(saved);
-      const user = USERS[s.login];
-      if (user && user.role === s.role) {
-        currentUser = { login: s.login, ...user };
-        applySession();
-        document.getElementById('authScreen').classList.add('hidden');
-      }
-    } catch(e) { localStorage.removeItem('mathcheck_session'); }
+  const { data, error } = await sb.auth.signInWithPassword({ email: emailAddr, password });
+  if (error) {
+    errEl.textContent = error.message.includes('Invalid') ? t('err_wrong_pw') : error.message;
+    errEl.classList.add('show');
+    return;
   }
-  apiKey = localStorage.getItem('mathcheck_key') || '';
-  if (apiKey) { document.getElementById('apiKeyInput').value = apiKey; updateStatus(true); }
-  history = JSON.parse(localStorage.getItem('mathcheck_history') || '[]');
-  renderAnalytics();
+
+  // Load profile — if missing or RLS blocks, create fallback
+  const { data: profile, error: profErr } = await sb
+    .from('profiles').select('*').eq('id', data.user.id).single();
+
+  if (profErr || !profile) {
+    const meta = data.user.user_metadata || {};
+    const fallback = {
+      id:         data.user.id,
+      first_name: meta.first_name || email,
+      last_name:  meta.last_name  || '',
+      role:       meta.role       || 'student'
+    };
+    const { error: upsertErr } = await sb.from('profiles').upsert(fallback);
+    if (upsertErr) {
+      errEl.textContent = 'Ошибка профиля: ' + upsertErr.message;
+      errEl.classList.add('show');
+      return;
+    }
+    currentUser = { username: email, ...fallback };
+  } else {
+    currentUser = { id: data.user.id, username: email, ...profile };
+  }
+
+  try {
+    await startSession();
+  } catch(e) {
+    errEl.textContent = 'Ошибка входа: ' + e.message;
+    errEl.classList.add('show');
+  }
+}
+
+// ── REGISTER via Supabase Auth ────────────────────────────
+async function doRegister() {
+  const firstName = document.getElementById('regFirstName').value.trim();
+  const lastName  = document.getElementById('regLastName').value.trim();
+  const username  = document.getElementById('regUsername').value.trim().toLowerCase();
+  const password  = document.getElementById('regPassword').value;
+  const errEl     = document.getElementById('registerError');
+  const okEl      = document.getElementById('registerSuccess');
+  errEl.classList.remove('show'); okEl.classList.remove('show');
+
+  if (!firstName || !lastName || !username || !password) { errEl.textContent = t('err_fill_all'); errEl.classList.add('show'); return; }
+  if (username.length < 3) { errEl.textContent = t('err_login_short'); errEl.classList.add('show'); return; }
+  if (password.length < 6) { errEl.textContent = t('err_pw_short'); errEl.classList.add('show'); return; }
+
+  const role = document.getElementById('regRole').value || 'student';
+  const emailAddr = `${username}@mathcheck.app`;
+  const { error } = await sb.auth.signUp({
+    email: emailAddr,
+    password,
+    options: { data: { first_name: firstName, last_name: lastName, role } }
+  });
+
+  if (error) {
+    errEl.textContent = error.message.includes('already') ? t('err_login_taken') : error.message;
+    errEl.classList.add('show');
+    return;
+  }
+
+  okEl.textContent = t('registered_ok'); okEl.classList.add('show');
+  ['regFirstName','regLastName','regUsername','regPassword'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── LOGOUT ────────────────────────────────────────────────
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('appLayout').style.display = 'none';
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+}
+
+// ── START SESSION ─────────────────────────────────────────
+async function startSession() {
+  try {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appLayout').style.display = 'grid';
+
+  const fn = currentUser.first_name || '';
+  const ln = currentUser.last_name  || '';
+  const initials = ((fn[0]||'?') + (ln[0]||'?')).toUpperCase();
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userName').textContent   = `${fn} ${ln}`.trim() || currentUser.username || '—';
+  const roleLabel = {teacher: t('role_teacher'), admin: 'Администратор', student: t('role_student')};
+  document.getElementById('userRole').textContent   = roleLabel[currentUser.role] || t('role_student');
+
+  const isTeacher = currentUser.role === 'teacher';
+  const isAdmin   = currentUser.role === 'admin';
+  document.getElementById('navTeacher').style.display   = (isTeacher || isAdmin) ? '' : 'none';
+  document.getElementById('navAnalytics').style.display = (isTeacher || isAdmin) ? '' : 'none';
+  document.getElementById('navAdmin').style.display     = isAdmin ? '' : 'none';
+
+  applyLang();
+  applyTheme();
+  await loadHistory();
   renderHistory();
+  if (isTeacher || isAdmin) { loadTeacherData(); loadAnalytics(); }
+  showPanel('student', document.querySelector('.nav-item'));
+  } catch(e) {
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('appLayout').style.display = 'none';
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = 'startSession error: ' + e.message;
+    errEl.classList.add('show');
+    console.error('startSession failed:', e);
+  }
 }
 
-function onApiKeyChange() {
-  apiKey = document.getElementById('apiKeyInput').value.trim();
-  localStorage.setItem('mathcheck_key', apiKey);
-  updateStatus(apiKey.startsWith('sk-ant'));
+// ── CHANGE PASSWORD via Supabase ──────────────────────────
+async function changePassword() {
+  const nw  = document.getElementById('pwNew').value;
+  const cnf = document.getElementById('pwConfirm').value;
+  const err = document.getElementById('pwError');
+  const ok  = document.getElementById('pwSuccess');
+  err.classList.remove('show'); ok.classList.remove('show');
+
+  if (nw.length < 6) { err.textContent = t('pw_too_short'); err.classList.add('show'); return; }
+  if (nw !== cnf)    { err.textContent = t('pw_no_match');  err.classList.add('show'); return; }
+
+  const { error } = await sb.auth.updateUser({ password: nw });
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+
+  ok.textContent = t('pw_saved'); ok.classList.add('show');
+  ['pwCurrent','pwNew','pwConfirm'].forEach(id => document.getElementById(id).value = '');
 }
 
-function updateStatus(ok) {
-  document.getElementById('statusDot').classList.toggle('connected', ok);
-  document.getElementById('statusText').textContent = ok ? 'Подключено к Claude API' : (apiKey ? 'Неверный формат ключа' : 'Ключ не введён');
-}
-
-function toggleApiVis() {
-  const i = document.getElementById('apiKeyInput');
-  i.type = i.type === 'password' ? 'text' : 'password';
-}
-
+// ── PANELS ────────────────────────────────────────────────
 function showPanel(name, el) {
+  currentPanel = name;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
-  const titles = {
-    student: ['Решить задание','Введите решение — ИИ проверит и объяснит ошибки'],
-    teacher: ['Журнал класса','Результаты учеников · Статус проверки'],
-    analytics: ['Аналитика системы','Метрики из НИРМ 04 · Тестирование и апробация'],
-    history: ['История проверок','Ваши предыдущие решения'],
-    config: ['Настройки','Конфигурация ИИ-модели и функций'],
-  };
-  document.getElementById('pageTitle').textContent = titles[name][0];
-  document.getElementById('pageSub').textContent = titles[name][1];
-  if (name === 'history') renderHistory();
+  updatePanelTitles(name);
+  if (name === 'history')   loadHistory().then(renderHistory);
+  if (name === 'profile')   loadProfilePanel();
+  if (name === 'admin')     loadAdminPanel();
+  if (name === 'analytics') loadAnalytics();
+  if (name === 'teacher')   loadTeacherData();
 }
+function updatePanelTitles(name) {
+  const key = `panel_${name}`;
+  const arr = t(key);
+  if (Array.isArray(arr)) {
+    document.getElementById('pageTitle').textContent = arr[0];
+    document.getElementById('pageSub').textContent   = arr[1];
+  }
+}
+
+// ── TASKS ─────────────────────────────────────────────────
+const TASKS = [
+  { nameKey:'task_linear',    formula:'3x + 7 = 22',         descKey:'find_x',          hints:['x = ','3x = ','Шаг 1: ','Ответ: x = '], custom:false },
+  { nameKey:'task_quadratic', formula:'x² − 5x + 6 = 0',     descKey:'find_x',          hints:['D = ','x₁ = ','x₂ = ','Ответ: '],     custom:false },
+  { nameKey:'task_system',    formula:'x + y = 10\n2x − y = 5', descKey:'find_x',       hints:['x = ','y = ','Шаг 1: ','Ответ: '],     custom:false },
+  { nameKey:'task_ineq',      formula:'2x − 4 > 8',           descKey:'find_x',          hints:['2x > ','x > ','Ответ: x ∈ '],          custom:false },
+  { nameKey:'task_discrim',   formula:'x² + 4x + 4 = 0',      descKey:'find_x',          hints:['D = ','x = ','Ответ: x = '],            custom:false },
+  { nameKey:'task_custom',    formula:'',                      descKey:'arbitrary',       hints:['Дано: ','Найти: ','Решение: ','Ответ: '], custom:true },
+];
+let currentTaskIdx = 0;
 
 function selectTask(idx, el) {
   currentTaskIdx = idx;
-  document.querySelectorAll('.task-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.task-chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
-  const t = TASKS[idx];
-  document.getElementById('taskSubLabel').textContent = t.name;
+  const task = TASKS[idx];
+  document.getElementById('taskSubLabel').textContent = t(task.nameKey);
   const fd = document.getElementById('formulaDisplay');
-  if (t.custom) {
-    fd.innerHTML = '<div class="formula-main" style="font-size:16px;color:var(--text3)">Введите задачу ниже</div><div class="formula-desc">Произвольная математическая задача</div>';
+  if (task.custom) {
+    fd.innerHTML = `<div class="formula-main" style="font-size:15px;color:var(--text3)">${t('enter_condition')}</div>`;
     document.getElementById('customTaskWrap').style.display = 'block';
   } else {
-    fd.innerHTML = `<div class="formula-main">${t.formula.replace('\n','<br>')}</div><div class="formula-desc">${t.desc}</div>`;
+    fd.innerHTML = `<div class="formula-main">${task.formula.replace('\n','<br>')}</div><div class="formula-desc">${t(task.descKey)}</div>`;
     document.getElementById('customTaskWrap').style.display = 'none';
   }
-  document.getElementById('hintGrid').innerHTML = t.hints.map(h =>
+  document.getElementById('hintGrid').innerHTML = task.hints.map(h =>
     `<button class="hint-btn" onclick="ins(${JSON.stringify(h)})">${h.trim()||'...'}</button>`).join('');
   clearAll();
 }
@@ -825,30 +1115,26 @@ function ins(text) {
 
 function clearAll() {
   document.getElementById('studentAnswer').value = '';
-  removePhoto();
   document.getElementById('resultArea').innerHTML = `
     <div class="result-placeholder">
       <div class="result-placeholder-icon">🤖</div>
-      <div>Введите решение и нажмите<br>«Проверить с помощью ИИ»</div>
+      <div>${t('result_placeholder')}</div>
     </div>`;
 }
 
-// ── PHOTO UPLOAD ──────────────────────────────────────────
-let uploadedPhotoBase64 = null;
-let uploadedPhotoName = '';
-let uploadedPhotoType = 'image/jpeg';
+// ── PHOTO ─────────────────────────────────────────────────
+let uploadedPhotoBase64 = null, uploadedPhotoName = '', uploadedPhotoType = 'image/jpeg';
 
 function handlePhotoFile(file) {
   if (!file) return;
   if (file.size > 10 * 1024 * 1024) { showToast('Файл слишком большой. Максимум 10 МБ'); return; }
-  if (!file.type.startsWith('image/')) { showToast('Пожалуйста, загрузите изображение'); return; }
+  if (!file.type.startsWith('image/')) { showToast('Загрузите изображение'); return; }
   uploadedPhotoName = file.name;
   uploadedPhotoType = file.type || 'image/jpeg';
   const reader = new FileReader();
   reader.onload = e => {
-    const dataUrl = e.target.result;
-    uploadedPhotoBase64 = dataUrl.split(',')[1];
-    renderPhotoPreview(dataUrl, file.name);
+    uploadedPhotoBase64 = e.target.result.split(',')[1];
+    renderPhotoPreview(e.target.result, file.name);
   };
   reader.readAsDataURL(file);
 }
@@ -856,8 +1142,7 @@ function handlePhotoFile(file) {
 function handlePhotoDrop(e) {
   e.preventDefault();
   document.getElementById('photoZone').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file) handlePhotoFile(file);
+  handlePhotoFile(e.dataTransfer.files[0]);
 }
 
 function renderPhotoPreview(dataUrl, name) {
@@ -865,187 +1150,48 @@ function renderPhotoPreview(dataUrl, name) {
   document.getElementById('photoPreview').style.display = 'block';
   document.getElementById('photoPreview').innerHTML = `
     <div class="photo-preview-wrap">
-      <img src="${dataUrl}" alt="Фото решения" style="width:100%;max-height:280px;object-fit:contain;display:block;background:var(--bg4);border-radius:0">
+      <img src="${dataUrl}" alt="Фото решения">
       <div class="photo-preview-bar">
         <span class="photo-preview-name">📷 ${name}</span>
         <button class="photo-remove-btn" onclick="removePhoto()">✕ Удалить</button>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;padding:10px 0 4px;font-size:12px;color:var(--teal)">
-      <span>✅</span><span>Фото загружено — нажмите кнопку ниже для анализа</span>
-    </div>`;
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 0 2px;font-size:12px;color:var(--teal)">✅ ${t('upload_photo').replace('Нажмите чтобы выбрать фото','Фото загружено')} — нажмите кнопку ниже</div>`;
   document.getElementById('checkPhotoBtn').style.display = 'flex';
 }
 
 function removePhoto() {
-  uploadedPhotoBase64 = null;
-  uploadedPhotoName = '';
-  uploadedPhotoType = 'image/jpeg';
-  document.getElementById('photoZone').style.display = 'block';
+  uploadedPhotoBase64 = null; uploadedPhotoName = ''; uploadedPhotoType = 'image/jpeg';
+  document.getElementById('photoZone').style.display = '';
   document.getElementById('photoPreview').style.display = 'none';
   document.getElementById('checkPhotoBtn').style.display = 'none';
   document.getElementById('photoFileInput').value = '';
 }
 
-async function checkPhotoWithAI() {
-  if (isChecking) return;
-  if (!uploadedPhotoBase64) { showToast('Сначала загрузите фото'); return; }
-  if (!apiKey || !apiKey.startsWith('sk-ant')) { showToast('Введите API ключ Anthropic в боковой панели'); return; }
+// ── AI CHECK (TEXT) ───────────────────────────────────────
+let isChecking = false;
+let history = [];
 
-  const task = TASKS[currentTaskIdx];
-  const taskText = task.custom
-    ? (document.getElementById('customTask').value.trim() || 'произвольная задача')
-    : `${task.formula} — ${task.desc}`;
-  const lang = document.getElementById('langSelect').value;
-  const style = document.getElementById('styleSelect').value;
-  const model = document.getElementById('modelSelect').value;
-
-  isChecking = true;
-  const btn = document.getElementById('checkPhotoBtn');
-  btn.disabled = true;
-  document.getElementById('photoBtnIcon').innerHTML = '<div class="spin" style="border-top-color:var(--teal)"></div>';
-  document.getElementById('photoBtnText').textContent = 'Анализирую фото...';
-
-  document.getElementById('resultArea').innerHTML = `
-    <div class="result-block">
-      <div class="ai-block">
-        <div class="ai-badge">ИИ читает фото</div>
-        <div class="ai-text" style="color:var(--text3)">Распознаю рукописное решение и анализирую...</div>
-      </div>
-    </div>`;
-
-  const prompt = `Ты — педагогический ИИ-ассистент по математике. На фото — рукописное решение ученика в тетради или скриншот.
-
-ЗАДАЧА (если видна): ${taskText}
-
-Твоя задача:
-1. Распознай рукописный текст и математические выражения с фото
-2. Проверь решение на правильность
-3. Найди ошибки и объясни их пошагово
-
-Стиль объяснения: ${style}.
-Отвечай на ${lang} языке.
-
-Верни ТОЛЬКО JSON без markdown:
-{
-  "recognized": "распознанный текст с фото",
-  "verdict": "correct" | "wrong" | "partial",
-  "verdict_text": "краткий вердикт",
-  "steps": [{"status": "ok"|"err"|"info", "text": "описание шага"}],
-  "comment": "подробный педагогический комментарий 3-5 предложений"
-}`;
-
-  try {
-    const resp = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
-      body: JSON.stringify({
-        model,
-        max_tokens: 1500,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: uploadedPhotoType, data: uploadedPhotoBase64 } },
-            { type: 'text', text: prompt }
-          ]
-        }]
-      })
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json();
-      throw new Error(err.error?.message || `Ошибка ${resp.status}`);
-    }
-
-    const data = await resp.json();
-    const raw = data.content?.[0]?.text || '';
-    let parsed;
-    try {
-      parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    } catch {
-      parsed = { verdict:'partial', verdict_text:'Ответ получен', recognized:'', steps:[{status:'info',text:'Смотрите комментарий ниже'}], comment: raw };
-    }
-
-    // Show recognized text + result
-    renderPhotoResult(parsed);
-
-    history.unshift({ task: taskText, answer: `[Фото] ${parsed.recognized||''}`, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') });
-    if (history.length > 20) history.pop();
-    localStorage.setItem('mathcheck_history', JSON.stringify(history));
-
-  } catch(err) {
-    document.getElementById('resultArea').innerHTML = `
-      <div class="result-block">
-        <div class="verdict wrong">
-          <div class="verdict-icon">⚠️</div>
-          <div><div class="verdict-title">Ошибка</div><div class="verdict-sub">${err.message}</div></div>
-        </div>
-      </div>`;
-  } finally {
-    isChecking = false;
-    btn.disabled = false;
-    document.getElementById('photoBtnIcon').textContent = '📷';
-    document.getElementById('photoBtnText').textContent = 'Проверить фото с помощью ИИ';
-  }
+function getAILang() {
+  const sel = document.getElementById('aiLangSelect');
+  return sel ? sel.value : 'русском';
 }
 
-function renderPhotoResult(data) {
-  const icons = { correct:'✅', wrong:'❌', partial:'⚠️' };
-  const labels = { correct:'Решение верное!', wrong:'Обнаружена ошибка', partial:'Частично верно' };
-  const stepsHtml = (data.steps||[]).map((s,i) => `
-    <div class="step-row">
-      <div class="step-num ${s.status}">${i+1}</div>
-      <div class="step-text">${s.text}</div>
-    </div>`).join('');
-  const recognizedHtml = data.recognized ? `
-    <div class="ai-block" style="margin-bottom:14px;border-color:rgba(45,212,191,.2)">
-      <div class="ai-badge" style="color:var(--teal)">📷 Распознанный текст</div>
-      <div class="ai-text" style="font-family:var(--font-mono);font-size:12px">${data.recognized}</div>
-    </div>` : '';
-  document.getElementById('resultArea').innerHTML = `
-    <div class="result-block">
-      ${recognizedHtml}
-      <div class="verdict ${data.verdict}">
-        <div class="verdict-icon">${icons[data.verdict]||'📝'}</div>
-        <div><div class="verdict-title">${labels[data.verdict]||data.verdict}</div><div class="verdict-sub">${data.verdict_text||''}</div></div>
-      </div>
-      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">Разбор по шагам</div>${stepsHtml}</div>` : ''}
-      <div class="ai-block">
-        <div class="ai-badge">Комментарий ИИ · Claude</div>
-        <div class="ai-text">${data.comment||''}</div>
-      </div>
-    </div>`;
-}
-
-// ── TEXT CHECK ────────────────────────────────────────────
 async function checkWithAI() {
   if (isChecking) return;
   const answer = document.getElementById('studentAnswer').value.trim();
-  if (!answer) { showToast('Введите ваше решение'); return; }
-  if (!apiKey || !apiKey.startsWith('sk-ant')) { showToast('Введите API ключ Anthropic в боковой панели'); return; }
+  if (!answer) { showToast(t('error_no_answer')); return; }
 
   const task = TASKS[currentTaskIdx];
   const taskText = task.custom
-    ? (document.getElementById('customTask').value.trim() || 'произвольная задача')
-    : `${task.formula} — ${task.desc}`;
+    ? (document.getElementById('customTask').value.trim() || t('arbitrary'))
+    : `${task.formula}`;
 
-  const model = document.getElementById('modelSelect').value;
-  const lang = document.getElementById('langSelect').value;
-  const style = document.getElementById('styleSelect').value;
+  const style  = document.getElementById('styleSelect').value;
+  const aiLang = getAILang();
 
-  isChecking = true;
-  const btn = document.getElementById('checkBtn');
-  btn.disabled = true;
-  document.getElementById('btnIcon').innerHTML = '<div class="spin"></div>';
-  document.getElementById('btnText').textContent = 'Анализирую...';
-
-  document.getElementById('resultArea').innerHTML = `
-    <div class="result-block">
-      <div class="ai-block">
-        <div class="ai-badge">ИИ анализирует решение</div>
-        <div class="ai-text" style="color:var(--text3)">Отправляю запрос к Claude ${model}...</div>
-      </div>
-    </div>`;
+  setCheckingState(true, 'checkBtn', 'btnIcon', 'btnText', t('checking'));
+  document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_analyzing')}</div><div class="ai-text" style="color:var(--text3)">Claude ${MODEL}...</div></div></div>`;
 
   const prompt = `Ты — педагогический ИИ-ассистент по математике. Проверь решение ученика.
 
@@ -1054,75 +1200,118 @@ async function checkWithAI() {
 РЕШЕНИЕ УЧЕНИКА:
 ${answer}
 
-Стиль объяснения: ${style}.
-Отвечай на ${lang} языке.
+Стиль объяснения: ${style}. Отвечай на ${aiLang} языке.
 
 Верни ТОЛЬКО JSON без markdown:
-{
-  "verdict": "correct" | "wrong" | "partial",
-  "verdict_text": "краткий вердикт",
-  "steps": [{"status": "ok"|"err"|"info", "text": "описание шага"}],
-  "comment": "подробный педагогический комментарий 3-5 предложений"
-}`;
+{"verdict":"correct"|"wrong"|"partial","verdict_text":"краткий вердикт","steps":[{"status":"ok"|"err"|"info","text":"описание шага"}],"comment":"комментарий 3-5 предложений"}`;
 
+  await callAPI([{ role:'user', content: prompt }], null, 'checkBtn', 'btnIcon', 'btnText', taskText, answer);
+}
+
+// ── AI CHECK (PHOTO) ──────────────────────────────────────
+async function checkPhotoWithAI() {
+  if (isChecking) return;
+  if (!uploadedPhotoBase64) { showToast(t('error_no_photo')); return; }
+
+  const task = TASKS[currentTaskIdx];
+  const taskText = task.custom
+    ? (document.getElementById('customTask').value.trim() || t('arbitrary'))
+    : task.formula;
+
+  const style  = document.getElementById('styleSelect').value;
+  const aiLang = getAILang();
+
+  setCheckingState(true, 'checkPhotoBtn', 'photoBtnIcon', 'photoBtnText', t('reading_photo'));
+  document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_reading')}</div><div class="ai-text" style="color:var(--text3)">Claude Vision...</div></div></div>`;
+
+  // If student picked "custom" task and typed it — pass as a hint, otherwise trust the photo fully
+  const taskHint = task.custom
+    ? (document.getElementById('customTask').value.trim() || '')
+    : '';
+
+  const prompt = `Ты — педагогический ИИ-ассистент по математике. На фото — рукописное решение ученика в тетради или скриншот.
+
+${taskHint ? `УСЛОВИЕ ЗАДАЧИ (если совпадает с фото): ${taskHint}\n` : ''}ВАЖНО: Читай задачу и решение ТОЛЬКО с фото. Не подставляй другую задачу, даже если она есть в контексте.
+
+Шаги:
+1. Распознай точно задачу и всё решение с фото
+2. Проверь каждый шаг решения
+3. Найди ошибки, объясни где именно
+4. Покажи правильный ход решения
+
+Стиль: ${style}. Отвечай на ${aiLang} языке.
+
+Верни ТОЛЬКО JSON без markdown:
+{"recognized":"точный текст с фото — задача и шаги","verdict":"correct"|"wrong"|"partial","verdict_text":"вердикт одним предложением","steps":[{"status":"ok"|"err"|"info","text":"описание шага"}],"comment":"педагогический комментарий 3-5 предложений"}`;
+
+  const content = [
+    { type:'image', source:{ type:'base64', media_type: uploadedPhotoType, data: uploadedPhotoBase64 }},
+    { type:'text', text: prompt }
+  ];
+  await callAPI([{ role:'user', content }], 'photo', 'checkPhotoBtn', 'photoBtnIcon', 'photoBtnText', '📷 ' + uploadedPhotoName, `[Фото] ${uploadedPhotoName}`);
+}
+
+async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPreview) {
   try {
     const resp = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 1024,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'x-api-key': API_KEY },
+      body: JSON.stringify({ model: MODEL, max_tokens: 1500, messages })
     });
-
     if (!resp.ok) {
-      const err = await resp.json();
+      const err = await resp.json().catch(()=>({error:{message:`HTTP ${resp.status}`}}));
       throw new Error(err.error?.message || `Ошибка ${resp.status}`);
     }
-
     const data = await resp.json();
     const raw = data.content?.[0]?.text || '';
     let parsed;
-    try {
-      parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    } catch {
-      parsed = { verdict:'partial', verdict_text:'Ответ получен', steps:[{status:'info',text:'Смотрите комментарий ниже'}], comment: raw };
-    }
+    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch { parsed = { verdict:'partial', verdict_text:'Ответ получен', steps:[{status:'info',text:'Смотрите комментарий'}], comment: raw }; }
 
-    renderResult(parsed);
+    mode === 'photo' ? renderPhotoResult(parsed) : renderResult(parsed);
 
-    // Save to history
-    history.unshift({ task: taskText, answer, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') });
-    if (history.length > 20) history.pop();
-    localStorage.setItem('mathcheck_history', JSON.stringify(history));
+    // Save to Supabase
+    const newEntry = { task: taskText, answer: answerPreview, verdict: parsed.verdict, comment: parsed.comment, time: new Date().toLocaleString('ru') };
+    history.unshift(newEntry);
+    renderHistory();
+    await sb.from('checks').insert({
+      user_id:  currentUser.id,
+      topic_id: TOPIC_MAP[currentTaskIdx] || null,
+      task:     taskText,
+      answer:   answerPreview,
+      verdict:  parsed.verdict,
+      comment:  parsed.comment
+    });
 
   } catch(err) {
     document.getElementById('resultArea').innerHTML = `
       <div class="result-block">
-        <div class="verdict wrong">
-          <div class="verdict-icon">⚠️</div>
-          <div><div class="verdict-title">Ошибка подключения</div><div class="verdict-sub">${err.message}</div></div>
-        </div>
-        <div class="ai-block">
-          <div class="ai-badge">Что делать</div>
-          <div class="ai-text">1. Убедитесь что сайт задеплоен на Vercel (не открыт как локальный файл)\n2. Проверьте правильность API ключа\n3. Убедитесь что на счету Anthropic есть кредиты</div>
+        <div class="verdict wrong"><div class="verdict-icon">⚠️</div>
+          <div><div class="verdict-title">${t('error_connection')}</div><div class="verdict-sub">${err.message}</div></div>
         </div>
       </div>`;
   } finally {
-    isChecking = false;
-    btn.disabled = false;
-    document.getElementById('btnIcon').textContent = '🔍';
-    document.getElementById('btnText').textContent = 'Проверить с помощью ИИ';
+    setCheckingState(false, btnId, iconId, textId, '');
   }
 }
 
+function setCheckingState(checking, btnId, iconId, textId, label) {
+  isChecking = checking;
+  const btn = document.getElementById(btnId);
+  btn.disabled = checking;
+  if (checking) {
+    document.getElementById(iconId).innerHTML = '<div class="spin"></div>';
+    document.getElementById(textId).textContent = label;
+  } else {
+    document.getElementById(iconId).textContent = btnId === 'checkPhotoBtn' ? '📷' : '🔍';
+    document.getElementById(textId).textContent = btnId === 'checkPhotoBtn' ? t('check_photo') : t('check_text');
+  }
+}
+
+// ── RENDER RESULTS ────────────────────────────────────────
 function renderResult(data) {
-  const icons = { correct:'✅', wrong:'❌', partial:'⚠️' };
-  const labels = { correct:'Решение верное!', wrong:'Обнаружена ошибка', partial:'Частично верно' };
+  const icons  = { correct:'✅', wrong:'❌', partial:'⚠️' };
+  const labels = { correct: t('verdict_correct'), wrong: t('verdict_wrong'), partial: t('verdict_partial') };
   const stepsHtml = (data.steps||[]).map((s,i) => `
     <div class="step-row">
       <div class="step-num ${s.status}">${i+1}</div>
@@ -1134,24 +1323,47 @@ function renderResult(data) {
         <div class="verdict-icon">${icons[data.verdict]||'📝'}</div>
         <div><div class="verdict-title">${labels[data.verdict]||data.verdict}</div><div class="verdict-sub">${data.verdict_text||''}</div></div>
       </div>
-      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">Разбор по шагам</div>${stepsHtml}</div>` : ''}
-      <div class="ai-block">
-        <div class="ai-badge">Комментарий ИИ · Claude</div>
-        <div class="ai-text">${data.comment||''}</div>
-      </div>
+      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">${t('step_analysis')}</div>${stepsHtml}</div>` : ''}
+      <div class="ai-block"><div class="ai-badge">${t('ai_comment')}</div><div class="ai-text">${data.comment||''}</div></div>
     </div>`;
 }
 
+function renderPhotoResult(data) {
+  const icons  = { correct:'✅', wrong:'❌', partial:'⚠️' };
+  const labels = { correct: t('verdict_correct'), wrong: t('verdict_wrong'), partial: t('verdict_partial') };
+  const stepsHtml = (data.steps||[]).map((s,i) => `
+    <div class="step-row">
+      <div class="step-num ${s.status}">${i+1}</div>
+      <div class="step-text">${s.text}</div>
+    </div>`).join('');
+  const recog = data.recognized ? `
+    <div class="ai-block" style="margin-bottom:12px;border-color:rgba(45,212,191,.2)">
+      <div class="ai-badge" style="color:var(--teal)">${t('recognized_text')}</div>
+      <div class="ai-text" style="font-family:var(--font-mono);font-size:12px">${data.recognized}</div>
+    </div>` : '';
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-block">
+      ${recog}
+      <div class="verdict ${data.verdict}">
+        <div class="verdict-icon">${icons[data.verdict]||'📝'}</div>
+        <div><div class="verdict-title">${labels[data.verdict]||data.verdict}</div><div class="verdict-sub">${data.verdict_text||''}</div></div>
+      </div>
+      ${stepsHtml ? `<div class="steps-block"><div class="steps-title">${t('step_analysis')}</div>${stepsHtml}</div>` : ''}
+      <div class="ai-block"><div class="ai-badge">${t('ai_comment')}</div><div class="ai-text">${data.comment||''}</div></div>
+    </div>`;
+}
+
+// ── HISTORY ───────────────────────────────────────────────
 function renderHistory() {
   const el = document.getElementById('historyList');
   if (!history.length) {
-    el.innerHTML = '<div class="result-placeholder"><div class="result-placeholder-icon">🕒</div><div>История пуста.<br>Проверьте первое задание!</div></div>';
+    el.innerHTML = `<div class="result-placeholder"><div class="result-placeholder-icon">🕒</div><div>${t('history_empty').replace('\n','<br>')}</div></div>`;
     return;
   }
-  el.innerHTML = '<div class="history-list">' + history.map((h,i) => `
+  el.innerHTML = '<div class="history-list">' + history.map(h => `
     <div class="history-item">
       <div class="history-meta">
-        <span class="pill ${h.verdict==='correct'?'ok':h.verdict==='wrong'?'err':'pend'}">${h.verdict==='correct'?'✓ Верно':h.verdict==='wrong'?'✗ Ошибка':'⚠ Частично'}</span>
+        <span class="pill ${h.verdict==='correct'?'ok':h.verdict==='wrong'?'err':'pend'}">${h.verdict==='correct'?t('correct'):h.verdict==='wrong'?t('wrong'):t('partial')}</span>
         <span class="history-task">${h.task.substring(0,40)}</span>
         <span class="history-time">${h.time}</span>
       </div>
@@ -1159,47 +1371,298 @@ function renderHistory() {
     </div>`).join('') + '</div>';
 }
 
-function renderAnalytics() {
-  const acc = [
-    {label:'Линейные уравнения',pct:95,color:'#4ade80'},
-    {label:'Арифметические ошибки',pct:93,color:'#4ade80'},
-    {label:'Системы уравнений',pct:88,color:'#6c63ff'},
-    {label:'Квадратные (стандарт)',pct:86,color:'#6c63ff'},
-    {label:'Квадратные (нестандарт)',pct:78,color:'#fbbf24'},
-  ];
-  document.getElementById('accuracyBars').innerHTML = acc.map(d=>`
-    <div class="h-bar-row">
-      <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
-      <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
-    </div>`).join('');
-  const errs = [
-    {label:'Арифметическая ошибка',pct:42,color:'#f87171'},
-    {label:'Неверный знак',pct:28,color:'#fbbf24'},
-    {label:'Пропуск шага',pct:18,color:'#a78bfa'},
-    {label:'Нестандартный метод',pct:12,color:'#2dd4bf'},
-  ];
-  document.getElementById('errorBars').innerHTML = errs.map(d=>`
-    <div class="h-bar-row">
-      <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
-      <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
-    </div>`).join('');
-  const perf = [
-    {label:'10 пользователей → 1.9с',pct:95,color:'#4ade80'},
-    {label:'50 пользователей → 2.4с',pct:76,color:'#6c63ff'},
-    {label:'100 пользователей → 4.1с',pct:50,color:'#fbbf24'},
-  ];
-  document.getElementById('perfBars').innerHTML = perf.map(d=>`
-    <div class="h-bar-row">
-      <div class="h-bar-label"><span>${d.label}</span><span style="color:${d.color};font-weight:600">${d.pct}%</span></div>
-      <div class="h-bar-track"><div class="h-bar-fill" style="width:${d.pct}%;background:${d.color}"></div></div>
-    </div>`).join('');
+// ── ANALYTICS (live from Supabase) ───────────────────────
+async function loadAnalytics() {
+  // Load topic_stats view
+  const { data: rows } = await sb.from('topic_stats').select('*').order('user_id');
+  if (!rows || rows.length === 0) {
+    document.getElementById('analyticsBody').innerHTML =
+      '<div style="padding:40px;text-align:center;color:var(--text3)">Пока нет данных</div>';
+    return;
+  }
+
+  // Group by student
+  const students = {};
+  let totalChecks = 0, totalCorrect = 0, topicTotals = {};
+  rows.forEach(r => {
+    if (!students[r.user_id]) students[r.user_id] = { name:`${r.first_name} ${r.last_name}`, topics:[], total:0, correct:0 };
+    students[r.user_id].topics.push(r);
+    students[r.user_id].total   += Number(r.total);
+    students[r.user_id].correct += Number(r.correct);
+    totalChecks  += Number(r.total);
+    totalCorrect += Number(r.correct);
+    if (!topicTotals[r.topic_name]) topicTotals[r.topic_name] = {correct:0,total:0};
+    topicTotals[r.topic_name].correct += Number(r.correct);
+    topicTotals[r.topic_name].total   += Number(r.total);
+  });
+
+  const studentList = Object.values(students);
+  const overallPct = totalChecks ? Math.round(totalCorrect/totalChecks*100) : 0;
+  const topTopic = Object.entries(topicTotals).sort((a,b)=>{
+    const pa = b[1].total ? b[1].correct/b[1].total : 0;
+    const pb = a[1].total ? a[1].correct/a[1].total : 0;
+    return pa - pb;
+  })[0]?.[0] || '—';
+
+  document.getElementById('statStudents').textContent = studentList.length;
+  document.getElementById('statChecks').textContent   = totalChecks;
+  document.getElementById('statCorrect').textContent  = overallPct + '%';
+  document.getElementById('statTopTopic').textContent = topTopic.split(' ')[0];
+
+  // Render per-student topic breakdown
+  const colors = ['#4ade80','#6c63ff','#fbbf24','#f87171','#2dd4bf','#a78bfa'];
+  document.getElementById('analyticsBody').innerHTML = studentList.map(s => {
+    const pct = s.total ? Math.round(s.correct/s.total*100) : 0;
+    const initials = s.name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+    const topicsHtml = s.topics.map((tp,i) => {
+      const p = Number(tp.pct)||0;
+      const col = p>=80?'#4ade80':p>=50?'#fbbf24':'#f87171';
+      return `<div class="topic-row">
+        <div class="topic-name">${tp.topic_name}</div>
+        <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${p}%;background:${col}"></div></div>
+        <div class="topic-pct" style="color:${col}">${p}%</div>
+        <div class="topic-counts">${tp.correct}/${tp.total}</div>
+      </div>`;
+    }).join('');
+    return `<div class="analytics-student-card">
+      <div class="analytics-student-header">
+        <div class="stu-av a" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--accent-glow);color:var(--accent)">${initials}</div>
+        <div class="analytics-student-name">${s.name}</div>
+        <div class="analytics-student-total">Итого: <strong>${pct}%</strong> (${s.correct}/${s.total})</div>
+      </div>
+      ${topicsHtml}
+    </div>`;
+  }).join('');
 }
 
+// ── PROFILE FUNCTIONS ─────────────────────────────────────
+async function loadProfilePanel() {
+  const fn = currentUser.first_name || '';
+  const ln = currentUser.last_name  || '';
+  document.getElementById('profileFirstName').value = fn;
+  document.getElementById('profileLastName').value  = ln;
+  const initials = ((fn[0]||'?') + (ln[0]||'?')).toUpperCase();
+  document.getElementById('profileAvatarBig').textContent = initials;
+  document.getElementById('profileNameBig').textContent   = `${fn} ${ln}`.trim() || '—';
+  const badge = document.getElementById('profileRoleBadge');
+  badge.textContent = currentUser.role === 'teacher' ? 'Учитель' : currentUser.role === 'admin' ? 'Администратор' : 'Ученик';
+  badge.className = `profile-role-badge ${currentUser.role}`;
+
+  // Load personal topic stats
+  const { data: rows } = await sb.from('topic_stats')
+    .select('*').eq('user_id', currentUser.id);
+
+  const total   = rows?.reduce((s,r)=>s+Number(r.total),0) || 0;
+  const correct = rows?.reduce((s,r)=>s+Number(r.correct),0) || 0;
+  const pct     = total ? Math.round(correct/total*100) : 0;
+  document.getElementById('pstatTotal').textContent   = total;
+  document.getElementById('pstatCorrect').textContent = correct;
+  document.getElementById('pstatPct').textContent     = pct + '%';
+
+  if (!rows || rows.length === 0) {
+    document.getElementById('myTopicStats').innerHTML =
+      '<div style="color:var(--text3);padding:20px;text-align:center">Ещё нет решений</div>';
+    return;
+  }
+  document.getElementById('myTopicStats').innerHTML = rows.map(r => {
+    const p = Number(r.pct)||0;
+    const col = p>=80?'#4ade80':p>=50?'#fbbf24':'#f87171';
+    return `<div class="topic-row" style="margin-bottom:10px">
+      <div class="topic-name" style="font-size:13px;min-width:180px">${r.topic_name}</div>
+      <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${p}%;background:${col}"></div></div>
+      <div class="topic-pct" style="color:${col};font-size:12px;font-weight:700">${p}%</div>
+      <div class="topic-counts" style="font-size:11px;color:var(--text3)">${r.correct}✓ ${r.wrong}✗</div>
+    </div>`;
+  }).join('');
+}
+
+async function saveProfile() {
+  const fn  = document.getElementById('profileFirstName').value.trim();
+  const ln  = document.getElementById('profileLastName').value.trim();
+  const err = document.getElementById('profileError');
+  const ok  = document.getElementById('profileSuccess');
+  err.classList.remove('show'); ok.classList.remove('show');
+  if (!fn || !ln) { err.textContent = 'Заполните имя и фамилию'; err.classList.add('show'); return; }
+
+  const { error } = await sb.from('profiles').update({ first_name: fn, last_name: ln }).eq('id', currentUser.id);
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+
+  currentUser.first_name = fn; currentUser.last_name = ln;
+  const initials = (fn[0] + ln[0]).toUpperCase();
+  document.getElementById('userAvatar').textContent    = initials;
+  document.getElementById('userName').textContent      = `${fn} ${ln}`;
+  document.getElementById('profileAvatarBig').textContent = initials;
+  document.getElementById('profileNameBig').textContent   = `${fn} ${ln}`;
+  ok.textContent = '✅ Данные сохранены!'; ok.classList.add('show');
+}
+
+async function savePassword() {
+  const nw  = document.getElementById('profilePwNew').value;
+  const cnf = document.getElementById('profilePwConfirm').value;
+  const err = document.getElementById('profilePwError');
+  const ok  = document.getElementById('profilePwSuccess');
+  err.classList.remove('show'); ok.classList.remove('show');
+  if (nw.length < 6) { err.textContent = t('pw_too_short'); err.classList.add('show'); return; }
+  if (nw !== cnf)    { err.textContent = t('pw_no_match');  err.classList.add('show'); return; }
+  const { error } = await sb.auth.updateUser({ password: nw });
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+  ok.textContent = t('pw_saved'); ok.classList.add('show');
+  document.getElementById('profilePwNew').value    = '';
+  document.getElementById('profilePwConfirm').value = '';
+}
+
+// ── ADMIN FUNCTIONS ────────────────────────────────────────
+async function loadAdminPanel() {
+  const { data: profiles } = await sb.from('profiles').select('*').order('created_at');
+  const { data: checks }   = await sb.from('checks').select('user_id');
+
+  if (!profiles) return;
+  const checkCount = {};
+  (checks||[]).forEach(c => { checkCount[c.user_id] = (checkCount[c.user_id]||0) + 1; });
+
+  document.getElementById('adminStatUsers').textContent    = profiles.length;
+  document.getElementById('adminStatStudents').textContent = profiles.filter(p=>p.role==='student').length;
+  document.getElementById('adminStatTeachers').textContent = profiles.filter(p=>p.role==='teacher').length;
+  document.getElementById('adminStatChecks').textContent   = (checks||[]).length;
+
+  document.getElementById('adminTableBody').innerHTML = profiles.map(p => {
+    const fn = p.first_name||''; const ln = p.last_name||'';
+    const initials = ((fn[0]||'?')+(ln[0]||'?')).toUpperCase();
+    const name = `${fn} ${ln}`.trim() || '—';
+    const dt   = new Date(p.created_at).toLocaleDateString('ru');
+    return `<div class="admin-table-row">
+      <div class="stu-name-cell">
+        <div class="stu-av a" style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent)">${initials}</div>
+        <div style="font-size:13px;color:var(--text)">${name}</div>
+      </div>
+      <select class="role-select" onchange="changeRole('${p.id}',this.value)">
+        <option value="student"  ${p.role==='student' ?'selected':''}>🎓 Ученик</option>
+        <option value="teacher"  ${p.role==='teacher' ?'selected':''}>👨‍🏫 Учитель</option>
+        <option value="admin"    ${p.role==='admin'   ?'selected':''}>🛡️ Админ</option>
+      </select>
+      <div style="font-size:13px">${checkCount[p.id]||0}</div>
+      <div style="font-size:12px;color:var(--text3)">${dt}</div>
+      <button class="reset-pw-btn" onclick="adminResetPw('${p.id}','${name}')">Сбросить пароль</button>
+    </div>`;
+  }).join('');
+}
+
+async function changeRole(userId, newRole) {
+  await sb.from('profiles').update({ role: newRole }).eq('id', userId);
+  showToast('Роль изменена');
+}
+
+async function adminResetPw(userId, name) {
+  const pw = prompt(`Новый пароль для ${name}:`);
+  if (!pw || pw.length < 6) { showToast('Пароль минимум 6 символов'); return; }
+  // Admin can't change other users' passwords via client SDK — show instruction
+  showToast('Попросите пользователя сменить пароль через профиль');
+}
+
+// ── TOAST ─────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3000);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── LOAD HISTORY from Supabase ───────────────────────────
+async function loadHistory() {
+  if (!currentUser?.id) return;
+  const { data } = await sb.from('checks')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  history = (data || []).map(r => ({
+    task:    r.task,
+    answer:  r.answer,
+    verdict: r.verdict,
+    comment: r.comment,
+    time:    new Date(r.created_at).toLocaleString('ru')
+  }));
+}
+
+// ── LOAD TEACHER DATA from Supabase ──────────────────────
+async function loadTeacherData() {
+  const { data: rows } = await sb
+    .from('checks')
+    .select('*, profiles(first_name, last_name)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (!rows) return;
+  const tbody = document.querySelector('.table-wrap');
+  if (!tbody) return;
+  const head = tbody.querySelector('.table-head');
+  const existingRows = tbody.querySelectorAll('.table-row');
+  existingRows.forEach(r => r.remove());
+  rows.slice(0,10).forEach(r => {
+    const p = r.profiles;
+    const name = p ? `${p.first_name} ${p.last_name}` : '—';
+    const initials = p ? (p.first_name[0]+p.last_name[0]).toUpperCase() : '??';
+    const colors = ['a','b','c','d'];
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const pill = r.verdict==='correct' ? 'ok' : r.verdict==='wrong' ? 'err' : 'pend';
+    const pillText = r.verdict==='correct' ? '✓' : r.verdict==='wrong' ? '✗' : '⚠';
+    const row = document.createElement('div');
+    row.className = 'table-row';
+    row.innerHTML = `
+      <div class="stu-name-cell"><div class="stu-av ${color}">${initials}</div><div class="stu-name">${name}</div></div>
+      <div class="stu-task">${r.task.substring(0,20)}</div>
+      <div><span class="pill ${pill}">${pillText} ${r.verdict}</span></div>
+      <div style="font-size:12px;color:var(--text3)">${new Date(r.created_at).toLocaleString('ru')}</div>
+      <div></div>`;
+    tbody.appendChild(row);
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────
+async function init() {
+  applyTheme();
+
+  const savedLang = localStorage.getItem('mc_lang') || 'ru';
+  lang = savedLang;
+  document.getElementById('langSelect').value = savedLang;
+
+  // Check for existing Supabase session (persists across devices via token)
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    const username = session.user.email?.replace('@mathcheck.app','') || '';
+    const { data: profile, error: profErr } = await sb
+      .from('profiles').select('*').eq('id', session.user.id).single();
+
+    if (profErr || !profile) {
+      // Create missing profile
+      const meta = session.user.user_metadata || {};
+      const fallback = {
+        id:         session.user.id,
+        first_name: meta.first_name || username,
+        last_name:  meta.last_name  || '',
+        role:       meta.role       || 'student'
+      };
+      await sb.from('profiles').upsert(fallback);
+      currentUser = { username, ...fallback };
+    } else {
+      currentUser = { id: session.user.id, username, ...profile };
+    }
+    await startSession();
+    return;
+  }
+
+  applyLang();
+
+  // Listen for auth changes (login/logout from other tabs)
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+      if (profile) {
+        currentUser = { id: session.user.id, username: session.user.email?.replace('@mathcheck.app',''), ...profile };
+        await startSession();
+      }
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+    }
+  });
 }
 
 init();
