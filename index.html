@@ -925,35 +925,20 @@ async function doLogin() {
     return;
   }
 
-  // Load profile — if missing or RLS blocks, create fallback
-  const { data: profile, error: profErr } = await sb
+  // Load profile
+  const { data: profile } = await sb
     .from('profiles').select('*').eq('id', data.user.id).single();
 
-  if (profErr || !profile) {
-    const meta = data.user.user_metadata || {};
-    const fallback = {
-      id:         data.user.id,
-      first_name: meta.first_name || email,
-      last_name:  meta.last_name  || '',
-      role:       meta.role       || 'student'
-    };
-    const { error: upsertErr } = await sb.from('profiles').upsert(fallback);
-    if (upsertErr) {
-      errEl.textContent = 'Ошибка профиля: ' + upsertErr.message;
-      errEl.classList.add('show');
-      return;
-    }
-    currentUser = { username: email, ...fallback };
-  } else {
-    currentUser = { id: data.user.id, username: email, ...profile };
-  }
+  const meta = data.user.user_metadata || {};
+  currentUser = {
+    id:         data.user.id,
+    username:   email,
+    first_name: profile?.first_name || meta.first_name || email,
+    last_name:  profile?.last_name  || meta.last_name  || '',
+    role:       profile?.role       || meta.role        || 'student',
+  };
 
-  try {
-    await startSession();
-  } catch(e) {
-    errEl.textContent = 'Ошибка входа: ' + e.message;
-    errEl.classList.add('show');
-  }
+  await startSession();
 }
 
 // ── REGISTER via Supabase Auth ────────────────────────────
@@ -1020,11 +1005,10 @@ async function startSession() {
 
   applyLang();
   applyTheme();
-  try { await loadHistory(); } catch(e) { console.warn('loadHistory failed:', e); }
+  await loadHistory();
   renderHistory();
-  if (isTeacher || isAdmin) { setTimeout(()=>{ loadTeacherData(); loadAnalytics(); }, 100); }
-  const firstNav = document.querySelector('.nav-item');
-  showPanel('student', firstNav);
+  if (isTeacher || isAdmin) { loadTeacherData(); loadAnalytics(); }
+  showPanel('student', document.querySelector('.nav-item'));
   } catch(e) {
     document.getElementById('authScreen').classList.remove('hidden');
     document.getElementById('appLayout').style.display = 'none';
@@ -1058,8 +1042,7 @@ function showPanel(name, el) {
   currentPanel = name;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const panelEl = document.getElementById('panel-' + name);
-  if (panelEl) panelEl.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
   updatePanelTitles(name);
   if (name === 'history')   loadHistory().then(renderHistory);
@@ -1630,23 +1613,17 @@ async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
     const username = session.user.email?.replace('@mathcheck.app','') || '';
-    const { data: profile, error: profErr } = await sb
+    const { data: profile } = await sb
       .from('profiles').select('*').eq('id', session.user.id).single();
 
-    if (profErr || !profile) {
-      // Create missing profile
-      const meta = session.user.user_metadata || {};
-      const fallback = {
-        id:         session.user.id,
-        first_name: meta.first_name || username,
-        last_name:  meta.last_name  || '',
-        role:       meta.role       || 'student'
-      };
-      await sb.from('profiles').upsert(fallback);
-      currentUser = { username, ...fallback };
-    } else {
-      currentUser = { id: session.user.id, username, ...profile };
-    }
+    const meta = session.user.user_metadata || {};
+    currentUser = {
+      id:         session.user.id,
+      username,
+      first_name: profile?.first_name || meta.first_name || username,
+      last_name:  profile?.last_name  || meta.last_name  || '',
+      role:       profile?.role       || meta.role        || 'student',
+    };
     await startSession();
     return;
   }
