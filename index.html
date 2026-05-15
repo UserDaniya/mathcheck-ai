@@ -910,7 +910,12 @@ async function doLogin() {
   const errEl    = document.getElementById('loginError');
   errEl.classList.remove('show');
 
-  // Accept plain username — convert to fake email for Supabase
+  if (!email || !password) {
+    errEl.textContent = 'Введите логин и пароль';
+    errEl.classList.add('show');
+    return;
+  }
+
   const emailAddr = email.includes('@') ? email : `${email}@mathcheck.app`;
 
   const { data, error } = await sb.auth.signInWithPassword({ email: emailAddr, password });
@@ -920,10 +925,25 @@ async function doLogin() {
     return;
   }
 
-  // Load profile
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
-  currentUser = { id: data.user.id, username: email, ...profile };
-  startSession();
+  // Load profile — if missing or RLS blocks, create fallback
+  const { data: profile, error: profErr } = await sb
+    .from('profiles').select('*').eq('id', data.user.id).single();
+
+  if (profErr || !profile) {
+    const meta = data.user.user_metadata || {};
+    const fallback = {
+      id:         data.user.id,
+      first_name: meta.first_name || email,
+      last_name:  meta.last_name  || '',
+      role:       meta.role       || 'student'
+    };
+    await sb.from('profiles').upsert(fallback);
+    currentUser = { username: email, ...fallback };
+  } else {
+    currentUser = { id: data.user.id, username: email, ...profile };
+  }
+
+  await startSession();
 }
 
 // ── REGISTER via Supabase Auth ────────────────────────────
@@ -1588,12 +1608,26 @@ async function init() {
   // Check for existing Supabase session (persists across devices via token)
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
-    if (profile) {
-      currentUser = { id: session.user.id, username: session.user.email?.replace('@mathcheck.app',''), ...profile };
-      await startSession();
-      return;
+    const username = session.user.email?.replace('@mathcheck.app','') || '';
+    const { data: profile, error: profErr } = await sb
+      .from('profiles').select('*').eq('id', session.user.id).single();
+
+    if (profErr || !profile) {
+      // Create missing profile
+      const meta = session.user.user_metadata || {};
+      const fallback = {
+        id:         session.user.id,
+        first_name: meta.first_name || username,
+        last_name:  meta.last_name  || '',
+        role:       meta.role       || 'student'
+      };
+      await sb.from('profiles').upsert(fallback);
+      currentUser = { username, ...fallback };
+    } else {
+      currentUser = { id: session.user.id, username, ...profile };
     }
+    await startSession();
+    return;
   }
 
   applyLang();
