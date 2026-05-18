@@ -1048,7 +1048,7 @@ function showPanel(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
   updatePanelTitles(name);
-  if (name === 'history')   loadHistory().then(renderHistory);
+  if (name === 'history') { document.getElementById('historyList').innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3)">⏳ Загрузка...</div>'; loadHistory().then(renderHistory); }
   if (name === 'profile')   loadProfilePanel();
   if (name === 'admin')     loadAdminPanel();
   if (name === 'analytics') loadAnalytics();
@@ -1640,14 +1640,17 @@ function showToast(msg) {
 }
 
 // ── LOAD HISTORY from Supabase ───────────────────────────
+
 async function loadHistory() {
   if (!currentUser?.id) return;
-  const { data } = await sb.from('checks')
-    .select('*')
+  const { data, error } = await sb.from('checks')
+    .select('id, task, answer, verdict, comment, ai_response, created_at')
     .eq('user_id', currentUser.id)
     .order('created_at', { ascending: false })
     .limit(30);
-  history = (data || []).map((r, i) => ({
+  if (error) { console.warn('loadHistory error:', error.message); return; }
+  if (!data) return;
+  history = data.map((r, i) => ({
     task:        r.task,
     answer:      r.answer,
     verdict:     r.verdict,
@@ -1656,6 +1659,21 @@ async function loadHistory() {
     time:        new Date(r.created_at).toLocaleString('ru')
   }));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ── LOAD TEACHER DATA from Supabase ──────────────────────
 async function loadTeacherData() {
