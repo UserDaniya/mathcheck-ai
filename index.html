@@ -1286,18 +1286,21 @@ async function callAPI(messages, mode, btnId, iconId, textId, taskText, answerPr
     const newEntry = {
       task: taskText, answer: answerPreview,
       verdict: parsed.verdict, comment: parsed.comment,
+      ai_response: parsed,
       time: new Date().toLocaleString('ru')
     };
     history.unshift(newEntry);
+    if (history.length > 30) history.pop();
     renderHistory();
 
     sb.from('checks').insert({
-      user_id:  currentUser.id,
-      topic_id: TOPIC_MAP[currentTaskIdx] || null,
-      task:     taskText,
-      answer:   answerPreview,
-      verdict:  parsed.verdict,
-      comment:  parsed.comment
+      user_id:    currentUser.id,
+      topic_id:   TOPIC_MAP[currentTaskIdx] || null,
+      task:       taskText,
+      answer:     answerPreview,
+      verdict:    parsed.verdict,
+      comment:    parsed.comment,
+      ai_response: parsed
     }).then(({ error }) => {
       if (error) console.warn('Supabase insert error:', error.message);
     });
@@ -1383,15 +1386,52 @@ function renderHistory() {
     el.innerHTML = `<div class="result-placeholder"><div class="result-placeholder-icon">🕒</div><div>${t('history_empty').replace('\n','<br>')}</div></div>`;
     return;
   }
-  el.innerHTML = '<div class="history-list">' + history.map(h => `
-    <div class="history-item">
+  el.innerHTML = '<div class="history-list">' + history.map((h, i) => {
+    const pillClass = h.verdict==='correct'?'ok':h.verdict==='wrong'?'err':'pend';
+    const pillLabel = h.verdict==='correct'?t('correct'):h.verdict==='wrong'?t('wrong'):t('partial');
+    const hasFullData = !!h.ai_response;
+    const expandBtn = hasFullData
+      ? `<button class="history-expand-btn" onclick="toggleHistoryItem(${i}, this)" style="margin-top:8px;background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--text2);cursor:pointer;">Показать разбор ▾</button>`
+      : `<div style="margin-top:6px;font-size:11px;color:var(--text3)">💾 Полный разбор недоступен (сохранены только последние 10)</div>`;
+    return `
+    <div class="history-item" id="history-item-${i}">
       <div class="history-meta">
-        <span class="pill ${h.verdict==='correct'?'ok':h.verdict==='wrong'?'err':'pend'}">${h.verdict==='correct'?t('correct'):h.verdict==='wrong'?t('wrong'):t('partial')}</span>
-        <span class="history-task">${h.task.substring(0,40)}</span>
+        <span class="pill ${pillClass}">${pillLabel}</span>
+        <span class="history-task">${h.task.substring(0,40)}${h.task.length>40?'...':''}</span>
         <span class="history-time">${h.time}</span>
       </div>
-      <div class="history-answer">${h.answer.substring(0,80)}${h.answer.length>80?'...':''}</div>
-    </div>`).join('') + '</div>';
+      <div class="history-answer" style="color:var(--text2);font-size:13px;margin-top:4px">${h.answer.substring(0,80)}${h.answer.length>80?'...':''}</div>
+      ${expandBtn}
+      <div id="history-detail-${i}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px"></div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function toggleHistoryItem(i, btn) {
+  const detail = document.getElementById(`history-detail-${i}`);
+  if (detail.style.display === 'none') {
+    const h = history[i];
+    const d = h.ai_response;
+    const icons = { correct:'✅', wrong:'❌', partial:'⚠️' };
+    const labels = { correct: t('verdict_correct'), wrong: t('verdict_wrong'), partial: t('verdict_partial') };
+    const stepsHtml = (d.steps||[]).map((s, si) => `
+      <div class="step-row">
+        <div class="step-num ${s.status}">${si+1}</div>
+        <div class="step-text">${s.text}</div>
+      </div>`).join('');
+    detail.innerHTML = `
+      <div class="verdict ${d.verdict}" style="margin-bottom:10px">
+        <div class="verdict-icon">${icons[d.verdict]||'📝'}</div>
+        <div><div class="verdict-title">${labels[d.verdict]||d.verdict}</div><div class="verdict-sub">${d.verdict_text||''}</div></div>
+      </div>
+      ${stepsHtml ? `<div class="steps-block" style="margin-bottom:10px"><div class="steps-title">${t('step_analysis')}</div>${stepsHtml}</div>` : ''}
+      <div class="ai-block"><div class="ai-badge">${t('ai_comment')}</div><div class="ai-text">${d.comment||''}</div></div>`;
+    detail.style.display = 'block';
+    btn.textContent = 'Скрыть разбор ▴';
+  } else {
+    detail.style.display = 'none';
+    btn.textContent = 'Показать разбор ▾';
+  }
 }
 
 // ── ANALYTICS (live from Supabase) ───────────────────────
@@ -1607,12 +1647,13 @@ async function loadHistory() {
     .eq('user_id', currentUser.id)
     .order('created_at', { ascending: false })
     .limit(30);
-  history = (data || []).map(r => ({
-    task:    r.task,
-    answer:  r.answer,
-    verdict: r.verdict,
-    comment: r.comment,
-    time:    new Date(r.created_at).toLocaleString('ru')
+  history = (data || []).map((r, i) => ({
+    task:        r.task,
+    answer:      r.answer,
+    verdict:     r.verdict,
+    comment:     r.comment,
+    ai_response: i < 10 ? (r.ai_response || null) : null,
+    time:        new Date(r.created_at).toLocaleString('ru')
   }));
 }
 
