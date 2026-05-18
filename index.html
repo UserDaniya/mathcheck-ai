@@ -1765,8 +1765,9 @@ async function init() {
       username,
       first_name: profile?.first_name || meta.first_name || username,
       last_name:  profile?.last_name  || meta.last_name  || '',
-      role:       profile?.role       || meta.role        || 'student',
+      role:       profile?.role || 'student',  // только из profiles, не из JWT
     };
+    console.log('init: role из profiles =', profile?.role, '| currentUser.role =', currentUser.role);
     await startSession();
     return;
   }
