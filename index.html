@@ -298,7 +298,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <div class="auth-logo-icon">∑</div>
       <div>
         <div class="auth-logo-text">MathCheck AI</div>
-        <div class="auth-logo-sub" data-i18n="powered_by">Powered by Claude Sonnet</div>
+        <div class="auth-logo-sub" data-i18n="powered_by">MathCheck AI</div>
       </div>
     </div>
 
@@ -364,7 +364,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <div class="logo-icon">∑</div>
       <div>
         <div class="logo-text">MathCheck AI</div>
-        <div class="logo-sub">Claude Sonnet</div>
+        <div class="logo-sub">ИИ-помощник</div>
       </div>
     </div>
     <nav class="nav-section">
@@ -498,10 +498,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <!-- TEACHER PANEL -->
       <div class="panel" id="panel-teacher">
         <div class="stats-row">
-          <div class="stat-box"><div class="stat-val">28</div><div class="stat-lbl" data-i18n="total_students">Всего учеников</div><div class="stat-trend up">↑ +3</div></div>
-          <div class="stat-box"><div class="stat-val">247</div><div class="stat-lbl" data-i18n="tasks_done">Заданий сдано</div><div class="stat-trend up">↑ +42</div></div>
-          <div class="stat-box"><div class="stat-val">73%</div><div class="stat-lbl" data-i18n="success_rate">Успеваемость</div><div class="stat-trend up">↑ +5%</div></div>
-          <div class="stat-box"><div class="stat-val">1.8с</div><div class="stat-lbl" data-i18n="avg_time">Среднее время ИИ</div><div class="stat-trend up">↓ ок</div></div>
+          <div class="stat-box"><div class="stat-val" id="teacherStatStudents">—</div><div class="stat-lbl" data-i18n="total_students">Всего учеников</div></div>
+          <div class="stat-box"><div class="stat-val" id="teacherStatChecks">—</div><div class="stat-lbl" data-i18n="tasks_done">Заданий сдано</div></div>
+          <div class="stat-box"><div class="stat-val" id="teacherStatSuccess">—</div><div class="stat-lbl" data-i18n="success_rate">Успеваемость</div></div>
+          <div class="stat-box"><div class="stat-val" id="teacherStatToday">—</div><div class="stat-lbl">Решений сегодня</div></div>
         </div>
         <div class="table-wrap" id="teacherTable">
           <div class="table-head" id="teacherTableHead">
@@ -560,20 +560,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
               <div class="auth-error" id="profileError"></div>
               <div class="auth-success" id="profileSuccess"></div>
               <button class="profile-save-btn" onclick="saveProfile()">💾 Сохранить изменения</button>
-            </div>
-            <div class="profile-form">
-              <div class="profile-form-title">Сменить пароль</div>
-              <div>
-                <div class="field-label">Новый пароль</div>
-                <input class="auth-input" type="password" id="profilePwNew" placeholder="минимум 6 символов">
-              </div>
-              <div>
-                <div class="field-label">Подтвердите пароль</div>
-                <input class="auth-input" type="password" id="profilePwConfirm" placeholder="повторите пароль">
-              </div>
-              <div class="auth-error" id="profilePwError"></div>
-              <div class="auth-success" id="profilePwSuccess"></div>
-              <button class="profile-save-btn" onclick="savePassword()">🔒 Изменить пароль</button>
             </div>
           </div>
         </div>
@@ -635,12 +621,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           </div>
 
           <div class="config-box">
-            <div class="config-title">Пароль и безопасность</div>
-            <div style="font-size:13px;color:var(--text3);line-height:1.7">
-              Для смены пароля перейдите в раздел<br>
-              <strong style="color:var(--accent)">👤 Мой профиль</strong><br>
-              там доступны все настройки аккаунта.
+            <div class="config-title">🔒 Пароль и безопасность</div>
+            <div>
+              <div class="field-label">Новый пароль</div>
+              <input class="auth-input" type="password" id="profilePwNew" placeholder="минимум 6 символов" style="margin-bottom:10px">
             </div>
+            <div>
+              <div class="field-label">Подтвердите пароль</div>
+              <input class="auth-input" type="password" id="profilePwConfirm" placeholder="повторите пароль" style="margin-bottom:10px">
+            </div>
+            <div class="auth-error" id="profilePwError"></div>
+            <div class="auth-success" id="profilePwSuccess"></div>
+            <button class="profile-save-btn" onclick="savePassword()">🔒 Изменить пароль</button>
           </div>
         </div>
       </div>
@@ -667,7 +659,7 @@ const MODEL   = 'claude-sonnet-4-5';
 // ── I18N ─────────────────────────────────────────────────
 const STRINGS = {
   ru: {
-    powered_by:'Powered by Claude Sonnet', login:'Войти', register:'Создать аккаунт',
+    powered_by:'MathCheck AI', login:'Войти', register:'Создать аккаунт',
     welcome:'Добро пожаловать', create_account:'Создать аккаунт',
     login_label:'Логин', password_label:'Пароль', first_name:'Имя', last_name:'Фамилия',
     login_btn:'Войти', register_btn:'Создать аккаунт',
@@ -687,7 +679,7 @@ const STRINGS = {
     or_type:'или введите текстом',
     check_photo:'Проверить фото с помощью ИИ', check_text:'Проверить с помощью ИИ',
     clear:'Очистить', result_title:'Результат проверки',
-    result_sub:'Анализ ИИ · Claude Sonnet',
+    result_sub:'Анализ ИИ',
     result_placeholder:'Введите решение и нажмите «Проверить»',
     checking:'Анализирую...', reading_photo:'Анализирую фото...',
     total_students:'Всего учеников', tasks_done:'Заданий сдано',
@@ -708,7 +700,7 @@ const STRINGS = {
     panel_history:['История проверок','Ваши предыдущие решения'],
     panel_config:['Настройки','Конфигурация системы'],
     verdict_correct:'Решение верное!', verdict_wrong:'Обнаружена ошибка', verdict_partial:'Частично верно',
-    step_analysis:'Разбор по шагам', ai_comment:'Комментарий ИИ · Claude',
+    step_analysis:'Разбор по шагам', ai_comment:'Комментарий ИИ',
     ai_analyzing:'ИИ анализирует решение', ai_reading:'ИИ читает фото',
     history_empty:'История пуста.\nПроверьте первое задание!',
     correct:'✓ Верно', wrong:'✗ Ошибка', partial:'⚠ Частично',
@@ -729,7 +721,7 @@ const STRINGS = {
     ai_lang_ru:'русском', ai_lang_kz:'казахском', ai_lang_en:'английском',
   },
   kz: {
-    powered_by:'Claude Sonnet арқылы жұмыс істейді', login:'Кіру', register:'Аккаунт жасау',
+    powered_by:'MathCheck AI', login:'Кіру', register:'Аккаунт жасау',
     welcome:'Қош келдіңіз', create_account:'Аккаунт жасау',
     login_label:'Логин', password_label:'Құпия сөз', first_name:'Аты', last_name:'Тегі',
     login_btn:'Кіру', register_btn:'Аккаунт жасау',
@@ -749,7 +741,7 @@ const STRINGS = {
     or_type:'немесе мәтін енгізіңіз',
     check_photo:'Фотоны ЖИ арқылы тексеру', check_text:'ЖИ арқылы тексеру',
     clear:'Тазалау', result_title:'Тексеру нәтижесі',
-    result_sub:'ЖИ талдауы · Claude Sonnet',
+    result_sub:'ЖИ талдауы',
     result_placeholder:'Шешімді енгізіп «Тексеру» батырмасын басыңыз',
     checking:'Талдануда...', reading_photo:'Фото талдануда...',
     total_students:'Барлық оқушылар', tasks_done:'Тапсырмалар өткізілді',
@@ -770,7 +762,7 @@ const STRINGS = {
     panel_history:['Тексеру тарихы','Алдыңғы шешімдер'],
     panel_config:['Параметрлер','Жүйе конфигурациясы'],
     verdict_correct:'Шешім дұрыс!', verdict_wrong:'Қате табылды', verdict_partial:'Ішінара дұрыс',
-    step_analysis:'Қадам бойынша талдау', ai_comment:'ЖИ түсіндірмесі · Claude',
+    step_analysis:'Қадам бойынша талдау', ai_comment:'ЖИ түсіндірмесі',
     ai_analyzing:'ЖИ шешімді талдауда', ai_reading:'ЖИ фотоны оқуда',
     history_empty:'Тарих бос.\nБірінші тапсырманы тексеріңіз!',
     correct:'✓ Дұрыс', wrong:'✗ Қате', partial:'⚠ Ішінара',
@@ -791,7 +783,7 @@ const STRINGS = {
     ai_lang_ru:'орыс', ai_lang_kz:'қазақ', ai_lang_en:'ағылшын',
   },
   en: {
-    powered_by:'Powered by Claude Sonnet', login:'Sign in', register:'Create account',
+    powered_by:'MathCheck AI', login:'Sign in', register:'Create account',
     welcome:'Welcome back', create_account:'Create account',
     login_label:'Username', password_label:'Password', first_name:'First name', last_name:'Last name',
     login_btn:'Sign in', register_btn:'Create account',
@@ -811,7 +803,7 @@ const STRINGS = {
     or_type:'or type your answer',
     check_photo:'Check photo with AI', check_text:'Check with AI',
     clear:'Clear', result_title:'Check result',
-    result_sub:'AI analysis · Claude Sonnet',
+    result_sub:'AI analysis',
     result_placeholder:'Enter your solution and click «Check»',
     checking:'Analysing...', reading_photo:'Reading photo...',
     total_students:'Total students', tasks_done:'Tasks submitted',
@@ -832,7 +824,7 @@ const STRINGS = {
     panel_history:['Check history','Your previous solutions'],
     panel_config:['Settings','System configuration'],
     verdict_correct:'Solution is correct!', verdict_wrong:'Error found', verdict_partial:'Partially correct',
-    step_analysis:'Step-by-step breakdown', ai_comment:'AI comment · Claude',
+    step_analysis:'Step-by-step breakdown', ai_comment:'AI comment',
     ai_analyzing:'AI is analysing the solution', ai_reading:'AI is reading the photo',
     history_empty:'History is empty.\nCheck your first task!',
     correct:'✓ Correct', wrong:'✗ Wrong', partial:'⚠ Partial',
@@ -979,10 +971,19 @@ async function doRegister() {
 async function doLogout() {
   await sb.auth.signOut();
   currentUser = null;
+  history = [];
+  // Очистка полей авторизации
+  ['loginUsername','loginPassword'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  // Очистка полей задания и результата
+  const sa = document.getElementById('studentAnswer'); if(sa) sa.value = '';
+  const ta = document.getElementById('taskArea'); if(ta) ta.value = '';
+  const ra = document.getElementById('resultArea'); if(ra) ra.innerHTML = '';
+  // Очистка профиля
+  ['profileFirstName','profileLastName','profilePwNew','profilePwConfirm'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  // Очистка истории
+  const hl = document.getElementById('historyList'); if(hl) hl.innerHTML = '';
   document.getElementById('authScreen').classList.remove('hidden');
   document.getElementById('appLayout').style.display = 'none';
-  document.getElementById('loginUsername').value = '';
-  document.getElementById('loginPassword').value = '';
 }
 
 // ── START SESSION ─────────────────────────────────────────
@@ -1179,7 +1180,7 @@ async function checkWithAI() {
   const aiLang = getAILang();
 
   setCheckingState(true, 'checkBtn', 'btnIcon', 'btnText', t('checking'));
-  document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_analyzing')}</div><div class="ai-text" style="color:var(--text3)">Claude ${MODEL}...</div></div></div>`;
+  document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_analyzing')}</div><div class="ai-text" style="color:var(--text3)">ИИ анализирует...</div></div></div>`;
 
   const prompt = `Ты — педагогический ИИ-ассистент по математике. Проверь решение ученика.
 
@@ -1210,7 +1211,7 @@ async function checkPhotoWithAI() {
   const aiLang = getAILang();
 
   setCheckingState(true, 'checkPhotoBtn', 'photoBtnIcon', 'photoBtnText', t('reading_photo'));
-  document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_reading')}</div><div class="ai-text" style="color:var(--text3)">Claude Vision...</div></div></div>`;
+  document.getElementById('resultArea').innerHTML = `<div class="result-block"><div class="ai-block"><div class="ai-badge">${t('ai_reading')}</div><div class="ai-text" style="color:var(--text3)">ИИ читает фото...</div></div></div>`;
 
   // If student picked "custom" task and typed it — pass as a hint, otherwise trust the photo fully
   const taskHint = task.custom
@@ -1648,7 +1649,12 @@ async function loadHistory() {
     .eq('user_id', currentUser.id)
     .order('created_at', { ascending: false })
     .limit(30);
-  if (error) { console.warn("loadHistory error:", error.message); document.getElementById("historyList").innerHTML = `<div style="padding:20px;color:red;font-size:13px">⚠️ Ошибка загрузки: ${error.message}</div>`; return; }
+  if (error) {
+    console.warn('loadHistory error:', error.message, error);
+    const el = document.getElementById('historyList');
+    if (el) el.innerHTML = `<div style="padding:20px;color:red;font-size:13px">⚠️ Ошибка: ${error.message}</div>`;
+    return; // не стираем старую историю
+  }
   if (!data) return;
   history = data.map((r, i) => ({
     task:        r.task,
@@ -1658,6 +1664,7 @@ async function loadHistory() {
     ai_response: i < 10 ? (r.ai_response || null) : null,
     time:        new Date(r.created_at).toLocaleString('ru')
   }));
+  console.log('loadHistory: загружено', history.length, 'записей');
 }
 
 
@@ -1683,17 +1690,34 @@ async function loadTeacherData() {
 
   const { data: rows, error } = await sb
     .from('checks')
-    .select('*, profiles(first_name, last_name), topics(name)')
+    .select('*, profiles(first_name, last_name, role), topics(name)')
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(100);
 
   if (error || !rows || rows.length === 0) {
     tbody.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">Пока нет решений от учеников</div>';
+    ['teacherStatStudents','teacherStatChecks','teacherStatSuccess','teacherStatToday'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.textContent = '0';
+    });
     return;
   }
 
+  // Считаем реальную статистику
+  const studentRows = rows.filter(r => r.profiles?.role === 'student' || !r.profiles?.role);
+  const uniqueStudents = new Set(studentRows.map(r => r.user_id)).size;
+  const totalChecks = rows.length;
+  const correctCount = rows.filter(r => r.verdict === 'correct').length;
+  const successRate = totalChecks > 0 ? Math.round(correctCount / totalChecks * 100) : 0;
+  const today = new Date().toDateString();
+  const todayCount = rows.filter(r => new Date(r.created_at).toDateString() === today).length;
+
+  const s = document.getElementById('teacherStatStudents'); if(s) s.textContent = uniqueStudents;
+  const c = document.getElementById('teacherStatChecks');   if(c) c.textContent = totalChecks;
+  const u = document.getElementById('teacherStatSuccess');  if(u) u.textContent = successRate + '%';
+  const d = document.getElementById('teacherStatToday');    if(d) d.textContent = todayCount;
+
   const avColors = ['a','b','c','d'];
-  tbody.innerHTML = rows.map(r => {
+  tbody.innerHTML = rows.slice(0, 50).map(r => {
     const p = r.profiles;
     const name     = p ? `${p.first_name||''} ${p.last_name||''}`.trim() : '—';
     const initials = p ? ((p.first_name||'?')[0]+(p.last_name||'?')[0]).toUpperCase() : '??';
@@ -1714,7 +1738,6 @@ async function loadTeacherData() {
     </div>`;
   }).join('');
 }
-
 // ── INIT ──────────────────────────────────────────────────
 async function init() {
   applyTheme();
