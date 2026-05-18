@@ -1648,7 +1648,7 @@ async function loadHistory() {
     .eq('user_id', currentUser.id)
     .order('created_at', { ascending: false })
     .limit(30);
-  if (error) { console.warn('loadHistory error:', error.message); return; }
+  if (error) { console.warn("loadHistory error:", error.message); document.getElementById("historyList").innerHTML = `<div style="padding:20px;color:red;font-size:13px">⚠️ Ошибка загрузки: ${error.message}</div>`; return; }
   if (!data) return;
   history = data.map((r, i) => ({
     task:        r.task,
