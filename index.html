@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +14,7 @@
   --amber:#fbbf24; --r:10px; --r2:16px;
   --font:'Manrope',sans-serif; --font-display:'Syne',sans-serif; --font-mono:'JetBrains Mono',monospace;
 }
-[data-theme="dark"] {
+[data-theme="light"] {
   --bg:#0a0a0f; --bg2:#111118; --bg3:#18181f; --bg4:#1e1e28;
   --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.12);
   --text:#f0f0f8; --text2:#9090a8; --text3:#5a5a72;
@@ -869,7 +869,7 @@ function onLangChange(val) {
 }
 
 // ── THEME ─────────────────────────────────────────────────
-let currentTheme = localStorage.getItem('mc_theme') || 'dark';
+let currentTheme = localStorage.getItem('mc_theme') || 'light';
 function applyTheme() {
   document.documentElement.setAttribute('data-theme', currentTheme);
   const btn = document.getElementById('themeBtn');
@@ -1009,9 +1009,15 @@ async function startSession() {
 
   applyLang();
   applyTheme();
-  await loadHistory();
+
+  // Загружаем все данные параллельно сразу при входе
+  const loads = [loadHistory()];
+  if (isTeacher || isAdmin) {
+    loads.push(loadTeacherData());
+    loads.push(loadAnalytics());
+  }
+  await Promise.all(loads);
   renderHistory();
-  if (isTeacher || isAdmin) { loadTeacherData(); loadAnalytics(); }
   showPanel('student', document.querySelector('.nav-item'));
   } catch(e) {
     document.getElementById('authScreen').classList.remove('hidden');
@@ -1049,7 +1055,7 @@ function showPanel(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
   updatePanelTitles(name);
-  if (name === 'history') { document.getElementById('historyList').innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3)">⏳ Загрузка...</div>'; loadHistory().then(renderHistory); }
+  if (name === 'history')   { renderHistory(); loadHistory().then(renderHistory); }
   if (name === 'profile')   loadProfilePanel();
   if (name === 'admin')     loadAdminPanel();
   if (name === 'analytics') loadAnalytics();
