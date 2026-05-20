@@ -278,6 +278,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text);box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:9999;max-width:300px}
 .toast.show{opacity:1;transform:translateY(0)}
 
+.mobile-nav{display:none}
+
 @media(max-width:900px){
   .sidebar{display:none}
   .tasks-chips{gap:6px}
@@ -287,117 +289,60 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   .config-grid{grid-template-columns:1fr}
   .table-head,.table-row{grid-template-columns:2fr 1fr 1fr}
 }
-
-/* ── MOBILE (≤600px) ────────────────────────────────────── */
 @media(max-width:600px){
-  /* Layout */
-  .layout{grid-template-columns:1fr}
+  html,body{overflow-x:hidden;max-width:100vw}
+  .layout{grid-template-columns:1fr;overflow-x:hidden}
   .sidebar{display:none}
-  .main{padding-bottom:72px}
-
-  /* Topbar */
-  .topbar{padding:10px 14px}
-  .page-title{font-size:16px}
+  .main{min-width:0;overflow-x:hidden;padding-bottom:72px}
+  .topbar{padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .page-title{font-size:15px}
   .page-sub{font-size:10px}
+  .badge-model{display:none}
   .theme-btn{padding:5px 9px;font-size:11px}
-
-  /* Content */
-  .content{padding:12px 14px}
-
-  /* Bottom nav bar */
-  .mobile-nav{
-    display:flex;
-    position:fixed;bottom:0;left:0;right:0;
-    background:var(--bg2);
-    border-top:1px solid var(--border);
-    z-index:900;
-    padding:0;
-    height:64px;
-  }
-  .mobile-nav-item{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:3px;padding:6px 2px;cursor:pointer;
-    font-size:9px;font-weight:600;color:var(--text3);
-    text-transform:uppercase;letter-spacing:.3px;
-    transition:color .15s;border:none;background:none;font-family:var(--font);
-  }
+  .content{padding:12px 14px;overflow-x:hidden}
+  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:900;height:64px;padding-bottom:env(safe-area-inset-bottom)}
+  .mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;cursor:pointer;border:none;background:none;font-family:var(--font);font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;transition:color .15s}
   .mobile-nav-item.active{color:var(--accent)}
   .mobile-nav-icon{font-size:20px;line-height:1}
-
-  /* Task chips — scroll horizontally */
-  .tasks-chips{flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tasks-chips{flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .tasks-chips::-webkit-scrollbar{display:none}
   .task-chip{flex-shrink:0}
   .task-chip-formula{display:none}
-
-  /* Solve area — stacked */
   .solve-area{grid-template-columns:1fr;gap:12px}
-
-  /* Formula display */
-  .formula-main{font-size:16px}
-
-  /* Buttons bigger for touch */
+  .panel-box{min-width:0}
+  .formula-main{font-size:16px;word-break:break-all}
   .btn-check{padding:14px;font-size:15px}
   .btn-photo{padding:12px}
   .btn-clear{padding:10px}
-
-  /* Stats */
   .stats-row{grid-template-columns:1fr 1fr;gap:8px}
   .stat-val{font-size:22px}
   .stat-box{padding:12px}
-
-  /* Table — simplified on mobile */
   .table-head{display:none}
-  .table-row{
-    grid-template-columns:1fr;
-    gap:6px;padding:12px 14px;
-    position:relative;
-  }
-  .table-row > div:nth-child(4){font-size:10px}
-  .table-row > div:last-child{display:none}
-
-  /* History */
+  .table-row{display:flex;flex-direction:column;gap:4px;padding:12px 14px}
+  .table-row>div:last-child{display:none}
+  .admin-table-head{display:none}
+  .admin-table-row{display:flex;flex-direction:column;gap:4px;padding:12px 14px}
+  .history-meta{flex-wrap:wrap}
   .history-time{margin-left:0;width:100%}
   .history-answer{white-space:normal;font-size:12px}
-
-  /* Charts */
   .charts-grid{grid-template-columns:1fr}
   .chart-box{padding:14px}
   .sus-big{font-size:36px}
-
-  /* Config / Settings */
   .config-grid{grid-template-columns:1fr}
   .config-box{padding:14px}
-
-  /* Profile */
   .profile-grid{grid-template-columns:1fr}
   .profile-row{grid-template-columns:1fr}
-
-  /* Admin table */
-  .admin-table-head{display:none}
-  .admin-table-row{grid-template-columns:1fr;gap:4px;padding:12px 14px}
-
-  /* Auth card */
-  .auth-card{padding:24px 20px;border-radius:16px}
-
-  /* Toast bottom offset */
-  .toast{bottom:80px;right:12px;left:12px;max-width:100%}
-
-  /* Result panel */
+  .auth-card{padding:24px 20px;border-radius:16px;max-width:100%}
+  .toast{bottom:76px;right:12px;left:12px;max-width:100%}
   .result-block{gap:10px}
   .verdict{padding:12px}
   .verdict-icon{font-size:18px}
-
-  /* Photo upload */
   .photo-upload-zone{padding:16px 12px}
   .photo-upload-icon{font-size:22px}
-
-  /* Math textarea */
   .math-area{min-height:90px;font-size:13px}
-
-  /* Analytics */
   .analytics-student-card{padding:12px}
-  .topic-name{min-width:100px;font-size:11px}
+  .topic-name{min-width:80px;font-size:11px}
+  .topic-row{flex-wrap:wrap;gap:6px}
 }
 </style>
 </head>
@@ -501,28 +446,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <button class="logout-btn" onclick="doLogout()">🚪 <span data-i18n="logout">Выйти</span></button>
     </div>
   </aside>
-
-  <!-- MOBILE BOTTOM NAV -->
-  <nav class="mobile-nav" id="mobileNav" style="display:none">
-    <button class="mobile-nav-item active" id="mnStudent" onclick="showPanel('student',this);setMobileNav('mnStudent')">
-      <span class="mobile-nav-icon">✏️</span>Задание
-    </button>
-    <button class="mobile-nav-item" id="mnHistory" onclick="showPanel('history',this);setMobileNav('mnHistory')">
-      <span class="mobile-nav-icon">🕒</span>История
-    </button>
-    <button class="mobile-nav-item" id="mnTeacher" style="display:none" onclick="showPanel('teacher',this);setMobileNav('mnTeacher')">
-      <span class="mobile-nav-icon">📋</span>Журнал
-    </button>
-    <button class="mobile-nav-item" id="mnAnalytics" style="display:none" onclick="showPanel('analytics',this);setMobileNav('mnAnalytics')">
-      <span class="mobile-nav-icon">📊</span>Аналитика
-    </button>
-    <button class="mobile-nav-item" id="mnProfile" onclick="showPanel('profile',this);setMobileNav('mnProfile')">
-      <span class="mobile-nav-icon">👤</span>Профиль
-    </button>
-    <button class="mobile-nav-item" id="mnConfig" onclick="showPanel('config',this);setMobileNav('mnConfig')">
-      <span class="mobile-nav-icon">⚙️</span>Ещё
-    </button>
-  </nav>
 
   <main class="main">
     <div class="topbar">
@@ -773,6 +696,45 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
     </div>
   </main>
+</div>
+
+<!-- MOBILE BOTTOM NAV — outside layout grid -->
+<nav class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-item active" id="mnStudent" onclick="showPanel('student',this);setMobileNav('mnStudent')">
+    <span class="mobile-nav-icon">✏️</span><span>Задание</span>
+  </button>
+  <button class="mobile-nav-item" id="mnHistory" onclick="showPanel('history',this);setMobileNav('mnHistory')">
+    <span class="mobile-nav-icon">🕒</span><span>История</span>
+  </button>
+  <button class="mobile-nav-item" id="mnTeacher" style="display:none" onclick="showPanel('teacher',this);setMobileNav('mnTeacher')">
+    <span class="mobile-nav-icon">📋</span><span>Журнал</span>
+  </button>
+  <button class="mobile-nav-item" id="mnAnalytics" style="display:none" onclick="showPanel('analytics',this);setMobileNav('mnAnalytics')">
+    <span class="mobile-nav-icon">📊</span><span>Аналитика</span>
+  </button>
+  <button class="mobile-nav-item" id="mnProfile" onclick="showPanel('profile',this);setMobileNav('mnProfile')">
+    <span class="mobile-nav-icon">👤</span><span>Профиль</span>
+  </button>
+  <button class="mobile-nav-item" id="mnMore" onclick="toggleMobileMenu()">
+    <span class="mobile-nav-icon">☰</span><span>Меню</span>
+  </button>
+</nav>
+
+<!-- MOBILE SLIDE-UP MENU -->
+<div id="mobileMenu" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.5)" onclick="toggleMobileMenu()">
+  <div onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom))">
+    <div style="width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px"></div>
+    <div id="mobileMenuUserInfo" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:12px;margin-bottom:16px">
+      <div id="mobileAvatar" style="width:40px;height:40px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff">?</div>
+      <div>
+        <div id="mobileUserName" style="font-weight:600;font-size:14px;color:var(--text)">—</div>
+        <div id="mobileUserRole" style="font-size:12px;color:var(--text3)">—</div>
+      </div>
+    </div>
+    <button onclick="toggleMobileMenu();showPanel('config',document.getElementById('mnMore'));setMobileNav('mnMore')" style="width:100%;padding:13px;margin-bottom:8px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;font-size:14px;color:var(--text);font-family:var(--font);cursor:pointer;text-align:left">⚙️ &nbsp;Настройки</button>
+    <button id="mnAdminBtn" style="display:none;width:100%;padding:13px;margin-bottom:8px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;font-size:14px;color:var(--text);font-family:var(--font);cursor:pointer;text-align:left" onclick="toggleMobileMenu();showPanel('admin',this);setMobileNav('mnMore')">🛡️ &nbsp;Управление</button>
+    <button onclick="toggleMobileMenu();doLogout()" style="width:100%;padding:13px;background:var(--red-dim);border:1px solid rgba(248,113,113,.3);border-radius:12px;font-size:14px;color:var(--red);font-family:var(--font);cursor:pointer;text-align:left">🚪 &nbsp;Выйти из аккаунта</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1929,18 +1891,31 @@ function setMobileNav(activeId) {
   if (el) el.classList.add('active');
 }
 
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  if (!menu) return;
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
 function initMobileNav() {
-  const isMobile = window.innerWidth <= 600;
-  const nav = document.getElementById('mobileNav');
-  if (nav) nav.style.display = isMobile ? 'flex' : 'none';
   const isStaff = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === 'admin';
   ['mnTeacher','mnAnalytics'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = isStaff ? 'flex' : 'none';
   });
+  const adminBtn = document.getElementById('mnAdminBtn');
+  if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none';
+  // Обновим имя/роль в мобильном меню
+  const av = document.getElementById('mobileAvatar');
+  const nm = document.getElementById('mobileUserName');
+  const rl = document.getElementById('mobileUserRole');
+  if (av && currentUser) {
+    av.textContent = ((currentUser.first_name||'?')[0]+(currentUser.last_name||'?')[0]).toUpperCase();
+  }
+  if (nm) nm.textContent = `${currentUser?.first_name||''} ${currentUser?.last_name||''}`.trim();
+  if (rl) rl.textContent = {teacher:'Учитель',admin:'Администратор',student:'Ученик'}[currentUser?.role]||'Ученик';
 }
-
-window.addEventListener('resize', initMobileNav);
 
 init();
 </script>
