@@ -287,6 +287,118 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   .config-grid{grid-template-columns:1fr}
   .table-head,.table-row{grid-template-columns:2fr 1fr 1fr}
 }
+
+/* ── MOBILE (≤600px) ────────────────────────────────────── */
+@media(max-width:600px){
+  /* Layout */
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding-bottom:72px}
+
+  /* Topbar */
+  .topbar{padding:10px 14px}
+  .page-title{font-size:16px}
+  .page-sub{font-size:10px}
+  .theme-btn{padding:5px 9px;font-size:11px}
+
+  /* Content */
+  .content{padding:12px 14px}
+
+  /* Bottom nav bar */
+  .mobile-nav{
+    display:flex;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg2);
+    border-top:1px solid var(--border);
+    z-index:900;
+    padding:0;
+    height:64px;
+  }
+  .mobile-nav-item{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;padding:6px 2px;cursor:pointer;
+    font-size:9px;font-weight:600;color:var(--text3);
+    text-transform:uppercase;letter-spacing:.3px;
+    transition:color .15s;border:none;background:none;font-family:var(--font);
+  }
+  .mobile-nav-item.active{color:var(--accent)}
+  .mobile-nav-icon{font-size:20px;line-height:1}
+
+  /* Task chips — scroll horizontally */
+  .tasks-chips{flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tasks-chips::-webkit-scrollbar{display:none}
+  .task-chip{flex-shrink:0}
+  .task-chip-formula{display:none}
+
+  /* Solve area — stacked */
+  .solve-area{grid-template-columns:1fr;gap:12px}
+
+  /* Formula display */
+  .formula-main{font-size:16px}
+
+  /* Buttons bigger for touch */
+  .btn-check{padding:14px;font-size:15px}
+  .btn-photo{padding:12px}
+  .btn-clear{padding:10px}
+
+  /* Stats */
+  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-val{font-size:22px}
+  .stat-box{padding:12px}
+
+  /* Table — simplified on mobile */
+  .table-head{display:none}
+  .table-row{
+    grid-template-columns:1fr;
+    gap:6px;padding:12px 14px;
+    position:relative;
+  }
+  .table-row > div:nth-child(4){font-size:10px}
+  .table-row > div:last-child{display:none}
+
+  /* History */
+  .history-time{margin-left:0;width:100%}
+  .history-answer{white-space:normal;font-size:12px}
+
+  /* Charts */
+  .charts-grid{grid-template-columns:1fr}
+  .chart-box{padding:14px}
+  .sus-big{font-size:36px}
+
+  /* Config / Settings */
+  .config-grid{grid-template-columns:1fr}
+  .config-box{padding:14px}
+
+  /* Profile */
+  .profile-grid{grid-template-columns:1fr}
+  .profile-row{grid-template-columns:1fr}
+
+  /* Admin table */
+  .admin-table-head{display:none}
+  .admin-table-row{grid-template-columns:1fr;gap:4px;padding:12px 14px}
+
+  /* Auth card */
+  .auth-card{padding:24px 20px;border-radius:16px}
+
+  /* Toast bottom offset */
+  .toast{bottom:80px;right:12px;left:12px;max-width:100%}
+
+  /* Result panel */
+  .result-block{gap:10px}
+  .verdict{padding:12px}
+  .verdict-icon{font-size:18px}
+
+  /* Photo upload */
+  .photo-upload-zone{padding:16px 12px}
+  .photo-upload-icon{font-size:22px}
+
+  /* Math textarea */
+  .math-area{min-height:90px;font-size:13px}
+
+  /* Analytics */
+  .analytics-student-card{padding:12px}
+  .topic-name{min-width:100px;font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -389,6 +501,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <button class="logout-btn" onclick="doLogout()">🚪 <span data-i18n="logout">Выйти</span></button>
     </div>
   </aside>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-nav" id="mobileNav" style="display:none">
+    <button class="mobile-nav-item active" id="mnStudent" onclick="showPanel('student',this);setMobileNav('mnStudent')">
+      <span class="mobile-nav-icon">✏️</span>Задание
+    </button>
+    <button class="mobile-nav-item" id="mnHistory" onclick="showPanel('history',this);setMobileNav('mnHistory')">
+      <span class="mobile-nav-icon">🕒</span>История
+    </button>
+    <button class="mobile-nav-item" id="mnTeacher" style="display:none" onclick="showPanel('teacher',this);setMobileNav('mnTeacher')">
+      <span class="mobile-nav-icon">📋</span>Журнал
+    </button>
+    <button class="mobile-nav-item" id="mnAnalytics" style="display:none" onclick="showPanel('analytics',this);setMobileNav('mnAnalytics')">
+      <span class="mobile-nav-icon">📊</span>Аналитика
+    </button>
+    <button class="mobile-nav-item" id="mnProfile" onclick="showPanel('profile',this);setMobileNav('mnProfile')">
+      <span class="mobile-nav-icon">👤</span>Профиль
+    </button>
+    <button class="mobile-nav-item" id="mnConfig" onclick="showPanel('config',this);setMobileNav('mnConfig')">
+      <span class="mobile-nav-icon">⚙️</span>Ещё
+    </button>
+  </nav>
 
   <main class="main">
     <div class="topbar">
@@ -1018,6 +1152,7 @@ async function startSession() {
   }
   await Promise.all(loads);
   renderHistory();
+  initMobileNav();
   showPanel('student', document.querySelector('.nav-item'));
   } catch(e) {
     document.getElementById('authScreen').classList.remove('hidden');
@@ -1787,6 +1922,25 @@ async function init() {
     }
   });
 }
+
+function setMobileNav(activeId) {
+  document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(activeId);
+  if (el) el.classList.add('active');
+}
+
+function initMobileNav() {
+  const isMobile = window.innerWidth <= 600;
+  const nav = document.getElementById('mobileNav');
+  if (nav) nav.style.display = isMobile ? 'flex' : 'none';
+  const isStaff = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
+  ['mnTeacher','mnAnalytics'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isStaff ? 'flex' : 'none';
+  });
+}
+
+window.addEventListener('resize', initMobileNav);
 
 init();
 </script>
